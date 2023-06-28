@@ -44,6 +44,22 @@ Step 2: Run the lint commmand:
 make lint
 ```
 
+### Testing your code
+
+By convention, test files are named `*_test.go` and are placed in the same directory as the code they are testing.
+
+To run all tests:
+
+```bash
+make test
+```
+
+To run all tests and view test coverage:
+
+```bash
+make coverage
+```
+
 ## Building for production
 
 ```bash

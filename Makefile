@@ -1,10 +1,16 @@
+PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
-.PHONY: dev build lint
+.PHONY: dev build test coverage lint
 
 dev:
-	@GO_ENV=development go run main.go
+	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
 build:
-	@go build -o ${OUTPUT_PATH} main.go
+	@go build -o ${OUTPUT_PATH} ${PROGRAM_ENTRYPOINT}
+test:
+	@go test -v ./...
+coverage:
+	@go test -coverprofile=coverage.out ./...
+	@go tool cover -func=coverage.out
 lint:
 	@golangci-lint run
