@@ -21,8 +21,8 @@ const (
 	PORT   = "PORT"
 )
 
-func LoadFromEnvironment() (*Config, error) {
-	err := godotenv.Load()
+func LoadFromEnvironment(envFiles ...string) (*Config, error) {
+	err := godotenv.Load(envFiles...)
 	if err != nil {
 		log.Fatalln("Error loading .env file:", err)
 		return nil, err
