@@ -13,17 +13,14 @@ func TestGetAllStories(t *testing.T) {
 }
 
 func TestCreateStory(t *testing.T) {
-	// Create a sample story
 	story := Story{
 		ID:     3,
 		Title:  "Story 3",
 		Author: "Username3",
 	}
 
-	// Create the story
 	CreateStory(story)
 
-	// Get all stories
 	stories := GetAllStories()
 
 	if len(stories) != 3 {
