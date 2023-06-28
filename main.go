@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"log"
 	"net/http"
 
@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/source-academy/stories-backend/config"
 	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/controller"
 )
 
 const (
@@ -36,9 +37,12 @@ func main() {
 	r.Use(cors.Handler(options))
 
 	// Define routes
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, WELCOME_MESSAGE)
-	})
+	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprint(w, WELCOME_MESSAGE)
+	// })
+
+	r.Get("/stories", controller.GetStories)
+	r.Post("/stories", controller.CreateStory)
 
 	// Start server
 	log.Println("Starting server on port 8080")
