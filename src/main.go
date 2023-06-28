@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/source-academy/stories-backend/config"
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/src/config"
+	"github.com/source-academy/stories-backend/src/utils/constants"
 )
 
 const (

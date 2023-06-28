@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/src/utils/constants"
 )
 
 type Config struct {
