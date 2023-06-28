@@ -1,7 +1,7 @@
 PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
-.PHONY: dev build test coverage lint format
+.PHONY: dev build test coverage lint format hooks
 
 dev:
 	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
@@ -16,3 +16,9 @@ lint:
 	@golangci-lint run
 format:
 	@go fmt ./...
+hooks:
+	@cp -f ./hooks/pre-commit.sh ./.git/hooks/pre-commit
+	@chmod 755 ./.git/hooks/pre-commit
+	@cp -f ./hooks/pre-push.sh ./.git/hooks/pre-push
+	@chmod 755 ./.git/hooks/pre-push
+	@echo "Hooks installed successfully!"
