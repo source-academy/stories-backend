@@ -37,7 +37,7 @@ func main() {
 
 	// Define routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, WELCOME_MESSAGE)
+		fmt.Fprint(w, WELCOME_MESSAGE)
 	})
 
 	// Start server

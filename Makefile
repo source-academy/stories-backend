@@ -1,7 +1,7 @@
 PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
-.PHONY: dev build test coverage
+.PHONY: dev build test coverage lint
 
 dev:
 	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
@@ -12,3 +12,5 @@ test:
 coverage:
 	@go test -coverprofile=coverage.out ./...
 	@go tool cover -func=coverage.out
+lint:
+	@golangci-lint run
