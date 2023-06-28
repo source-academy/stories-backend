@@ -26,15 +26,25 @@ To work with and debug the API, we also strongly recommend installing tools like
 
 **TODO:** Add instructions for setting up the database.
 
-## Starting the server
+## Development
 
-### Development
+### Starting the server
 
 ```bash
 make dev
 ```
 
-### Building for production
+### Running linter
+
+Step 1: Install [golangci-lint](https://golangci-lint.run/usage/install/#local-installation) locally.
+
+Step 2: Run the lint commmand:
+
+```bash
+make lint
+```
+
+## Building for production
 
 ```bash
 make build
