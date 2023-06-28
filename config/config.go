@@ -37,9 +37,12 @@ func LoadFromEnvironment() (*Config, error) {
 	}
 
 	config.Host = os.Getenv(HOST)
-	config.Port, err = strconv.Atoi(os.Getenv(PORT))
-	if err != nil {
-		log.Fatalf("Error invalid PORT: %s\n", os.Getenv(PORT))
+
+	envPort := os.Getenv(PORT)
+	if envPort == "" {
+		config.Port = constants.DEFAULT_PORT
+	} else if config.Port, err = strconv.Atoi(envPort); err != nil {
+		log.Fatalf("Error invalid PORT: %s\n", envPort)
 		return nil, err
 	}
 
