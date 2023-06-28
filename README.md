@@ -22,6 +22,19 @@ Install Golang and PostgresSQL. We recommend using a version manager like [asdf]
 
 To work with and debug the API, we also strongly recommend installing tools like [Postman](https://www.postman.com/downloads/).
 
+### Setting up git hooks
+
+We use pre-commit and pre-push hooks to ensure that code is formatted and linted before committing and pushing. To set up the hooks, run the following commands:
+
+```bash
+make hooks
+```
+
+**Notes:**
+
+* Hooks only work on macOS/Linux. Support for Windows is coming soon.
+* You will need to install golangci-lint locally for git hooks to work. See [Running linter](#running-linter) for instructions.
+
 ### Setting up the database
 
 **TODO:** Add instructions for setting up the database.
