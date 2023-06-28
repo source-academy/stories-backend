@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/source-academy/stories-backend/config"
+	"github.com/source-academy/stories-backend/utils/constants"
 )
 
 const (
@@ -16,6 +17,12 @@ const (
 )
 
 func main() {
+	// Load configuration
+	conf, err := config.LoadFromEnvironment()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// TODO: Abstract router setup logic
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -23,7 +30,7 @@ func main() {
 	options := cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 	}
-	if os.Getenv("GO_ENV") == "development" {
+	if conf.Environment == constants.ENV_DEVELOPMENT {
 		options.AllowedOrigins = []string{"https://*", "http://*"}
 	}
 	r.Use(cors.Handler(options))
@@ -35,7 +42,7 @@ func main() {
 
 	// Start server
 	log.Println("Starting server on port 8080")
-	err := http.ListenAndServe("localhost:8080", r)
+	err = http.ListenAndServe("localhost:8080", r)
 	if err != nil {
 		log.Fatalln(err)
 	}
