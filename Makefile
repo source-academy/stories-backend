@@ -1,8 +1,9 @@
+PROGRAM_ENTRYPOINT=./src/main.go
 OUTPUT_PATH=./app
 
 .PHONY: dev
 
 dev:
-	@GO_ENV=development go run main.go
+	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
 build:
-	@go build -o ${OUTPUT_PATH} main.go
+	@go build -o ${OUTPUT_PATH} ${PROGRAM_ENTRYPOINT}
