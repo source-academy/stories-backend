@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/source-academy/stories-backend/config"
+	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/utils/constants"
 )
 
@@ -39,6 +40,9 @@ func main() {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, WELCOME_MESSAGE)
 	})
+
+	r.Get("/stories", controller.GetStories)
+	r.Post("/stories", controller.CreateStory)
 
 	// Start server
 	log.Println("Starting server on port 8080")
