@@ -1,4 +1,4 @@
-PROGRAM_ENTRYPOINT=./src/main.go
+PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
 .PHONY: dev
