@@ -3,6 +3,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/source-academy/stories-backend/model"
@@ -13,11 +14,10 @@ func GetStories(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(stories); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		log.Fatalln(err)
+		panic(err)
 	}
 }
-
 
 func CreateStory(w http.ResponseWriter, r *http.Request) {
 	var story model.Story
