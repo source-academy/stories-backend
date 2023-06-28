@@ -1,42 +1,38 @@
 package model
 
-import "testing"
+// can use :  `go test -v ./model` to run test
 
-// can run test using : go test -v ./model
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestGetAllStories(t *testing.T) {
-	stories := GetAllStories()
+	t.Run("should return correct number of stories", func(t *testing.T) {
+		stories := GetAllStories()
 
-	if len(stories) != 2 {
-		t.Errorf("Expected number of stories to be 2, but got %d", len(stories))
-	}
+		assert.Len(t, stories, 2, "Expected number of stories to be 2")
+	})
 }
 
 func TestCreateStory(t *testing.T) {
-	story := Story{
-		ID:     3,
-		Title:  "Story 3",
-		Author: "Username3",
-	}
+	t.Run("should create a new story", func(t *testing.T) {
+		story := Story{
+			ID:     3,
+			Title:  "Story 3",
+			Author: "Username3",
+		}
 
-	CreateStory(story)
+		CreateStory(story)
 
-	stories := GetAllStories()
+		stories := GetAllStories()
 
-	if len(stories) != 3 {
-		t.Errorf("Expected number of stories to be 3, but got %d", len(stories))
-	}
+		assert.Len(t, stories, 3, "Expected number of stories to be 3")
 
-	lastStory := stories[len(stories)-1]
-	if lastStory.ID != 3 {
-		t.Errorf("Expected story ID to be 3, but got %d", lastStory.ID)
-	}
-
-	if lastStory.Title != "Story 3" {
-		t.Errorf("Expected story title to be 'Story 3', but got '%s'", lastStory.Title)
-	}
-
-	if lastStory.Author != "Username3" {
-		t.Errorf("Expected story author to be 'Username3', but got '%s'", lastStory.Author)
-	}
+		lastStory := stories[len(stories)-1]
+		assert.Equal(t, 3, lastStory.ID, "Expected story ID to be 3")
+		assert.Equal(t, "Story 3", lastStory.Title, "Expected story title to be 'Story 3'")
+		assert.Equal(t, "Username3", lastStory.Author, "Expected story author to be 'Username3'")
+	})
 }
