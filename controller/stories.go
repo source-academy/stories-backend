@@ -1,4 +1,3 @@
-// controller/story.go
 package controller
 
 import (

@@ -1,4 +1,3 @@
-// model/story.go
 package model
 
 type Story struct {

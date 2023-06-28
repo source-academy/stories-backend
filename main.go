@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"log"
 	"net/http"
 
@@ -37,9 +36,9 @@ func main() {
 	r.Use(cors.Handler(options))
 
 	// Define routes
-	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprint(w, WELCOME_MESSAGE)
-	// })
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, WELCOME_MESSAGE)
+	})
 
 	r.Get("/stories", controller.GetStories)
 	r.Post("/stories", controller.CreateStory)
