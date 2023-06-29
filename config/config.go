@@ -47,6 +47,11 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	return config, nil
 }
 
+// Parses an integer from the environment variable with the given key.
+// If the environment variable is not set, it returns the default
+// value. If the environment variable is set but cannot be parsed as
+// an integer, it returns an error as well as setting the return value
+// to the default value.
 func parseIntFromEnv(key string, defaultValue int) (int, error) {
 	strVal := os.Getenv(key)
 	if strVal == "" {
