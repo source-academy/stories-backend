@@ -1,6 +1,7 @@
 package database
 
 import (
+	"os"
 	"testing"
 
 	"github.com/source-academy/stories-backend/config"
@@ -11,6 +12,11 @@ import (
 func ignoreError(func() (err error)) {}
 
 func TestConnect(t *testing.T) {
+	// TODO: Set up postgres container for testing in CI
+	if os.Getenv(config.GO_ENV) == constants.ENV_TEST {
+		t.Skip("Skipping database connection tests in CI environment")
+	}
+
 	conf := &config.DatabaseConfig{
 		TimeZone:     constants.DB_DEFAULT_TIMEZONE,
 		Host:         "localhost",

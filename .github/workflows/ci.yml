@@ -22,7 +22,7 @@ jobs:
           version: v1.53.3
       - name: Run tests
         run: |
-          make test
+          make testCI
       - name: Build server
         run: |
           make build
