@@ -39,6 +39,10 @@ make hooks
 
 **TODO:** Add instructions for setting up the database.
 
+### Setting up environment variables
+
+Copy `.env.example` to `.env` and fill in/modify the required values as needed.
+
 ## Development
 
 ### Starting the server
