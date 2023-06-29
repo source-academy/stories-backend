@@ -33,4 +33,16 @@ func TestConnect(t *testing.T) {
 		db.Raw("SELECT current_database()").Scan(&dbName)
 		assert.Equal(t, constants.DB_DEFAULT_NAME, dbName)
 	})
+	// TODO: Populate these with actual tables once schema is finalized
+	// t.Run("should show a correct list of tables", func(t *testing.T) {
+	// 	db, _ := Connect(conf)
+	// 	defer Close(db)
+
+	// 	// Get list of tables in the database
+	// 	var tables []string
+	// 	err := db.Table("information_schema.tables").Where("table_schema = ?", "public").Pluck("table_name", &tables).Error
+	// 	assert.Nil(t, err)
+
+	// 	assert.Equal(t, []string{}, tables)
+	// })
 }
