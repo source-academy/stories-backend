@@ -38,13 +38,23 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	config.Host = os.Getenv(HOST)
 
-	envPort := os.Getenv(PORT)
-	if envPort == "" {
-		config.Port = constants.DEFAULT_PORT
-	} else if config.Port, err = strconv.Atoi(envPort); err != nil {
-		log.Fatalf("Error invalid PORT: %s\n", envPort)
-		return nil, err
+	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
+	if err != nil {
+		log.Println("WARNING: invalid port:", err)
+		log.Println("Using default port:", constants.DEFAULT_PORT)
 	}
 
 	return config, nil
+}
+
+func parseIntFromEnv(key string, defaultValue int) (int, error) {
+	strVal := os.Getenv(key)
+	if strVal == "" {
+		return defaultValue, nil
+	}
+	value, err := strconv.Atoi(strVal)
+	if err != nil {
+		return defaultValue, err
+	}
+	return value, nil
 }
