@@ -6,12 +6,12 @@ import (
 )
 
 type DatabaseConfig struct {
-	TimeZone string
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Database string
+	TimeZone     string
+	Host         string
+	Port         int
+	User         string
+	Password     string
+	DatabaseName string
 }
 
 func (c DatabaseConfig) ToDataSourceName() string {
@@ -21,7 +21,7 @@ func (c DatabaseConfig) ToDataSourceName() string {
 		fmt.Sprintf("port=%d", c.Port),
 		fmt.Sprintf("user=%s", c.User),
 		fmt.Sprintf("password=%s", c.Password),
-		fmt.Sprintf("dbname=%s", c.Database),
+		fmt.Sprintf("dbname=%s", c.DatabaseName),
 	}
 
 	dsnBuilder := strings.Builder{}
