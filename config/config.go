@@ -13,12 +13,21 @@ type Config struct {
 	Environment string
 	Host        string
 	Port        int
+
+	Database *DatabaseConfig
 }
 
 const (
 	GO_ENV = "GO_ENV"
 	HOST   = "HOST"
 	PORT   = "PORT"
+
+	DB_TIMEZONE = "DB_TIMEZONE"
+	DB_HOSTNAME = "DB_HOSTNAME"
+	DB_PORT     = "DB_PORT"
+	DB_USER     = "DB_USER"
+	DB_PASSWORD = "DB_PASSWORD"
+	DB_NAME     = "DB_NAME"
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
@@ -36,12 +45,27 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 		config.Environment = constants.ENV_PRODUCTION
 	}
 
+	// Database
+	dbConfig := &DatabaseConfig{
+		TimeZone:     os.Getenv(DB_TIMEZONE),
+		Host:         os.Getenv(DB_HOSTNAME),
+		User:         os.Getenv(DB_USER),
+		Password:     os.Getenv(DB_PASSWORD),
+		DatabaseName: os.Getenv(DB_NAME),
+	}
+	dbConfig.Port, err = parseIntFromEnv(DB_PORT, constants.DB_DEFAULT_PORT)
+	if err != nil {
+		log.Println("WARNING: invalid database port:", err)
+		log.Println("Using default database port:", constants.DB_DEFAULT_PORT)
+	}
+	config.Database = dbConfig
+
 	config.Host = os.Getenv(HOST)
 
 	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
 	if err != nil {
-		log.Println("WARNING: invalid port:", err)
-		log.Println("Using default port:", constants.DEFAULT_PORT)
+		log.Println("WARNING: invalid server port:", err)
+		log.Println("Using default server port:", constants.DEFAULT_PORT)
 	}
 
 	return config, nil
