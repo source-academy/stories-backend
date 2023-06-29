@@ -58,6 +58,38 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 	})
 }
 
+func TestLoadFromEnvironment_FileEnvironment(t *testing.T) {
+	// TODO: Uncomment this test when we have our own internal
+	//       logging package that does not call os.Exit() on error.
+	// t.Run("should throw error when environment file not found", func(t *testing.T) {
+	// 	_, err := LoadFromEnvironment("non-existent-file")
+	// 	assert.NotNil(t, err)
+	// })
+	t.Run("should load a valid environment file without errors", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, map[string]string{
+			"ANYTHING":      "anything",
+			"ANYTHING_ELSE": "anything else",
+		})
+		defer cleanUp(t)
+
+		_, err := LoadFromEnvironment(envFile)
+		assert.Nil(t, err)
+	})
+	t.Run("should update environment variables from environment file", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, map[string]string{
+			"SOMETHING": "something",
+			"ANOTHER":   "other",
+		})
+		defer cleanUp(t)
+
+		_, err := LoadFromEnvironment(envFile)
+		assert.Nil(t, err)
+
+		assert.Equal(t, "something", os.Getenv("SOMETHING"))
+		assert.Equal(t, "other", os.Getenv("ANOTHER"))
+	})
+}
+
 func TestLoadFromEnvironment_FileEnvironment_Host(t *testing.T) {
 	t.Run("should return empty string when it is not set", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{})
@@ -88,7 +120,7 @@ func TestLoadFromEnvironment_FileEnvironment_Port(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, constants.DEFAULT_PORT, conf.Port)
 	})
-	t.Run("should return port when it is set", func(t *testing.T) {
+	t.Run("should return port when it is set to a valid value", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{
 			PORT: "1234",
 		})
@@ -98,4 +130,15 @@ func TestLoadFromEnvironment_FileEnvironment_Port(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 1234, conf.Port)
 	})
+	// TODO: Uncomment this test when we have our own internal
+	//       logging package that does not call os.Exit() on error.
+	// t.Run("should throw error when port is set to an invalid value", func(t *testing.T) {
+	// 	envFile, cleanUp := setupEnvFile(t, map[string]string{
+	// 		PORT: "not-a-number",
+	// 	})
+	// 	defer cleanUp(t)
+
+	// 	_, err := LoadFromEnvironment(envFile)
+	// 	assert.NotNil(t, err)
+	// })
 }
