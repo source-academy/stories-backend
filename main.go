@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -14,6 +16,7 @@ import (
 )
 
 const (
+	STARTUP_MESSAGE = "Starting server..."
 	WELCOME_MESSAGE = "Hello from Source Academy Stories!"
 )
 
@@ -23,6 +26,27 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// Initialze Sentry configuration
+	// TODO: Migrate logic to routing middleware
+	//       or internal logger package.
+	if conf.Environment == constants.ENV_PRODUCTION {
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn: conf.SentryDSN,
+			// Set TracesSampleRate to 1.0 to capture 100%
+			// of transactions for performance monitoring.
+			// We recommend adjusting this value in production,
+			TracesSampleRate: 1.0,
+		})
+		if err != nil {
+			log.Fatalln("sentry.Init:", err)
+
+		}
+	}
+	// Flush buffered events before the program terminates.
+	defer sentry.Flush(2 * time.Second)
+	// Notify that server is starting
+	sentry.CaptureMessage(STARTUP_MESSAGE)
 
 	// TODO: Abstract router setup logic
 	r := chi.NewRouter()
