@@ -45,8 +45,9 @@ func main() {
 	r.Post("/stories", controller.CreateStory)
 
 	// Start server
-	log.Println("Starting server on port 8080")
-	err = http.ListenAndServe("localhost:8080", r)
+	log.Printf("Starting server on %s port %d", conf.Host, conf.Port)
+	addr := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
+	err = http.ListenAndServe(addr, r)
 	if err != nil {
 		log.Fatalln(err)
 	}
