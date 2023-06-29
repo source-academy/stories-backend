@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func ignoreError(err error) {}
+
 func TestConnect(t *testing.T) {
 	conf := &config.DatabaseConfig{
 		TimeZone:     constants.DB_DEFAULT_TIMEZONE,
@@ -19,14 +21,14 @@ func TestConnect(t *testing.T) {
 
 	t.Run("should connect to database", func(t *testing.T) {
 		db, err := Connect(conf)
-		defer Close(db)
+		defer ignoreError(Close(db))
 
 		assert.Nil(t, err)
 		assert.NotNil(t, db)
 	})
 	t.Run("should return correct database name", func(t *testing.T) {
 		db, _ := Connect(conf)
-		defer Close(db)
+		defer ignoreError(Close(db))
 
 		// Get currently connected database name
 		var dbName string
@@ -36,7 +38,7 @@ func TestConnect(t *testing.T) {
 	// TODO: Populate these with actual tables once schema is finalized
 	// t.Run("should show a correct list of tables", func(t *testing.T) {
 	// 	db, _ := Connect(conf)
-	// 	defer Close(db)
+	// 	defer ignoreError(Close(db))
 
 	// 	// Get list of tables in the database
 	// 	var tables []string
