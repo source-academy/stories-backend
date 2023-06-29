@@ -25,11 +25,12 @@ func TestConnect(t *testing.T) {
 		assert.NotNil(t, db)
 	})
 	t.Run("should return correct database name", func(t *testing.T) {
-		db, err := Connect(conf)
+		db, _ := Connect(conf)
 		defer Close(db)
 
-		assert.Nil(t, err)
-		assert.NotNil(t, db)
-		assert.Equal(t, constants.DB_DEFAULT_NAME, db.Name())
+		// Get currently connected database name
+		var dbName string
+		db.Raw("SELECT current_database()").Scan(&dbName)
+		assert.Equal(t, constants.DB_DEFAULT_NAME, dbName)
 	})
 }
