@@ -25,7 +25,7 @@ const (
 	DB_TIMEZONE = "DB_TIMEZONE"
 	DB_HOSTNAME = "DB_HOSTNAME"
 	DB_PORT     = "DB_PORT"
-	DB_USER     = "DB_USER"
+	DB_USERNAME = "DB_USERNAME"
 	DB_PASSWORD = "DB_PASSWORD"
 	DB_NAME     = "DB_NAME"
 )
@@ -49,7 +49,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	dbConfig := &DatabaseConfig{
 		TimeZone:     os.Getenv(DB_TIMEZONE),
 		Host:         os.Getenv(DB_HOSTNAME),
-		User:         os.Getenv(DB_USER),
+		User:         os.Getenv(DB_USERNAME),
 		Password:     os.Getenv(DB_PASSWORD),
 		DatabaseName: os.Getenv(DB_NAME),
 	}
