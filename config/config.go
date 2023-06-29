@@ -13,12 +13,16 @@ type Config struct {
 	Environment string
 	Host        string
 	Port        int
+
+	SentryDSN string
 }
 
 const (
 	GO_ENV = "GO_ENV"
 	HOST   = "HOST"
 	PORT   = "PORT"
+
+	SENTRY = "SENTRY_DSN"
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
@@ -30,14 +34,18 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	config := &Config{}
 
+	// Environment
 	if os.Getenv(GO_ENV) == constants.ENV_DEVELOPMENT {
 		config.Environment = constants.ENV_DEVELOPMENT
 	} else {
 		config.Environment = constants.ENV_PRODUCTION
 	}
 
-	config.Host = os.Getenv(HOST)
+	// Sentry
+	config.SentryDSN = os.Getenv(SENTRY)
 
+	// Server configuration
+	config.Host = os.Getenv(HOST)
 	envPort := os.Getenv(PORT)
 	if envPort == "" {
 		config.Port = constants.DEFAULT_PORT
