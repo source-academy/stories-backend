@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -9,11 +11,14 @@ import (
 	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
 
-func Setup(config *config.Config) chi.Router {
+func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Handler) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Recoverer)
+	for _, injectMiddleware := range injectMiddleWares {
+		r.Use(injectMiddleware)
+	}
 	// Handle CORS
 	options := cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
