@@ -4,10 +4,16 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/TwiN/go-color"
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
+)
+
+var (
+	greenTick     = color.With(color.Green, "✔")
+	yellowChevron = color.With(color.Yellow, "❯")
 )
 
 func main() {
@@ -40,19 +46,19 @@ func main() {
 	switch flag.Arg(0) {
 	case "migrate":
 		migrate.ExecMax(db, "postgres", migrations, migrate.Up, 0)
-		fmt.Println("  ✔", "Migration complete")
+		fmt.Println(greenTick, "Migration complete")
 	case "rollback":
 		migrate.ExecMax(db, "postgres", migrations, migrate.Down, 1)
-		fmt.Println("  ✔", "Rollback complete")
+		fmt.Println(greenTick, "Rollback complete")
 	case "status":
 		completed, err := migrate.GetMigrationRecords(db, "postgres")
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Printf("✔ %d migrations previously done:\n", len(completed))
+		fmt.Printf(greenTick+" %d migrations previously done:\n", len(completed))
 		for _, c := range completed {
-			fmt.Println("  ✔", c.Id)
+			fmt.Println("  "+greenTick, c.Id)
 		}
 
 		pending, _, err := migrate.PlanMigration(db, "postgres", migrations, migrate.Up, 0)
@@ -61,9 +67,9 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Printf("❯ Pending %d migrations:\n", len(pending))
+		fmt.Printf(yellowChevron+" Pending %d migrations:\n", len(pending))
 		for _, p := range pending {
-			fmt.Println("  ❯", p.Migration.Id)
+			fmt.Println("  "+yellowChevron, p.Migration.Id)
 		}
 	default:
 		logrus.Errorln("Invalid command")
