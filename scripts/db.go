@@ -3,12 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 
 	"github.com/TwiN/go-color"
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
+)
+
+const (
+	defaultMaxMigrateSteps  = 0 // no limit
+	defaultMaxRollbackSteps = 1
 )
 
 var (
@@ -45,10 +51,26 @@ func main() {
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "migrate":
-		migrate.ExecMax(db, "postgres", migrations, migrate.Up, 0)
+		var steps int
+		if flag.Arg(1) == "" {
+			steps = defaultMaxMigrateSteps
+		} else if steps, err = strconv.Atoi(flag.Arg(1)); err != nil {
+			logrus.Warningln("Invalid number of steps", err)
+			logrus.Warningf("Defaulting to %d steps\n", defaultMaxMigrateSteps)
+			steps = defaultMaxMigrateSteps
+		}
+		migrate.ExecMax(db, "postgres", migrations, migrate.Up, steps)
 		fmt.Println(greenTick, "Migration complete")
 	case "rollback":
-		migrate.ExecMax(db, "postgres", migrations, migrate.Down, 1)
+		var steps int
+		if flag.Arg(1) == "" {
+			steps = defaultMaxRollbackSteps
+		} else if steps, err = strconv.Atoi(flag.Arg(1)); err != nil {
+			logrus.Warningln("Invalid number of steps", err)
+			logrus.Warningf("Defaulting to %d steps\n", defaultMaxRollbackSteps)
+			steps = defaultMaxRollbackSteps
+		}
+		migrate.ExecMax(db, "postgres", migrations, migrate.Down, steps)
 		fmt.Println(greenTick, "Rollback complete")
 	case "status":
 		completed, err := migrate.GetMigrationRecords(db, "postgres")
