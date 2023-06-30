@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/joho/godotenv"
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
 
 type Config struct {
