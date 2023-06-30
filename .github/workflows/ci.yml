@@ -9,6 +9,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Check go.mod
+        run: |
+          go get
+          if [[ $(git status --porcelain) ]]; then
+            echo "Please run 'go get' and commit the changes to go.mod and go.sum"
+            exit 1
+          fi
       - name: Check format
         run: |
           make format
