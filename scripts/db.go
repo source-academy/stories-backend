@@ -48,6 +48,7 @@ func main() {
 		Dir: "migrations",
 	})
 
+	// TODO: Reduce code duplication
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "migrate":
