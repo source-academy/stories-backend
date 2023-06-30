@@ -4,8 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/source-academy/stories-backend/config"
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/internal/config"
+	"github.com/source-academy/stories-backend/internal/utils/constants"
+
 	"github.com/stretchr/testify/assert"
 )
 

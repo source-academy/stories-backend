@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/internal/utils/constants"
 	"github.com/stretchr/testify/assert"
 )
 

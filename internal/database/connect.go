@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/source-academy/stories-backend/config"
+	"github.com/source-academy/stories-backend/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
