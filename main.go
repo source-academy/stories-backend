@@ -50,11 +50,11 @@ func main() {
 			log.Fatalln("sentry.Init:", err)
 
 		}
+		// Flush buffered events before the program terminates.
+		defer sentry.Flush(2 * time.Second)
+		// Notify that server is starting
+		sentry.CaptureMessage(STARTUP_MESSAGE)
 	}
-	// Flush buffered events before the program terminates.
-	defer sentry.Flush(2 * time.Second)
-	// Notify that server is starting
-	sentry.CaptureMessage(STARTUP_MESSAGE)
 
 	// TODO: Abstract router setup logic
 	r := chi.NewRouter()
