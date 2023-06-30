@@ -15,6 +15,8 @@ type Config struct {
 	Port        int
 
 	Database *DatabaseConfig
+
+	SentryDSN string
 }
 
 const (
@@ -28,6 +30,8 @@ const (
 	DB_USERNAME = "DB_USERNAME"
 	DB_PASSWORD = "DB_PASSWORD"
 	DB_NAME     = "DB_NAME"
+
+	SENTRY = "SENTRY_DSN"
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
@@ -39,6 +43,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	config := &Config{}
 
+	// Environment
 	if os.Getenv(GO_ENV) == constants.ENV_DEVELOPMENT {
 		config.Environment = constants.ENV_DEVELOPMENT
 	} else {
@@ -60,8 +65,11 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 	config.Database = dbConfig
 
-	config.Host = os.Getenv(HOST)
+	// Sentry
+	config.SentryDSN = os.Getenv(SENTRY)
 
+	// Server configuration
+	config.Host = os.Getenv(HOST)
 	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
 	if err != nil {
 		logrus.Warningln("WARNING: invalid server port:", err)
