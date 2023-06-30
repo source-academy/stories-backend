@@ -37,7 +37,43 @@ make hooks
 
 ### Setting up the database
 
-**TODO:** Add instructions for setting up the database.
+#### Creating the database
+
+For now, we use psql to manually create the database. Run the following command to create the database (adjust the necessary values as needed):
+
+```bash
+psql -U postgres -c "CREATE DATABASE sa_stories"
+```
+
+#### Migrating the database
+
+For this step onwards, make sure you have your environment variables set up correctly. See [Setting up environment variables](#setting-up-environment-variables) for more details.
+
+Run the migration target to migrate the database:
+
+```bash
+make db_migrate
+```
+
+By default, the migration target will run all pending migrations (visible using `make db_status` command). To only run a certain number of migrations forward, use the `steps` argument:
+
+```bash
+make db_migrate steps=1
+```
+
+#### Rolling back migrations
+
+To roll back the most recent migration, run the following command:
+
+```bash
+make db_rollback
+```
+
+To roll back a certain number of migrations, use the `steps` argument:
+
+```bash
+make db_rollback steps=1
+```
 
 ### Setting up environment variables
 
