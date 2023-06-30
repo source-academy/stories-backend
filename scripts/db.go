@@ -60,7 +60,11 @@ func main() {
 			logrus.Warningf("Defaulting to %d steps\n", defaultMaxMigrateSteps)
 			steps = defaultMaxMigrateSteps
 		}
-		migrate.ExecMax(db, "postgres", migrations, migrate.Up, steps)
+		_, err = migrate.ExecMax(db, "postgres", migrations, migrate.Up, steps)
+		if err != nil {
+			logrus.Errorln(err)
+			panic(err)
+		}
 		fmt.Println(greenTick, "Migration complete")
 	case "rollback":
 		var steps int
@@ -71,7 +75,11 @@ func main() {
 			logrus.Warningf("Defaulting to %d steps\n", defaultMaxRollbackSteps)
 			steps = defaultMaxRollbackSteps
 		}
-		migrate.ExecMax(db, "postgres", migrations, migrate.Down, steps)
+		_, err = migrate.ExecMax(db, "postgres", migrations, migrate.Down, steps)
+		if err != nil {
+			logrus.Errorln(err)
+			panic(err)
+		}
 		fmt.Println(greenTick, "Rollback complete")
 	case "status":
 		completed, err := migrate.GetMigrationRecords(db, "postgres")
