@@ -10,10 +10,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/source-academy/stories-backend/config"
 	"github.com/source-academy/stories-backend/controller"
-	"github.com/source-academy/stories-backend/database"
-	"github.com/source-academy/stories-backend/utils/constants"
+	"github.com/source-academy/stories-backend/internal/config"
+	"github.com/source-academy/stories-backend/internal/database"
+	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
 
 const (
