@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -40,7 +39,7 @@ func main() {
 			TracesSampleRate: 1.0,
 		})
 		if err != nil {
-			log.Fatalln("sentry.Init:", err)
+			logrus.Errorln("sentry.Init:", err)
 
 		}
 		// Flush buffered events before the program terminates.
