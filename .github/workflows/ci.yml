@@ -37,6 +37,7 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           file: coverage.out
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build server
         run: |
           make build
