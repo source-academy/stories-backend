@@ -2,20 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
 	"github.com/source-academy/stories-backend/internal/router"
 	"github.com/source-academy/stories-backend/internal/utils/constants"
-)
-
-const (
-	STARTUP_MESSAGE = "Starting server..."
 )
 
 func main() {
@@ -32,9 +28,8 @@ func main() {
 	}
 	defer database.Close(db)
 
+	var injectMiddlewares []func(http.Handler) http.Handler
 	// Initialze Sentry configuration
-	// TODO: Migrate logic to routing middleware
-	//       or internal logger package.
 	if conf.Environment == constants.ENV_PRODUCTION {
 		err := sentry.Init(sentry.ClientOptions{
 			Dsn: conf.SentryDSN,
@@ -44,17 +39,26 @@ func main() {
 			TracesSampleRate: 1.0,
 		})
 		if err != nil {
-			log.Fatalln("sentry.Init:", err)
+			logrus.Errorln("sentry.Init:", err)
 
 		}
 		// Flush buffered events before the program terminates.
 		defer sentry.Flush(2 * time.Second)
-		// Notify that server is starting
-		sentry.CaptureMessage(STARTUP_MESSAGE)
+
+		// Setup Sentry middleware. Adapted from:
+		// https://gist.github.com/rhcarvalho/66130d1252d4a7b1fbaeacfe3687eaf3
+		sentryMiddleware := sentryhttp.New(sentryhttp.Options{
+			Repanic: true,
+		})
+		// Important: Chi has a middleware stack and thus it is important to put the
+		// Sentry handler on the appropriate place. If using middleware.Recoverer,
+		// the Sentry middleware must come afterwards (and configure it with
+		// Repanic: true).
+		injectMiddlewares = append(injectMiddlewares, sentryMiddleware.Handle)
 	}
 
 	// Setup router
-	r := router.Setup(conf)
+	r := router.Setup(conf, injectMiddlewares)
 
 	// Start server
 	logrus.Infof("Starting server on %s port %d", conf.Host, conf.Port)
