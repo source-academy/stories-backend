@@ -24,8 +24,10 @@ func Setup(config *config.Config) chi.Router {
 	// Define routes
 	r.Get("/", controller.HandleHealthCheck)
 
-	r.Get("/stories", controller.GetStories)
-	r.Post("/stories", controller.CreateStory)
+	r.Route("/stories", func(r chi.Router) {
+		r.Get("/", controller.GetStories)
+		r.Post("/", controller.CreateStory)
+	})
 
 	return r
 }
