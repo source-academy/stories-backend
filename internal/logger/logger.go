@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"log"
 	"os"
 )
@@ -31,4 +32,11 @@ func Setup(output *os.File) (l *Logger) {
 		Debug: log.New(output, "\u001b[36mDEBUG: \u001B[0m", log.LstdFlags|log.Lshortfile),
 	}
 	return l
+}
+
+func Get() (*Logger, error) {
+	if l == nil {
+		return nil, errors.New("Logger not initialized!")
+	}
+	return l, nil
 }
