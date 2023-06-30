@@ -1,11 +1,11 @@
 package config
 
 import (
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
 
@@ -33,7 +33,7 @@ const (
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	err := godotenv.Load(envFiles...)
 	if err != nil {
-		log.Fatalln("Error loading .env file:", err)
+		logrus.Errorln("Error loading .env file:", err)
 		return nil, err
 	}
 
@@ -55,8 +55,8 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, constants.DB_DEFAULT_PORT)
 	if err != nil {
-		log.Println("WARNING: invalid database port:", err)
-		log.Println("Using default database port:", constants.DB_DEFAULT_PORT)
+		logrus.Warningln("WARNING: invalid database port:", err)
+		logrus.Warningln("Using default database port:", constants.DB_DEFAULT_PORT)
 	}
 	config.Database = dbConfig
 
@@ -64,8 +64,8 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
 	if err != nil {
-		log.Println("WARNING: invalid server port:", err)
-		log.Println("Using default server port:", constants.DEFAULT_PORT)
+		logrus.Warningln("WARNING: invalid server port:", err)
+		logrus.Warningln("Using default server port:", constants.DEFAULT_PORT)
 	}
 
 	return config, nil
