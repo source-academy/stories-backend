@@ -12,6 +12,8 @@ import (
 func Setup(config *config.Config) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Recoverer)
 	// Handle CORS
 	options := cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
