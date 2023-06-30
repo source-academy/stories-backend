@@ -14,10 +14,6 @@ import (
 	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
 
-const (
-	STARTUP_MESSAGE = "Starting server..."
-)
-
 func main() {
 	// Load configuration
 	conf, err := config.LoadFromEnvironment()
@@ -49,8 +45,6 @@ func main() {
 		}
 		// Flush buffered events before the program terminates.
 		defer sentry.Flush(2 * time.Second)
-		// Notify that server is starting
-		sentry.CaptureMessage(STARTUP_MESSAGE)
 	}
 
 	// Setup router
