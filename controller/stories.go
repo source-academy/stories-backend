@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/model"
 )
 
@@ -13,7 +13,7 @@ func GetStories(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(stories); err != nil {
-		log.Fatalln(err)
+		logrus.Errorln(err)
 		panic(err)
 	}
 }
