@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/source-academy/stories-backend/config"
 	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/database"
 	"github.com/source-academy/stories-backend/utils/constants"
 )
 
@@ -26,6 +27,13 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// Connect to the database
+	db, err := database.Connect(conf.Database)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer database.Close(db)
 
 	// Initialze Sentry configuration
 	// TODO: Migrate logic to routing middleware
