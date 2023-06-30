@@ -60,7 +60,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, constants.DB_DEFAULT_PORT)
 	if err != nil {
-		logrus.Warningln("WARNING: invalid database port:", err)
+		logrus.Warningln("Invalid database port:", err)
 		logrus.Warningln("Using default database port:", constants.DB_DEFAULT_PORT)
 	}
 	config.Database = dbConfig
@@ -72,7 +72,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	config.Host = os.Getenv(HOST)
 	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
 	if err != nil {
-		logrus.Warningln("WARNING: invalid server port:", err)
+		logrus.Warningln("Invalid server port:", err)
 		logrus.Warningln("Using default server port:", constants.DEFAULT_PORT)
 	}
 
