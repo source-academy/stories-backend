@@ -25,6 +25,11 @@ jobs:
           GO_ENV: test
         run: |
           make test
+          make coverage
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          file: coverage.out
       - name: Build server
         run: |
           make build
