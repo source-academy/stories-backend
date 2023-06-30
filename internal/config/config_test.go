@@ -59,12 +59,10 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 }
 
 func TestLoadFromEnvironment_FileEnvironment(t *testing.T) {
-	// TODO: Uncomment this test when we have our own internal
-	//       logging package that does not call os.Exit() on error.
-	// t.Run("should throw error when environment file not found", func(t *testing.T) {
-	// 	_, err := LoadFromEnvironment("non-existent-file")
-	// 	assert.NotNil(t, err)
-	// })
+	t.Run("should throw error when environment file not found", func(t *testing.T) {
+		_, err := LoadFromEnvironment("non-existent-file")
+		assert.NotNil(t, err)
+	})
 	t.Run("should load a valid environment file without errors", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{
 			"ANYTHING":      "anything",
@@ -130,15 +128,13 @@ func TestLoadFromEnvironment_FileEnvironment_Port(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 1234, conf.Port)
 	})
-	// TODO: Uncomment this test when we have our own internal
-	//       logging package that does not call os.Exit() on error.
-	// t.Run("should throw error when port is set to an invalid value", func(t *testing.T) {
-	// 	envFile, cleanUp := setupEnvFile(t, map[string]string{
-	// 		PORT: "not-a-number",
-	// 	})
-	// 	defer cleanUp(t)
+	t.Run("should throw error when port is set to an invalid value", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, map[string]string{
+			PORT: "not-a-number",
+		})
+		defer cleanUp(t)
 
-	// 	_, err := LoadFromEnvironment(envFile)
-	// 	assert.NotNil(t, err)
-	// })
+		_, err := LoadFromEnvironment(envFile)
+		assert.NotNil(t, err)
+	})
 }
