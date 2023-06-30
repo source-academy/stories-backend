@@ -1,7 +1,10 @@
 PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
-.PHONY: dev build test testCI coverage lint format hooks
+DB_SCRIPT_ENTRYPOINT=./scripts/db.go
+DB_TARGETS=db_migrate db_rollback db_status
+
+.PHONY: dev build test testCI coverage lint format hooks $(DB_TARGETS)
 
 dev:
 	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
@@ -24,3 +27,11 @@ hooks:
 	@cp -f ./hooks/pre-push.sh ./.git/hooks/pre-push
 	@chmod 755 ./.git/hooks/pre-push
 	@echo "Hooks installed successfully!"
+
+db_migrate: db_status
+	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} migrate $(steps)
+db_rollback:
+	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} rollback $(steps)
+	@$(MAKE) db_status
+db_status:
+	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} status
