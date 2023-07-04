@@ -23,7 +23,7 @@ func TestConnect(t *testing.T) {
 		Host:         "localhost",
 		Port:         constants.DB_DEFAULT_PORT,
 		User:         "postgres",
-		DatabaseName: constants.DB_DEFAULT_NAME,
+		DatabaseName: "sa_stories",
 	}
 
 	t.Run("should connect to database", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestConnect(t *testing.T) {
 		// Get currently connected database name
 		var dbName string
 		db.Raw("SELECT current_database()").Scan(&dbName)
-		assert.Equal(t, constants.DB_DEFAULT_NAME, dbName)
+		assert.Equal(t, "sa_stories", dbName)
 	})
 	// TODO: Populate these with actual tables once schema is finalized
 	// t.Run("should show a correct list of tables", func(t *testing.T) {
