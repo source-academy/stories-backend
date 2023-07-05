@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS stories (
 );
 
 -- +migrate Down
+
+DROP TABLE IF EXISTS stories;

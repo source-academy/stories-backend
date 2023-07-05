@@ -1,4 +1,3 @@
-
 -- +migrate Up
 
 CREATE TABLE IF NOT EXISTS users (
@@ -7,4 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     github_ID INTEGER,
     UNIQUE (user_id)
 );
+
 -- +migrate Down
+
+DROP TABLE IF EXISTS users;
