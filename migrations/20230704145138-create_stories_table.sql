@@ -11,5 +11,6 @@ CREATE TABLE IF NOT EXISTS stories (
     UNIQUE (story_id)
 );
 
-
 -- +migrate Down
+
+DROP TABLE IF EXISTS stories;
