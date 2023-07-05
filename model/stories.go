@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Story struct {
 	StoryID      int       `json:"story_id"`
 	UserID       int       `json:"user_id"`
