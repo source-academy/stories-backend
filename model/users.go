@@ -15,6 +15,15 @@ func GetAllUsers() []User {
 	return users
 }
 
+func GetUserByID(userID int) *User {
+	for i, user := range users {
+		if user.UserID == userID {
+			return &users[i]
+		}
+	}
+	return nil
+}
+
 func CreateUser(user User) {
 	users = append(users, user)
 }
