@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"fmt"
+	"github.com/go-chi/chi/v5"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/model"
@@ -21,17 +22,13 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	// userIDStr := r.URL.Query().Get("userID") // Assuming you want to retrieve it from the query parameter
-	// fmt.Println("userID:", userIDStr)
-	// userID, err := strconv.Atoi(userIDStr)
-	// if err != nil {
-	//  // Handle the error if the userID is not a valid integer
-	//  http.Error(w, "Invalid userID", http.StatusBadRequest)
-	//  return
-	// }
-	// user := model.GetUserByID(userID)
-	user := model.GetUserByID(2)
-	fmt.Println("userID:", 2)
+	userIDStr := chi.URLParam(r, "userID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid userID", http.StatusBadRequest)
+		return
+	}
+	user := model.GetUserByID(userID)
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(user); err != nil {
