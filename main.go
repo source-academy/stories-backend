@@ -12,7 +12,12 @@ import (
 	"github.com/source-academy/stories-backend/internal/database"
 	"github.com/source-academy/stories-backend/internal/router"
 	"github.com/source-academy/stories-backend/internal/utils/constants"
+
+	"github.com/source-academy/stories-backend/controller"
+	"gorm.io/gorm"
 )
+
+var DB *gorm.DB
 
 func main() {
 	// Load configuration
@@ -22,11 +27,13 @@ func main() {
 	}
 
 	// Connect to the database
-	db, err := database.Connect(conf.Database)
+	// db, err := database.Connect(conf.Database)
+	DB, err = database.Connect(conf.Database)
+	controller.DB = DB
 	if err != nil {
 		logrus.Errorln(err)
 	}
-	defer database.Close(db)
+	defer database.Close(DB)
 
 	var injectMiddlewares []func(http.Handler) http.Handler
 	// Initialze Sentry configuration
