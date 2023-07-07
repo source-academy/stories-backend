@@ -23,3 +23,12 @@ func GetAllStories() []Story {
 func CreateStory(story Story) {
 	stories = append(stories, story)
 }
+
+func GetStoryByID(storyID int) *Story {
+	for i, story := range stories {
+		if story.StoryID == storyID {
+			return &stories[i]
+		}
+	}
+	return nil
+}
