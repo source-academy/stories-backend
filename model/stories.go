@@ -1,6 +1,11 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
+
+var DB *gorm.DB
 
 type Story struct {
 	StoryID      int       `json:"story_id"`
@@ -11,24 +16,22 @@ type Story struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
-var stories = []Story{
-	{StoryID: 1, UserID: 1, StoryContent: "Story 1 Content", CreatedAt: time.Now(), DeletedAt: time.Now(), UpdatedAt: time.Now()},
-	{StoryID: 2, UserID: 2, StoryContent: "Story 2 Content", CreatedAt: time.Now(), DeletedAt: time.Now(), UpdatedAt: time.Now()},
-}
-
 func GetAllStories() []Story {
+	var stories []Story
+	DB.Find(&stories)
 	return stories
 }
 
 func CreateStory(story Story) {
-	stories = append(stories, story)
+	DB.Create(&story)
 }
 
 func GetStoryByID(storyID int) *Story {
-	for i, story := range stories {
-		if story.StoryID == storyID {
-			return &stories[i]
-		}
+	var story Story
+	result := DB.First(&story, storyID)
+	if result.Error != nil {
+		return nil
 	}
-	return nil
+
+	return &story
 }

@@ -12,9 +12,9 @@ import (
 )
 
 func GetStories(w http.ResponseWriter, r *http.Request) {
-	// stories := model.GetAllStories()
-	var stories []model.Story
-	DB.Find(&stories)
+	stories := model.GetAllStories()
+	// var stories []model.Story
+	// DB.Find(&stories)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
@@ -31,9 +31,9 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid storyID", http.StatusBadRequest)
 		return
 	}
-	// story := model.GetStoryByID(storyID)
-	var story model.Story
-	DB.First(&story, storyID)
+	story := model.GetStoryByID(storyID)
+	// var story model.Story
+	// DB.First(&story, storyID)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
@@ -50,8 +50,8 @@ func CreateStory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// model.CreateStory(story)
-	DB.Create(&story)
+	model.CreateStory(story)
+	// DB.Create(&story)
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(&story); err != nil {
 		logrus.Errorln(err)
