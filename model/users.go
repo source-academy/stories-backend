@@ -11,24 +11,20 @@ type User struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-var users = []User{
-	{UserID: 1, GithubUsername: "User 1", GithubID: 1, CreatedAt: time.Now(), DeletedAt: time.Now(), UpdatedAt: time.Now()},
-	{UserID: 2, GithubUsername: "User 2", GithubID: 2, CreatedAt: time.Now(), DeletedAt: time.Now(), UpdatedAt: time.Now()},
-}
-
 func GetAllUsers() []User {
+	var users []User
+	DB.Find(&users)
 	return users
 }
 
 func GetUserByID(userID int) *User {
-	for i, user := range users {
-		if user.UserID == userID {
-			return &users[i]
-		}
+	var user User
+	if DB.First(&user, userID).Error != nil {
+		return nil
 	}
-	return nil
+	return &user
 }
 
 func CreateUser(user User) {
-	users = append(users, user)
+	DB.Create(&user)
 }

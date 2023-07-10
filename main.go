@@ -13,7 +13,6 @@ import (
 	"github.com/source-academy/stories-backend/internal/router"
 	"github.com/source-academy/stories-backend/internal/utils/constants"
 
-	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/model"
 	"gorm.io/gorm"
 )
@@ -30,7 +29,6 @@ func main() {
 	// Connect to the database
 	// db, err := database.Connect(conf.Database)
 	DB, err = database.Connect(conf.Database)
-	controller.DB = DB
 	model.DB = DB
 	if err != nil {
 		logrus.Errorln(err)

@@ -22,10 +22,6 @@ func GetAllStories() []Story {
 	return stories
 }
 
-func CreateStory(story Story) {
-	DB.Create(&story)
-}
-
 func GetStoryByID(storyID int) *Story {
 	var story Story
 	result := DB.First(&story, storyID)
@@ -34,4 +30,8 @@ func GetStoryByID(storyID int) *Story {
 	}
 
 	return &story
+}
+
+func CreateStory(story Story) {
+	DB.Create(&story)
 }
