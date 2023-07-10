@@ -13,12 +13,13 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE OR REPLACE FUNCTION update_users_updated_at_column()
     RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
+    IF (NEW.github_username IS DISTINCT FROM OLD.github_username) THEN
+        NEW.updated_at = CURRENT_TIMESTAMP;
+    END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger on the users table to update the updated_at column
 CREATE TRIGGER update_users_updated_at_trigger
     BEFORE UPDATE ON users
     FOR EACH ROW

@@ -14,12 +14,13 @@ CREATE TABLE IF NOT EXISTS stories (
 CREATE OR REPLACE FUNCTION update_stories_updated_at_column()
     RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
+    IF (NEW.story_content IS DISTINCT FROM OLD.story_content) THEN
+        NEW.updated_at = CURRENT_TIMESTAMP;
+    END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger on the stories table to update the updated_at column
 CREATE TRIGGER update_stories_updated_at_trigger
     BEFORE UPDATE ON stories
     FOR EACH ROW
