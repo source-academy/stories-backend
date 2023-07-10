@@ -18,14 +18,11 @@ var DB *gorm.DB
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	// users := model.GetAllUsers()
 	var users []model.User
-	if err := DB.Select("user_id, github_username, github_id").Find(&users).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	DB.Find(&users)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(users); err != nil {
+	if err := encoder.Encode(&users); err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
@@ -38,7 +35,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid userID", http.StatusBadRequest)
 		return
 	}
-	user := model.GetUserByID(userID)
+
+	// user := model.GetUserByID(userID)
+	var user model.User
+	DB.First(&user, userID)
+
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(user); err != nil {
@@ -55,9 +56,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// model.CreateUser(user)
-	if err := DB.Exec("INSERT INTO users (user_id, github_username, github_id) VALUES ($1, $2, $3)", user.UserID, user.GithubUsername, user.GithubID).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	DB.Create(&user)
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(&user); err != nil {
+		logrus.Errorln(err)
+		panic(err)
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
