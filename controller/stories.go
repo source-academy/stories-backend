@@ -14,14 +14,11 @@ import (
 func GetStories(w http.ResponseWriter, r *http.Request) {
 	// stories := model.GetAllStories()
 	var stories []model.Story
-	if err := DB.Select("story_id, user_id, story_content").Find(&stories).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	DB.Find(&stories)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(stories); err != nil {
+	if err := encoder.Encode(&stories); err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
@@ -34,7 +31,10 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid storyID", http.StatusBadRequest)
 		return
 	}
-	story := model.GetStoryByID(storyID)
+	// story := model.GetStoryByID(storyID)
+	var story model.Story
+	DB.First(&story, storyID)
+
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(story); err != nil {
@@ -51,9 +51,11 @@ func CreateStory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// model.CreateStory(story)
-	if err := DB.Exec("INSERT INTO stories (story_id, user_id, story_content) VALUES ($1, $2, $3)", story.StoryID, story.UserID, story.StoryContent).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	DB.Create(&story)
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(&story); err != nil {
+		logrus.Errorln(err)
+		panic(err)
 	}
 	w.WriteHeader(http.StatusCreated)
 }
