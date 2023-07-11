@@ -37,7 +37,7 @@ echo "$(echo "$NEW_MIGRATIONS" | sed 's/^/    /')"
 echo "Checking timestamps..."
 # Get the timestamp of the last migration in the base branch
 LAST_MIGRATION_TIMESTAMP=$(echo "$BASE_MIGRATIONS" | tail -n 1 | sed 's/[^0-9]*\([0-9]*\).*/\1/')
-echo "Last known migration timestamp: ${LAST_MIGRATION_TIMESTAMP:-"none"}"
+echo "Last merged migration timestamp: ${LAST_MIGRATION_TIMESTAMP:-"none"}"
 if [ -z "$LAST_MIGRATION_TIMESTAMP" ]; then
     echo "No migrations found in base branch, all migrations allowed..."
     exit 0
