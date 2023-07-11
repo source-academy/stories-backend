@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          # Allows for file comparison across commits
+          fetch-depth: 0
       - name: Check go.mod
         run: |
           go get
@@ -27,6 +30,10 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.53.3
+      - name: Ensure ordering of migration files is preserved
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          ./scripts/check-migrations-ordering.sh origin/${{ github.base_ref }}
       - name: Run tests and check code coverage
         env:
           GO_ENV: test
