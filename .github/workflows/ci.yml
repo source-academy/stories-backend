@@ -36,7 +36,7 @@ jobs:
       - name: Ensure ordering of migration files is preserved
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          ./scripts/check-migrations.sh ${{ github.base_ref }}
+          ./scripts/check-migrations-ordering.sh ${{ github.base_ref }}
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:
