@@ -35,16 +35,20 @@ echo "Found the following NEW migrations:"
 echo "$(echo "$NEW_MIGRATIONS" | sed 's/^/    /')"
 
 echo "Checking timestamps..."
+get_timestamps() {
+    # Migration file format: yyyymmddhhmmss-description.sql
+    # We use `|| true;` to avoid the script failing if the grep returns no results
+    awk -F'-' '{print $1}' $1 | { grep '^[0-9]\{14\}$' || true; }
+}
 # Get the timestamp of the last migration in the base branch
-# Migration file format: yyyymmddhhmmss-description.sql
-LAST_MIGRATION_TIMESTAMP=$(echo "$BASE_MIGRATIONS" | tail -n 1 | sed 's/^\([0-9]\{14\}\|\).*$/\1/')
+LAST_MIGRATION_TIMESTAMP=$(get_timestamps <(echo "$BASE_MIGRATIONS") | tail -n 1)
 echo "Last merged migration timestamp: ${LAST_MIGRATION_TIMESTAMP:-"none"}"
 if [ -z "$LAST_MIGRATION_TIMESTAMP" ]; then
     echo "No migrations found in base branch, all migrations allowed..."
     exit 0
 fi
 
-TIMESTAMPS_TO_CHECK=$(echo "$NEW_MIGRATIONS" | sed 's/^\([0-9]\{14\}\|\).*$/\1/')
+TIMESTAMPS_TO_CHECK=$(get_timestamps <(echo "$NEW_MIGRATIONS"))
 for TIMESTAMP in $TIMESTAMPS_TO_CHECK; do
     if [ "$TIMESTAMP" -lt "$LAST_MIGRATION_TIMESTAMP" ]; then
         echo "ERROR: Migration with timestamp $TIMESTAMP is older than the last merged migration timestamp $LAST_MIGRATION_TIMESTAMP"
