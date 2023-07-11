@@ -1,0 +1,5 @@
+# We only use sql-migrate to generate new migration files
+development:
+  dialect: postgres
+  datasource: DUMMY
+  dir: migrations
