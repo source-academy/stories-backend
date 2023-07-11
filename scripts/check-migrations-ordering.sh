@@ -36,14 +36,15 @@ echo "$(echo "$NEW_MIGRATIONS" | sed 's/^/    /')"
 
 echo "Checking timestamps..."
 # Get the timestamp of the last migration in the base branch
-LAST_MIGRATION_TIMESTAMP=$(echo "$BASE_MIGRATIONS" | tail -n 1 | sed 's/[^0-9]*\([0-9]*\).*/\1/')
+# Migration file format: yyyymmddhhmmss-description.sql
+LAST_MIGRATION_TIMESTAMP=$(echo "$BASE_MIGRATIONS" | tail -n 1 | sed 's/^\([0-9]\{14\}\|\).*$/\1/')
 echo "Last merged migration timestamp: ${LAST_MIGRATION_TIMESTAMP:-"none"}"
 if [ -z "$LAST_MIGRATION_TIMESTAMP" ]; then
     echo "No migrations found in base branch, all migrations allowed..."
     exit 0
 fi
 
-TIMESTAMPS_TO_CHECK=$(echo "$NEW_MIGRATIONS" | sed 's/[^0-9]*\([0-9]*\).*/\1/')
+TIMESTAMPS_TO_CHECK=$(echo "$NEW_MIGRATIONS" | sed 's/^\([0-9]\{14\}\|\).*$/\1/')
 for TIMESTAMP in $TIMESTAMPS_TO_CHECK; do
     if [ "$TIMESTAMP" -lt "$LAST_MIGRATION_TIMESTAMP" ]; then
         echo "ERROR: Migration with timestamp $TIMESTAMP is older than the last merged migration timestamp $LAST_MIGRATION_TIMESTAMP"
