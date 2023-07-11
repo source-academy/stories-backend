@@ -27,9 +27,17 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.53.3
-      - name: Run tests
+      - name: Run tests and check code coverage
+        env:
+          GO_ENV: test
         run: |
-          make testCI
+          make test
+          make coverage
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          file: coverage.out
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build server
         run: |
           make build
