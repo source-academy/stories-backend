@@ -30,16 +30,16 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.53.3
+      - name: Ensure ordering of migration files is preserved
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          ./scripts/check-migrations-ordering.sh origin/${{ github.base_ref }}
       - name: Run tests and check code coverage
         env:
           GO_ENV: test
         run: |
           make test
           make coverage
-      - name: Ensure ordering of migration files is preserved
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          ./scripts/check-migrations-ordering.sh origin/${{ github.base_ref }}
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:
