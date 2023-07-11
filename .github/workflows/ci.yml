@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          # Allows for file comparison across commits
+          fetch-depth: 0
       - name: Check go.mod
         run: |
           go get
