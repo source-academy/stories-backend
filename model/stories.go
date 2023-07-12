@@ -24,11 +24,7 @@ func GetAllStories() []Story {
 
 func GetStoryByID(storyID int) *Story {
 	var story Story
-	result := DB.First(&story, storyID)
-	if result.Error != nil {
-		return nil
-	}
-
+	DB.First(&story, storyID)
 	return &story
 }
 

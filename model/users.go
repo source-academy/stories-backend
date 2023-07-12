@@ -19,9 +19,7 @@ func GetAllUsers() []User {
 
 func GetUserByID(userID int) *User {
 	var user User
-	if DB.First(&user, userID).Error != nil {
-		return nil
-	}
+	DB.First(&user, userID)
 	return &user
 }
 
