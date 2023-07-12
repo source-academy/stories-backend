@@ -4,9 +4,9 @@ CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     github_username TEXT,
     github_ID INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP DEFAULT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at created_at_type,
+    deleted_at  deleted_at_type,
+    updated_at updated_at_type
 );
 
 -- +migrate StatementBegin

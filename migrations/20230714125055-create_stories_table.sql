@@ -4,9 +4,9 @@ CREATE TABLE IF NOT EXISTS stories (
     story_id SERIAL PRIMARY KEY,
     author_id INT,
     story_content TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP DEFAULT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at created_at_type,
+    deleted_at  deleted_at_type,
+    updated_at updated_at_type,
     FOREIGN KEY (author_id) REFERENCES users(user_id)
 );
 
