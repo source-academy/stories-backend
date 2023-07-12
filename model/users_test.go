@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 	// "time"
-	"github.com/google/uuid"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ func TestGetAllUsers(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	t.Run("should create a new user", func(t *testing.T) {
 		user := User{
-			UserID:         uuid.New(),
+			UserID:         3,
 			GithubUsername: "User 3",
 			GithubID:       3,
 			// CreatedAt:      time.Now(),

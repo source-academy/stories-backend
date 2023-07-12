@@ -1,13 +1,9 @@
 package model
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
+import "time"
 
 type UserDB struct {
-	UserID         uuid.UUID
+	UserID         int
 	GithubUsername string
 	GithubID       int
 	CreatedAt      time.Time
@@ -16,9 +12,9 @@ type UserDB struct {
 }
 
 type User struct {
-	UserID         uuid.UUID `json:"userId"`
-	GithubUsername string    `json:"githubUsername"`
-	GithubID       int       `json:"githubId"`
+	UserID         int    `json:"userId"`
+	GithubUsername string `json:"githubUsername"`
+	GithubID       int    `json:"githubId"`
 }
 
 func MapUserDBToUser(userDB UserDB) User {
@@ -36,17 +32,12 @@ func GetAllUsers() []User {
 	return users
 }
 
-func GetUserByID(userID uuid.UUID) *User {
+func GetUserByID(userID int) *User {
 	var user User
-	DB.First(&user, "user_id = ?", userID)
+	DB.First(&user, userID)
 	return &user
 }
 
 func CreateUser(user User) {
-	newUser := User{
-		UserID:         uuid.New(),
-		GithubUsername: user.GithubUsername,
-		GithubID:       user.GithubID,
-	}
-	DB.Create(&newUser)
+	DB.Create(&user)
 }

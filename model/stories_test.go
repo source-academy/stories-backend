@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 	// "time"
-	"github.com/google/uuid"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func TestCreateStory(t *testing.T) {
 		// Create a new story
 		story := Story{
 			StoryID:      3,
-			AuthorID:     uuid.New(),
+			AuthorID:     1,
 			StoryContent: "Story 3 Content",
 			// CreatedAt:    time.Now(),
 			// DeletedAt:    time.Now(),

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
@@ -10,7 +9,7 @@ var DB *gorm.DB
 
 type StoryDB struct {
 	StoryID      int
-	AuthorID     uuid.UUID
+	AuthorID     int
 	StoryContent string
 	CreatedAt    time.Time
 	DeletedAt    time.Time
@@ -18,9 +17,9 @@ type StoryDB struct {
 }
 
 type Story struct {
-	StoryID      int       `json:"storyId"`
-	AuthorID     uuid.UUID `json:"authorId"`
-	StoryContent string    `json:"storyContent"`
+	StoryID      int    `json:"storyId"`
+	AuthorID     int    `json:"authorId"`
+	StoryContent string `json:"storyContent"`
 }
 
 func MapStoryDBToStory(storyDB StoryDB) Story {
