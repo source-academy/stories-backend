@@ -3,12 +3,12 @@ package model
 import "time"
 
 type User struct {
-	UserID         int       `json:"user_id"`
-	GithubUsername string    `json:"github_username"`
-	GithubID       int       `json:"github_id"`
-	CreatedAt      time.Time `json:"created_at"`
-	DeletedAt      time.Time `json:"deleted_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	UserID         int       `json:"userId"`
+	GithubUsername string    `json:"githubUsername"`
+	GithubID       int       `json:"githubId"`
+	CreatedAt      time.Time `json:"createdAt"`
+	DeletedAt      time.Time `json:"deletedAt"`
+	UpdatedAt      time.Time `json:"updatedAt"`
 }
 
 func GetAllUsers() []User {

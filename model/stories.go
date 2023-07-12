@@ -8,12 +8,12 @@ import (
 var DB *gorm.DB
 
 type Story struct {
-	StoryID      int       `json:"story_id"`
-	UserID       int       `json:"user_id"`
-	StoryContent string    `json:"story_content"`
-	CreatedAt    time.Time `json:"created_at"`
-	DeletedAt    time.Time `json:"deleted_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	StoryID      int       `json:"storyId"`
+	UserID       int       `json:"userId"`
+	StoryContent string    `json:"storyContent"`
+	CreatedAt    time.Time `json:"createdAt"`
+	DeletedAt    time.Time `json:"deletedAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
 func GetAllStories() []Story {
