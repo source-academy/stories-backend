@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/model"
 )
@@ -27,7 +27,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
-	userID, err := strconv.Atoi(userIDStr)
+	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid userID", http.StatusBadRequest)
 		return

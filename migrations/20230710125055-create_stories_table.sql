@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS stories (
     story_id SERIAL PRIMARY KEY,
-    author_id INT,
+    author_id UUID,
     story_content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT NULL,

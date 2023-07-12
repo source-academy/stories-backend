@@ -1,7 +1,7 @@
 -- +migrate Up
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     github_username TEXT,
     github_ID INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
