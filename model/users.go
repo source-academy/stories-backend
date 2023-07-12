@@ -2,13 +2,28 @@ package model
 
 import "time"
 
+type UserDB struct {
+	UserID         int
+	GithubUsername string
+	GithubID       int
+	CreatedAt      time.Time
+	DeletedAt      time.Time
+	UpdatedAt      time.Time
+}
+
 type User struct {
-	UserID         int       `json:"userId"`
-	GithubUsername string    `json:"githubUsername"`
-	GithubID       int       `json:"githubId"`
-	CreatedAt      time.Time `json:"createdAt"`
-	DeletedAt      time.Time `json:"deletedAt"`
-	UpdatedAt      time.Time `json:"updatedAt"`
+	UserID         int    `json:"userId"`
+	GithubUsername string `json:"githubUsername"`
+	GithubID       int    `json:"githubId"`
+}
+
+func MapUserDBToUser(userDB UserDB) User {
+	user := User{
+		UserID:         userDB.UserID,
+		GithubUsername: userDB.GithubUsername,
+		GithubID:       userDB.GithubID,
+	}
+	return user
 }
 
 func GetAllUsers() []User {

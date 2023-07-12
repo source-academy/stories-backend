@@ -2,7 +2,7 @@ package model
 
 import (
 	"testing"
-	"time"
+	// "time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,9 +21,9 @@ func TestCreateUser(t *testing.T) {
 			UserID:         3,
 			GithubUsername: "User 3",
 			GithubID:       3,
-			CreatedAt:      time.Now(),
-			DeletedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
+			// CreatedAt:      time.Now(),
+			// DeletedAt:      time.Now(),
+			// UpdatedAt:      time.Now(),
 		}
 
 		CreateUser(user)

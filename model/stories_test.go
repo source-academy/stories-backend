@@ -2,7 +2,7 @@ package model
 
 import (
 	"testing"
-	"time"
+	// "time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -25,9 +25,9 @@ func TestCreateStory(t *testing.T) {
 			StoryID:      3,
 			AuthorID:     1,
 			StoryContent: "Story 3 Content",
-			CreatedAt:    time.Now(),
-			DeletedAt:    time.Now(),
-			UpdatedAt:    time.Now(),
+			// CreatedAt:    time.Now(),
+			// DeletedAt:    time.Now(),
+			// UpdatedAt:    time.Now(),
 		}
 
 		// Create the story
