@@ -11,15 +11,18 @@ import (
 	"github.com/source-academy/stories-backend/model"
 )
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	users := model.GetAllUsers()
-
+func EncodeJSONResponse(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(&users); err != nil {
+	if err := encoder.Encode(data); err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	users := model.GetAllUsers()
+	EncodeJSONResponse(w, users)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +33,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := model.GetUserByID(userID)
-
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(user); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	EncodeJSONResponse(w, user)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -45,13 +42,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	model.CreateUser(user)
-
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(&user); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	EncodeJSONResponse(w, &user)
 	w.WriteHeader(http.StatusCreated)
 }

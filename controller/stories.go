@@ -7,19 +7,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"strconv"
 
-	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/model"
 )
 
 func GetStories(w http.ResponseWriter, r *http.Request) {
 	stories := model.GetAllStories()
-
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(&stories); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	EncodeJSONResponse(w, stories)
 }
 
 func GetStory(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +23,7 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	story := model.GetStoryByID(storyID)
-
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(story); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	EncodeJSONResponse(w, story)
 }
 
 func CreateStory(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +34,6 @@ func CreateStory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	model.CreateStory(story)
-
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(&story); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	EncodeJSONResponse(w, &story)
 	w.WriteHeader(http.StatusCreated)
 }
