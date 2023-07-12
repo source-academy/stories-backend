@@ -9,7 +9,7 @@ var DB *gorm.DB
 
 type Story struct {
 	StoryID      int       `json:"storyId"`
-	UserID       int       `json:"userId"`
+	AuthorID     int       `json:"authorId"`
 	StoryContent string    `json:"storyContent"`
 	CreatedAt    time.Time `json:"createdAt"`
 	DeletedAt    time.Time `json:"deletedAt"`

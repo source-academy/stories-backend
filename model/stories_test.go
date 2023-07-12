@@ -23,7 +23,7 @@ func TestCreateStory(t *testing.T) {
 		// Create a new story
 		story := Story{
 			StoryID:      3,
-			UserID:       1,
+			AuthorID:     1,
 			StoryContent: "Story 3 Content",
 			CreatedAt:    time.Now(),
 			DeletedAt:    time.Now(),
@@ -42,7 +42,7 @@ func TestCreateStory(t *testing.T) {
 		// Assert the properties of the created story
 		createdStory := stories[0]
 		assert.Equal(t, 3, createdStory.StoryID, "Expected story ID to be 3")
-		assert.Equal(t, 1, createdStory.UserID, "Expected user ID to be 1")
+		assert.Equal(t, 1, createdStory.AuthorID, "Expected user ID to be 1")
 		assert.Equal(t, "Story 3 Content", createdStory.StoryContent, "Expected story content to be 'Story 3 Content'")
 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
 	})
@@ -57,7 +57,7 @@ func TestGetStoryByID(t *testing.T) {
 		// Assert the retrieved story
 		assert.NotNil(t, story, "Expected story to be retrieved")
 		assert.Equal(t, 3, story.StoryID, "Expected story ID to be 3")
-		assert.Equal(t, 1, story.UserID, "Expected user ID to be 1")
+		assert.Equal(t, 1, story.AuthorID, "Expected user ID to be 1")
 		assert.Equal(t, "Story 3 Content", story.StoryContent, "Expected story content to be 'Story 3 Content'")
 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
 	})

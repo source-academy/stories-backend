@@ -2,12 +2,12 @@
 
 CREATE TABLE IF NOT EXISTS stories (
     story_id SERIAL PRIMARY KEY,
-    user_id INT,
+    author_id INT,
     story_content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (author_id) REFERENCES users(user_id)
 );
 
 -- +migrate StatementBegin
