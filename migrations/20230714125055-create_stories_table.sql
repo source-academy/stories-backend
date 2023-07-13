@@ -2,12 +2,11 @@
 
 CREATE TABLE IF NOT EXISTS stories (
     story_id SERIAL PRIMARY KEY,
-    author_id INT,
+    author_id INT REFERENCES users(user_id),
     story_content TEXT,
     created_at created_at_type,
     deleted_at  deleted_at_type,
-    updated_at updated_at_type,
-    FOREIGN KEY (author_id) REFERENCES users(user_id)
+    updated_at updated_at_type
 );
 
 -- +migrate StatementBegin
