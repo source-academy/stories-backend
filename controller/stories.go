@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/source-academy/stories-backend/model"
+	"github.com/source-academy/stories-backend/view"
 )
 
 func GetStories(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateStory(w http.ResponseWriter, r *http.Request) {
-	var story model.Story
+	var story view.Story
 	if err := json.NewDecoder(r.Body).Decode(&story); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"github.com/source-academy/stories-backend/view"
+	"time"
+)
 
 type UserDB struct {
 	UserID         int
@@ -11,14 +14,8 @@ type UserDB struct {
 	UpdatedAt      time.Time
 }
 
-type User struct {
-	UserID         int    `json:"userId"`
-	GithubUsername string `json:"githubUsername"`
-	GithubID       int    `json:"githubId"`
-}
-
-func MapUserDBToUser(userDB UserDB) User {
-	user := User{
+func MapUserDBToUser(userDB UserDB) view.User {
+	user := view.User{
 		UserID:         userDB.UserID,
 		GithubUsername: userDB.GithubUsername,
 		GithubID:       userDB.GithubID,
@@ -26,18 +23,18 @@ func MapUserDBToUser(userDB UserDB) User {
 	return user
 }
 
-func GetAllUsers() []User {
-	var users []User
+func GetAllUsers() []view.User {
+	var users []view.User
 	DB.Find(&users)
 	return users
 }
 
-func GetUserByID(userID int) *User {
-	var user User
+func GetUserByID(userID int) *view.User {
+	var user view.User
 	DB.First(&user, userID)
 	return &user
 }
 
-func CreateUser(user User) {
+func CreateUser(user view.User) {
 	DB.Create(&user)
 }
