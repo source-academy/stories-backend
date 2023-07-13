@@ -1,7 +1,7 @@
 package view
 
 type Story struct {
-	StoryID      int    `json:"storyId"`
-	AuthorID     int    `json:"authorId"`
+	ID           uint   `json:"storyId"`
+	AuthorID     uint   `json:"authorId"`
 	StoryContent string `json:"storyContent"`
 }

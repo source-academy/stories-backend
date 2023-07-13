@@ -11,6 +11,4 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- +migrate Down
 
-DROP TRIGGER IF EXISTS update_users_updated_at_trigger ON users;
-DROP FUNCTION IF EXISTS update_users_updated_at_column();
 DROP TABLE IF EXISTS users;

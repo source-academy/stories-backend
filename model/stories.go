@@ -15,7 +15,7 @@ type StoryDB struct {
 
 func MapStoryDBToStory(storyDB StoryDB) view.Story {
 	story := view.Story{
-		StoryID:      storyDB.StoryID,
+		ID:           storyDB.ID,
 		AuthorID:     storyDB.AuthorID,
 		StoryContent: storyDB.StoryContent,
 	}

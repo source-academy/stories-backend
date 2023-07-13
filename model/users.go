@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/source-academy/stories-backend/view"
-	"time"
+	"gorm.io/gorm"
 )
 
 type UserDB struct {
@@ -13,7 +13,7 @@ type UserDB struct {
 
 func MapUserDBToUser(userDB UserDB) view.User {
 	user := view.User{
-		UserID:         userDB.UserID,
+		ID:             userDB.ID,
 		GithubUsername: userDB.GithubUsername,
 		GithubID:       userDB.GithubID,
 	}

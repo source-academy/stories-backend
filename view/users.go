@@ -1,7 +1,7 @@
 package view
 
 type User struct {
-	UserID         int    `json:"userId"`
+	ID             uint   `json:"userId"`
 	GithubUsername string `json:"githubUsername"`
 	GithubID       int    `json:"githubId"`
 }
