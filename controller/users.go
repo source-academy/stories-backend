@@ -9,6 +9,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/model"
+	"github.com/source-academy/stories-backend/view"
 )
 
 func EncodeJSONResponse(w http.ResponseWriter, data interface{}) {
@@ -37,7 +38,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user model.User
+	var user view.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

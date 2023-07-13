@@ -1,7 +1,8 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"github.com/source-academy/stories-backend/view"
+	"time"
 )
 
 type UserDB struct {
@@ -10,33 +11,27 @@ type UserDB struct {
 	GithubID       int
 }
 
-type User struct {
-	ID             uint   `json:"userId"`
-	GithubUsername string `json:"githubUsername"`
-	GithubID       int    `json:"githubId"`
-}
-
-func MapUserDBToUser(userDB UserDB) User {
-	user := User{
-		ID:             userDB.ID,
+func MapUserDBToUser(userDB UserDB) view.User {
+	user := view.User{
+		UserID:         userDB.UserID,
 		GithubUsername: userDB.GithubUsername,
 		GithubID:       userDB.GithubID,
 	}
 	return user
 }
 
-func GetAllUsers() []User {
-	var users []User
+func GetAllUsers() []view.User {
+	var users []view.User
 	DB.Find(&users)
 	return users
 }
 
-func GetUserByID(userID int) *User {
-	var user User
+func GetUserByID(userID int) *view.User {
+	var user view.User
 	DB.First(&user, userID)
 	return &user
 }
 
-func CreateUser(user User) {
+func CreateUser(user view.User) {
 	DB.Create(&user)
 }
