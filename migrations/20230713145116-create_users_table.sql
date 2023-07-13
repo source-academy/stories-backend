@@ -1,7 +1,7 @@
 -- +migrate Up
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     github_username TEXT,
     github_ID INTEGER,
     created_at created_at_type,

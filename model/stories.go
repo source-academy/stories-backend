@@ -2,29 +2,25 @@ package model
 
 import (
 	"gorm.io/gorm"
-	"time"
 )
 
 var DB *gorm.DB
 
 type StoryDB struct {
-	StoryID      int
-	AuthorID     int
+	gorm.Model
+	AuthorID     uint
 	StoryContent string
-	CreatedAt    time.Time
-	DeletedAt    time.Time
-	UpdatedAt    time.Time
 }
 
 type Story struct {
-	StoryID      int    `json:"storyId"`
-	AuthorID     int    `json:"authorId"`
+	ID           uint   `json:"storyId"`
+	AuthorID     uint   `json:"authorId"`
 	StoryContent string `json:"storyContent"`
 }
 
 func MapStoryDBToStory(storyDB StoryDB) Story {
 	story := Story{
-		StoryID:      storyDB.StoryID,
+		ID:           storyDB.ID,
 		AuthorID:     storyDB.AuthorID,
 		StoryContent: storyDB.StoryContent,
 	}

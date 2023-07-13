@@ -1,25 +1,24 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type UserDB struct {
-	UserID         int
+	gorm.Model
 	GithubUsername string
 	GithubID       int
-	CreatedAt      time.Time
-	DeletedAt      time.Time
-	UpdatedAt      time.Time
 }
 
 type User struct {
-	UserID         int    `json:"userId"`
+	ID             uint   `json:"userId"`
 	GithubUsername string `json:"githubUsername"`
 	GithubID       int    `json:"githubId"`
 }
 
 func MapUserDBToUser(userDB UserDB) User {
 	user := User{
-		UserID:         userDB.UserID,
+		ID:             userDB.ID,
 		GithubUsername: userDB.GithubUsername,
 		GithubID:       userDB.GithubID,
 	}
