@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS stories (
     id SERIAL PRIMARY KEY,
-    author_id INT UNSIGNED REFERENCES users(id),
+    author_id INT REFERENCES users(id),
     story_content TEXT,
     created_at created_at_type,
     deleted_at  deleted_at_type,
