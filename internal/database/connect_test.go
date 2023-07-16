@@ -28,14 +28,14 @@ func TestConnect(t *testing.T) {
 	}
 
 	t.Run("should connect to database", func(t *testing.T) {
-		db, err := Connect(conf)
+		db, err := Connect(conf.ToDataSourceName())
 		defer ignoreError(func() error { return Close(db) })
 
 		assert.Nil(t, err)
 		assert.NotNil(t, db)
 	})
 	t.Run("should return correct database name", func(t *testing.T) {
-		db, _ := Connect(conf)
+		db, _ := Connect(conf.ToDataSourceName())
 		defer ignoreError(func() error { return Close(db) })
 
 		// Get currently connected database name

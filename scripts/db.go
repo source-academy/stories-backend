@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
+	"gorm.io/gorm"
 )
 
 const (
@@ -22,6 +24,23 @@ var (
 	yellowChevron = color.With(color.Yellow, "❯")
 )
 
+func createIfNotExistAndConnect(dbserver *gorm.DB, conf *config.DatabaseConfig) (*sql.DB, *gorm.DB) {
+	// Create if not exist and Connect to the database
+	d, err := database.CreateAndConnect(dbserver, conf)
+	if err != nil {
+		logrus.Errorln(err)
+		panic(err)
+	}
+
+	db, err := d.DB()
+	if err != nil {
+		logrus.Errorln(err)
+		panic(err)
+	}
+
+	return db, d
+}
+
 func main() {
 	// Load configuration
 	conf, err := config.LoadFromEnvironment()
@@ -30,19 +49,14 @@ func main() {
 		panic(err)
 	}
 
-	// Connect to the database
-	d, err := database.Connect(conf.Database)
+	// Connect to the db server
+	dbserver, err := database.Connect(conf.Database.ToEmptyDataSourceName())
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
-	defer database.Close(d)
 
-	db, err := d.DB()
-	if err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
+	defer database.Close(dbserver)
 
 	migrations := (migrate.FileMigrationSource{
 		Dir: "migrations",
@@ -51,7 +65,19 @@ func main() {
 	// TODO: Reduce code duplication
 	flag.Parse()
 	switch flag.Arg(0) {
+	case "drop":
+		err := database.Drop(dbserver, conf.Database)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(greenTick, "Dropped database: ", conf.Database.DatabaseName)
+	case "create":
+		_, d := createIfNotExistAndConnect(dbserver, conf.Database)
+		defer database.Close(d)
+		fmt.Println(greenTick, "Created database: ", conf.Database.DatabaseName)
 	case "migrate":
+		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
+		defer database.Close(d)
 		var steps int
 		if flag.Arg(1) == "" {
 			steps = defaultMaxMigrateSteps
@@ -67,6 +93,8 @@ func main() {
 		}
 		fmt.Println(greenTick, "Migration complete")
 	case "rollback":
+		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
+		defer database.Close(d)
 		var steps int
 		if flag.Arg(1) == "" {
 			steps = defaultMaxRollbackSteps
@@ -82,6 +110,8 @@ func main() {
 		}
 		fmt.Println(greenTick, "Rollback complete")
 	case "status":
+		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
+		defer database.Close(d)
 		completed, err := migrate.GetMigrationRecords(db, "postgres")
 		if err != nil {
 			logrus.Errorln(err)
