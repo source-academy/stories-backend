@@ -1,20 +1,39 @@
 package model
 
-type Story struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
+import (
+	"github.com/source-academy/stories-backend/view"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+type StoryDB struct {
+	gorm.Model
+	AuthorID uint
+	Content  string
 }
 
-var stories = []Story{
-	{ID: 1, Title: "Story 1", Author: "Username1"},
-	{ID: 2, Title: "Story 2", Author: "Username2"},
+func MapStoryDBToStory(storyDB StoryDB) view.Story {
+	story := view.Story{
+		ID:           storyDB.ID,
+		AuthorID:     storyDB.AuthorID,
+		StoryContent: storyDB.Content,
+	}
+	return story
 }
 
-func GetAllStories() []Story {
+func GetAllStories() []view.Story {
+	var stories []view.Story
+	DB.Find(&stories)
 	return stories
 }
 
-func CreateStory(story Story) {
-	stories = append(stories, story)
+func GetStoryByID(storyID int) *view.Story {
+	var story view.Story
+	DB.First(&story, storyID)
+	return &story
+}
+
+func CreateStory(story view.Story) {
+	DB.Create(&story)
 }

@@ -33,7 +33,14 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 
 	r.Route("/stories", func(r chi.Router) {
 		r.Get("/", controller.GetStories)
+		r.Get("/{storyID}", controller.GetStory)
 		r.Post("/", controller.CreateStory)
+	})
+
+	r.Route("/users", func(r chi.Router) {
+		r.Get("/", controller.GetUsers)
+		r.Get("/{userID}", controller.GetUser)
+		r.Post("/", controller.CreateUser)
 	})
 
 	return r
