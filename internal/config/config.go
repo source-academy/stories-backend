@@ -82,7 +82,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 func getEnvOrDefault(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
-		return value // Includes empty string
+		return value // Includes empty string if set
 	}
 	return fallback
 }
