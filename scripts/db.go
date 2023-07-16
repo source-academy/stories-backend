@@ -24,9 +24,9 @@ var (
 	yellowChevron = color.With(color.Yellow, "❯")
 )
 
-func createIfNotExistAndConnect(dbserver *gorm.DB, conf *config.DatabaseConfig) (*sql.DB, *gorm.DB) {
+func createIfNotExistAndConnect(dbserver *gorm.DB, dbconf *config.DatabaseConfig) (*sql.DB, *gorm.DB) {
 	// Create if not exist and Connect to the database
-	d, err := database.CreateAndConnect(dbserver, conf)
+	d, err := database.CreateAndConnect(dbserver, dbconf)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
