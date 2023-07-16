@@ -35,11 +35,8 @@ const (
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
-	err := godotenv.Load(envFiles...)
-	if err != nil {
-		logrus.Errorln("Error loading .env file:", err)
-		return nil, err
-	}
+	var err error
+	loadEnvFiles(envFiles...)
 
 	config := &Config{}
 
@@ -78,6 +75,23 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// Populates the environment from variables
+// in the given files. If a file does not exist,
+// it will be ignored (with a warning).
+func loadEnvFiles(envFiles ...string) {
+	// We manually iterate through each file path
+	// because godotenv.Load() will stop at the first
+	// error it encounters.
+	for _, filePath := range envFiles {
+		err := godotenv.Load(filePath)
+		if err == nil {
+			logrus.Warningf("Error loading env file %s: %v. Skipping...\n", filePath, err)
+			continue
+		}
+		logrus.Infoln("Loaded environment from", filePath)
+	}
 }
 
 func getEnvOrDefault(key string, fallback string) string {
