@@ -1,4 +1,4 @@
-package controller
+package users
 
 import (
 	"encoding/json"
@@ -8,13 +8,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/model"
 	"github.com/source-academy/stories-backend/view"
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users := model.GetAllUsers()
-	EncodeJSONResponse(w, users)
+	controller.EncodeJSONResponse(w, users)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +26,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := model.GetUserByID(userID)
-	EncodeJSONResponse(w, user)
+	controller.EncodeJSONResponse(w, user)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +36,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	model.CreateUser(user)
-	EncodeJSONResponse(w, &user)
+	controller.EncodeJSONResponse(w, &user)
 	w.WriteHeader(http.StatusCreated)
 }
