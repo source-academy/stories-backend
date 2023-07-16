@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/source-academy/stories-backend/model"
-	"github.com/source-academy/stories-backend/view"
+	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
 
 func GetStories(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +29,7 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateStory(w http.ResponseWriter, r *http.Request) {
-	var story view.Story
+	var story storyviews.View
 	if err := json.NewDecoder(r.Body).Decode(&story); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
