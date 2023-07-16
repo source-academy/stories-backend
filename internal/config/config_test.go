@@ -59,9 +59,9 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 }
 
 func TestLoadFromEnvironment_FileEnvironment(t *testing.T) {
-	t.Run("should throw error when environment file not found", func(t *testing.T) {
+	t.Run("should not throw error when environment file not found", func(t *testing.T) {
 		_, err := LoadFromEnvironment("non-existent-file")
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 	})
 	t.Run("should load a valid environment file without errors", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{
