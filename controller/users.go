@@ -4,22 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"strconv"
 
-	"github.com/sirupsen/logrus"
+	"github.com/go-chi/chi/v5"
+
 	"github.com/source-academy/stories-backend/model"
 	"github.com/source-academy/stories-backend/view"
 )
-
-func EncodeJSONResponse(w http.ResponseWriter, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(data); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
-}
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users := model.GetAllUsers()
