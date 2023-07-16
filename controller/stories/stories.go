@@ -13,12 +13,12 @@ import (
 	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
 
-func GetStories(w http.ResponseWriter, r *http.Request) {
+func HandleList(w http.ResponseWriter, r *http.Request) {
 	stories := model.GetAllStories()
 	controller.EncodeJSONResponse(w, stories)
 }
 
-func GetStory(w http.ResponseWriter, r *http.Request) {
+func HandleRead(w http.ResponseWriter, r *http.Request) {
 	storyIDStr := chi.URLParam(r, "storyID")
 	storyID, err := strconv.Atoi(storyIDStr)
 	if err != nil {
@@ -29,7 +29,7 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 	controller.EncodeJSONResponse(w, story)
 }
 
-func CreateStory(w http.ResponseWriter, r *http.Request) {
+func HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var story storyviews.View
 	if err := json.NewDecoder(r.Body).Decode(&story); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

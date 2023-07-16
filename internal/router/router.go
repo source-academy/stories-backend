@@ -33,9 +33,9 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Get("/", controller.HandleHealthCheck)
 
 	r.Route("/stories", func(r chi.Router) {
-		r.Get("/", stories.GetStories)
-		r.Get("/{storyID}", stories.GetStory)
-		r.Post("/", stories.CreateStory)
+		r.Get("/", stories.HandleList)
+		r.Get("/{storyID}", stories.HandleRead)
+		r.Post("/", stories.HandleCreate)
 	})
 
 	r.Route("/users", func(r chi.Router) {
