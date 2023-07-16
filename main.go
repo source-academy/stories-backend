@@ -27,7 +27,6 @@ func main() {
 	}
 
 	// Connect to the database
-	// db, err := database.Connect(conf.Database)
 	DB, err = database.Connect(conf.Database)
 	model.DB = DB
 	if err != nil {
