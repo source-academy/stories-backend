@@ -1,4 +1,4 @@
-package constants
+package envutils
 
 const (
 	ENV_DEVELOPMENT = "development"
