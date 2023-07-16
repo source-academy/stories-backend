@@ -26,6 +26,10 @@ hooks:
 	@chmod 755 ./.git/hooks/pre-push
 	@echo "Hooks installed successfully!"
 
+db_create:
+	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} create
+db_drop:
+	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} drop
 db_migrate: db_status
 	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} migrate $(steps)
 db_rollback:

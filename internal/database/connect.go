@@ -1,13 +1,11 @@
 package database
 
 import (
-	"github.com/source-academy/stories-backend/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func Connect(conf *config.DatabaseConfig) (*gorm.DB, error) {
-	dsn := conf.ToDataSourceName()
+func Connect(dsn string) (*gorm.DB, error) {
 	driver := postgres.Open(dsn)
 
 	db, err := gorm.Open(driver, &gorm.Config{})
