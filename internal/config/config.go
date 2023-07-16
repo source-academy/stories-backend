@@ -79,13 +79,21 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	return config, nil
 }
 
+func getEnvOrDefault(key string, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value // Includes empty string
+	}
+	return fallback
+}
+
 // Parses an integer from the environment variable with the given key.
 // If the environment variable is not set, it returns the default
 // value. If the environment variable is set but cannot be parsed as
 // an integer, it returns an error as well as setting the return value
 // to the default value.
 func parseIntFromEnv(key string, defaultValue int) (int, error) {
-	strVal := os.Getenv(key)
+	// FIXME: Hacky abstraction
+	strVal := getEnvOrDefault(key, strconv.Itoa(defaultValue))
 	if strVal == "" {
 		return defaultValue, nil
 	}
