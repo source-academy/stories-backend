@@ -10,7 +10,7 @@ import (
 
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/model"
-	"github.com/source-academy/stories-backend/view"
+	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user view.User
+	var user userviews.View
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
