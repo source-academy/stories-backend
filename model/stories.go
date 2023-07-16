@@ -9,15 +9,15 @@ var DB *gorm.DB
 
 type StoryDB struct {
 	gorm.Model
-	AuthorID     uint
-	StoryContent string
+	AuthorID uint
+	Content  string
 }
 
 func MapStoryDBToStory(storyDB StoryDB) view.Story {
 	story := view.Story{
 		ID:           storyDB.ID,
 		AuthorID:     storyDB.AuthorID,
-		StoryContent: storyDB.StoryContent,
+		StoryContent: storyDB.Content,
 	}
 	return story
 }
