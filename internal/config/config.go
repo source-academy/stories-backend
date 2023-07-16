@@ -52,11 +52,12 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	// Database
 	dbConfig := &DatabaseConfig{
-		TimeZone:     os.Getenv(DB_TIMEZONE),
-		Host:         os.Getenv(DB_HOSTNAME),
-		User:         os.Getenv(DB_USERNAME),
-		Password:     os.Getenv(DB_PASSWORD),
-		DatabaseName: os.Getenv(DB_NAME),
+		// Port handled below
+		TimeZone:     getEnvOrDefault(DB_TIMEZONE, constants.DB_DEFAULT_TIMEZONE),
+		Host:         getEnvOrDefault(DB_HOSTNAME, constants.DB_DEFAULT_HOSTNAME),
+		User:         getEnvOrDefault(DB_USERNAME, constants.DB_DEFAULT_USER),
+		Password:     getEnvOrDefault(DB_PASSWORD, constants.DB_DEFAULT_PASSWORD),
+		DatabaseName: getEnvOrDefault(DB_NAME, constants.DB_DEFAULT_NAME),
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, constants.DB_DEFAULT_PORT)
 	if err != nil {
