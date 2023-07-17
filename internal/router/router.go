@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/controller/stories"
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/utils/constants"
 )
@@ -32,9 +33,9 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Get("/", controller.HandleHealthCheck)
 
 	r.Route("/stories", func(r chi.Router) {
-		r.Get("/", controller.GetStories)
-		r.Get("/{storyID}", controller.GetStory)
-		r.Post("/", controller.CreateStory)
+		r.Get("/", stories.HandleList)
+		r.Get("/{storyID}", stories.HandleRead)
+		r.Post("/", stories.HandleCreate)
 	})
 
 	r.Route("/users", func(r chi.Router) {
