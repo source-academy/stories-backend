@@ -27,6 +27,7 @@ func main() {
 	}
 
 	// Connect to the database
+	// FIXME: Don't use a global variable
 	DB, err = database.Connect(conf.Database)
 	model.DB = DB
 	if err != nil {
