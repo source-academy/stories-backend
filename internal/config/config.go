@@ -51,11 +51,11 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	// Database
 	dbConfig := &DatabaseConfig{
 		// Port handled below
-		TimeZone:     getEnvOrDefault(DB_TIMEZONE, constants.DB_DEFAULT_TIMEZONE),
-		Host:         getEnvOrDefault(DB_HOSTNAME, constants.DB_DEFAULT_HOSTNAME),
-		User:         getEnvOrDefault(DB_USERNAME, constants.DB_DEFAULT_USER),
-		Password:     getEnvOrDefault(DB_PASSWORD, constants.DB_DEFAULT_PASSWORD),
-		DatabaseName: getEnvOrDefault(DB_NAME, constants.DB_DEFAULT_NAME),
+		TimeZone:     getEnvOrDefault(DB_TIMEZONE, dbutils.DB_DEFAULT_TIMEZONE),
+		Host:         getEnvOrDefault(DB_HOSTNAME, dbutils.DB_DEFAULT_HOSTNAME),
+		User:         getEnvOrDefault(DB_USERNAME, dbutils.DB_DEFAULT_USER),
+		Password:     getEnvOrDefault(DB_PASSWORD, dbutils.DB_DEFAULT_PASSWORD),
+		DatabaseName: getEnvOrDefault(DB_NAME, dbutils.DB_DEFAULT_NAME),
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, dbutils.DB_DEFAULT_PORT)
 	if err != nil {
