@@ -14,12 +14,12 @@ import (
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
+func HandleList(w http.ResponseWriter, r *http.Request) {
 	users := model.GetAllUsers()
 	controller.EncodeJSONResponse(w, users)
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func HandleRead(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -30,7 +30,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	controller.EncodeJSONResponse(w, userviews.SingleFrom(*user))
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var params userparams.Create
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

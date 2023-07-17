@@ -40,9 +40,9 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	})
 
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/", users.GetUsers)
-		r.Get("/{userID}", users.GetUser)
-		r.Post("/", users.CreateUser)
+		r.Get("/", users.HandleList)
+		r.Get("/{userID}", users.HandleRead)
+		r.Post("/", users.HandleCreate)
 	})
 
 	return r
