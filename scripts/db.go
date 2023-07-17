@@ -10,7 +10,6 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
-	"github.com/source-academy/stories-backend/internal/database"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +25,7 @@ var (
 
 func createIfNotExistAndConnect(dbserver *gorm.DB, dbconf *config.DatabaseConfig) (*sql.DB, *gorm.DB) {
 	// Create if not exist and Connect to the database
-	d, err := database.CreateAndConnect(dbserver, dbconf)
+	d, err := CreateAndConnect(dbserver, dbconf)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
@@ -50,13 +49,13 @@ func main() {
 	}
 
 	// Connect to the db server
-	dbserver, err := database.Connect(conf.Database.ToEmptyDataSourceName())
+	dbserver, err := ConnectToDBServer(conf.Database)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
 
-	defer database.Close(dbserver)
+	defer Close(dbserver)
 
 	migrations := (migrate.FileMigrationSource{
 		Dir: "migrations",
@@ -66,18 +65,20 @@ func main() {
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "drop":
-		err := database.Drop(dbserver, conf.Database)
+		err := Drop(dbserver, conf.Database)
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println(greenTick, "Dropped database: ", conf.Database.DatabaseName)
 	case "create":
 		_, d := createIfNotExistAndConnect(dbserver, conf.Database)
-		defer database.Close(d)
+		defer Close(d)
+
 		fmt.Println(greenTick, "Created database: ", conf.Database.DatabaseName)
 	case "migrate":
 		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
-		defer database.Close(d)
+		defer Close(d)
+
 		var steps int
 		if flag.Arg(1) == "" {
 			steps = defaultMaxMigrateSteps
@@ -94,7 +95,8 @@ func main() {
 		fmt.Println(greenTick, "Migration complete")
 	case "rollback":
 		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
-		defer database.Close(d)
+		defer Close(d)
+
 		var steps int
 		if flag.Arg(1) == "" {
 			steps = defaultMaxRollbackSteps
@@ -111,7 +113,8 @@ func main() {
 		fmt.Println(greenTick, "Rollback complete")
 	case "status":
 		db, d := createIfNotExistAndConnect(dbserver, conf.Database)
-		defer database.Close(d)
+		defer Close(d)
+
 		completed, err := migrate.GetMigrationRecords(db, "postgres")
 		if err != nil {
 			logrus.Errorln(err)

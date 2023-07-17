@@ -27,7 +27,7 @@ func main() {
 	}
 
 	// Connect to the database
-	DB, err = database.Connect(conf.Database.ToDataSourceName())
+	DB, err = database.Connect(conf.Database)
 	model.DB = DB
 	if err != nil {
 		logrus.Errorln(err)

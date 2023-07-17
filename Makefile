@@ -1,8 +1,8 @@
 PROGRAM_ENTRYPOINT=./main.go
 OUTPUT_PATH=./app
 
-DB_SCRIPT_ENTRYPOINT=./scripts/db.go
-DB_TARGETS=db_migrate db_rollback db_status
+DB_SCRIPT_ENTRYPOINT=./scripts/db.go ./scripts/create_db.go
+DB_TARGETS=db_migrate db_rollback db_status db_create db_drop
 
 .PHONY: dev build test coverage lint format hooks $(DB_TARGETS)
 
