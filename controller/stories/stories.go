@@ -17,6 +17,7 @@ import (
 )
 
 func HandleList(w http.ResponseWriter, r *http.Request) {
+	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
@@ -35,6 +36,7 @@ func HandleRead(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
@@ -52,6 +54,8 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	storyModel := *params.ToModel()
+
+	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
