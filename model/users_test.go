@@ -46,7 +46,7 @@ func TestGetAllUsers(t *testing.T) {
 		defer cleanUp(t)
 
 		users := GetAllUsers(db)
-		assert.Len(t, users, 2, "Expected initial number of users to be 0")
+		assert.Len(t, users, 0, "Expected initial number of users to be 0")
 	})
 }
 
@@ -69,7 +69,7 @@ func TestCreateUser(t *testing.T) {
 		var lastUser User
 		db.Model(&User{}).Last(&lastUser)
 
-		assert.Equal(t, user.ID, lastUser.ID, expectCreateEqualMessage)
+		assert.Equal(t, user.ID, lastUser.ID, "Expected the user ID to be updated")
 		assert.Equal(t, user.GithubUsername, lastUser.GithubUsername, expectCreateEqualMessage)
 		assert.Equal(t, user.GithubID, lastUser.GithubID, expectCreateEqualMessage)
 	})
@@ -80,14 +80,14 @@ func TestGetUserByID(t *testing.T) {
 		db, cleanUp := setupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
-		users := []User{
+		users := []*User{
 			{GithubUsername: "testUsername1", GithubID: 123},
 			{GithubUsername: "testUsername2", GithubID: 456},
 			{GithubUsername: "testUsername3", GithubID: 789},
 		}
 
 		for _, userToAdd := range users {
-			CreateUser(db, &userToAdd)
+			CreateUser(db, userToAdd)
 		}
 
 		for _, user := range users {
