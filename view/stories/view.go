@@ -1,6 +1,6 @@
-package view
+package storyviews
 
-type Story struct {
+type View struct {
 	ID           uint   `json:"storyId"`
 	AuthorID     uint   `json:"authorId"`
 	StoryContent string `json:"storyContent"`

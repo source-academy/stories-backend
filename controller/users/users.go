@@ -1,29 +1,21 @@
-package controller
+package users
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"strconv"
 
-	"github.com/sirupsen/logrus"
-	"github.com/source-academy/stories-backend/model"
-	"github.com/source-academy/stories-backend/view"
-)
+	"github.com/go-chi/chi/v5"
 
-func EncodeJSONResponse(w http.ResponseWriter, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(data); err != nil {
-		logrus.Errorln(err)
-		panic(err)
-	}
-}
+	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/model"
+	userviews "github.com/source-academy/stories-backend/view/users"
+)
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users := model.GetAllUsers()
-	EncodeJSONResponse(w, users)
+	controller.EncodeJSONResponse(w, users)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -34,16 +26,16 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := model.GetUserByID(userID)
-	EncodeJSONResponse(w, user)
+	controller.EncodeJSONResponse(w, user)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user view.User
+	var user userviews.View
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	model.CreateUser(user)
-	EncodeJSONResponse(w, &user)
+	controller.EncodeJSONResponse(w, &user)
 	w.WriteHeader(http.StatusCreated)
 }
