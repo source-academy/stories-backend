@@ -84,9 +84,9 @@ func Create(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	return nil
 }
 
-func Drop(dbserver *gorm.DB, dbconf *config.DatabaseConfig) error {
+func Drop(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", dbconf.DatabaseName)
-	result := dbserver.Exec(drop_command)
+	result := db.Exec(drop_command)
 	if result.Error != nil {
 		return result.Error
 	}
