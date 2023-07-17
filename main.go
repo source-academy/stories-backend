@@ -11,7 +11,7 @@ import (
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
 	"github.com/source-academy/stories-backend/internal/router"
-	"github.com/source-academy/stories-backend/internal/utils/constants"
+	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 
 	"github.com/source-academy/stories-backend/model"
 	"gorm.io/gorm"
@@ -36,7 +36,7 @@ func main() {
 
 	var injectMiddlewares []func(http.Handler) http.Handler
 	// Initialze Sentry configuration
-	if conf.Environment == constants.ENV_PRODUCTION {
+	if conf.Environment == envutils.ENV_PRODUCTION {
 		err := sentry.Init(sentry.ClientOptions{
 			Dsn: conf.SentryDSN,
 			// Set TracesSampleRate to 1.0 to capture 100%
