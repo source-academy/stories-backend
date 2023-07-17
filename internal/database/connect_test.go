@@ -12,23 +12,17 @@ import (
 func ignoreError(func() (err error)) {}
 
 func TestConnect(t *testing.T) {
-	conf := &config.DatabaseConfig{
-		TimeZone:     dbutils.DB_DEFAULT_TIMEZONE,
-		Host:         "localhost",
-		Port:         dbutils.DB_DEFAULT_PORT,
-		User:         "postgres",
-		DatabaseName: dbutils.DB_DEFAULT_NAME,
-	}
+	conf, _ := config.LoadFromEnvironment()
 
 	t.Run("should connect to database", func(t *testing.T) {
-		db, err := Connect(conf)
+		db, err := Connect(conf.Database)
 		defer ignoreError(func() error { return Close(db) })
 
 		assert.Nil(t, err)
 		assert.NotNil(t, db)
 	})
 	t.Run("should return correct database name", func(t *testing.T) {
-		db, _ := Connect(conf)
+		db, _ := Connect(conf.Database)
 		defer ignoreError(func() error { return Close(db) })
 
 		// Get currently connected database name
@@ -38,7 +32,7 @@ func TestConnect(t *testing.T) {
 	})
 	// TODO: Populate these with actual tables once schema is finalized
 	// t.Run("should show a correct list of tables", func(t *testing.T) {
-	// 	db, _ := Connect(conf)
+	// 	db, _ := Connect(conf.Database)
 	//  defer ignoreError(func() error { return Close(db) })
 
 	// 	// Get list of tables in the database
