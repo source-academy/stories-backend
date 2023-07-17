@@ -10,18 +10,18 @@ type User struct {
 	GithubID       int
 }
 
-func GetAllUsers() []User {
+func GetAllUsers(db *gorm.DB) []User {
 	var users []User
-	DB.Find(&users)
+	db.Find(&users)
 	return users
 }
 
-func GetUserByID(userID int) *User {
+func GetUserByID(db *gorm.DB, id int) User {
 	var user User
-	DB.First(&user, userID)
-	return &user
+	db.First(&user, id)
+	return user
 }
 
-func CreateUser(user *User) {
-	DB.Create(user)
+func CreateUser(db *gorm.DB, user *User) {
+	db.Create(user)
 }
