@@ -4,7 +4,7 @@ OUTPUT_PATH=./app
 DB_SCRIPT_ENTRYPOINT=./scripts/db.go
 DB_TARGETS=db_migrate db_rollback db_status
 
-.PHONY: dev build test testCI coverage lint format hooks $(DB_TARGETS)
+.PHONY: dev build test coverage lint format hooks $(DB_TARGETS)
 
 dev:
 	@GO_ENV=development go run ${PROGRAM_ENTRYPOINT}
