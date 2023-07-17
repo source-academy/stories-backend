@@ -21,7 +21,8 @@ var DB *gorm.DB
 
 func main() {
 	// Load configuration
-	conf, err := config.LoadFromEnvironment()
+	// FIXME: Remove hardcoding when further configuration is added
+	conf, err := config.LoadFromEnvironment(".env")
 	if err != nil {
 		logrus.Errorln(err)
 	}
