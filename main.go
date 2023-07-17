@@ -28,6 +28,7 @@ func main() {
 	}
 
 	// Connect to the database
+	// FIXME: Don't use a global variable
 	DB, err = database.Connect(conf.Database)
 	model.DB = DB
 	if err != nil {
@@ -36,6 +37,10 @@ func main() {
 	defer database.Close(DB)
 
 	var injectMiddlewares []func(http.Handler) http.Handler
+
+	// Inject DB session into request context
+	injectMiddlewares = append(injectMiddlewares, database.MakeMiddlewareFrom(DB))
+
 	// Initialze Sentry configuration
 	if conf.Environment == envutils.ENV_PRODUCTION {
 		err := sentry.Init(sentry.ClientOptions{
