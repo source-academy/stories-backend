@@ -10,6 +10,7 @@ import (
 
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/model"
+	userparams "github.com/source-academy/stories-backend/params/users"
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
@@ -26,16 +27,17 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := model.GetUserByID(userID)
-	controller.EncodeJSONResponse(w, user)
+	controller.EncodeJSONResponse(w, userviews.SingleFrom(*user))
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user userviews.View
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var params userparams.Create
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	model.CreateUser(user)
-	controller.EncodeJSONResponse(w, &user)
+	userModel := *params.ToModel()
+	model.CreateUser(&userModel)
+	controller.EncodeJSONResponse(w, userviews.SingleFrom(userModel))
 	w.WriteHeader(http.StatusCreated)
 }

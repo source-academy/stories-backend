@@ -1,37 +1,27 @@
 package model
 
 import (
-	userviews "github.com/source-academy/stories-backend/view/users"
 	"gorm.io/gorm"
 )
 
-type UserDB struct {
+type User struct {
 	gorm.Model
 	GithubUsername string
 	GithubID       int
 }
 
-func MapUserDBToUser(userDB UserDB) userviews.View {
-	user := userviews.View{
-		ID:             userDB.ID,
-		GithubUsername: userDB.GithubUsername,
-		GithubID:       userDB.GithubID,
-	}
-	return user
-}
-
-func GetAllUsers() []userviews.View {
-	var users []userviews.View
+func GetAllUsers() []User {
+	var users []User
 	DB.Find(&users)
 	return users
 }
 
-func GetUserByID(userID int) *userviews.View {
-	var user userviews.View
+func GetUserByID(userID int) *User {
+	var user User
 	DB.First(&user, userID)
 	return &user
 }
 
-func CreateUser(user userviews.View) {
-	DB.Create(&user)
+func CreateUser(user *User) {
+	DB.Create(user)
 }
