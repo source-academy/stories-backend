@@ -21,19 +21,19 @@ func ConnectToDBServer(conf *config.DatabaseConfig) (*gorm.DB, error) {
 	return db, nil
 }
 
-func Close(d *gorm.DB) error {
+func Close(d *gorm.DB) {
 	db, err := d.DB()
 	if err != nil {
-		return err
+		panic(err)
 	}
 	var dbName string
 	result := d.Raw("SELECT current_database();").Scan(&dbName)
 	if result.Error != nil {
-		return result.Error
+		panic(result.Error)
 	}
 
 	fmt.Println(yellowChevron, "Closing connection with database", dbName+".")
-	return db.Close()
+	panic(db.Close())
 }
 
 func CreateAndConnect(db *gorm.DB, dbconf *config.DatabaseConfig) (*gorm.DB, error) {
