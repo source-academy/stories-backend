@@ -15,14 +15,6 @@ type DatabaseConfig struct {
 }
 
 func (c DatabaseConfig) ToDataSourceName() string {
-	return c.toDataSourceName(true)
-}
-
-func (c DatabaseConfig) ToEmptyDataSourceName() string {
-	return c.toDataSourceName(false)
-}
-
-func (c DatabaseConfig) toDataSourceName(useDBName bool) string {
 	configs := []string{
 		// TODO: Remove after refactoring is done
 		// fmt.Sprintf("TimeZone=%s", c.TimeZone),
@@ -49,7 +41,7 @@ func (c DatabaseConfig) toDataSourceName(useDBName bool) string {
 	if c.Password != "" {
 		configs = append(configs, fmt.Sprintf("password=%s", c.Password))
 	}
-	if c.DatabaseName != "" && useDBName {
+	if c.DatabaseName != "" {
 		configs = append(configs, fmt.Sprintf("dbname=%s", c.DatabaseName))
 	}
 

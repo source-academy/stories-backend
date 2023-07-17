@@ -5,19 +5,35 @@ import (
 	"fmt"
 
 	"github.com/source-academy/stories-backend/internal/config"
-	"github.com/source-academy/stories-backend/internal/database"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func ConnectToDBServer(conf *config.DatabaseConfig) (*gorm.DB, error) {
-	dsn := conf.ToEmptyDataSourceName()
+func ConnectToDBServer(conf config.DatabaseConfig) (*gorm.DB, error) {
+	conf.DatabaseName = ""
+	dsn := conf.ToDataSourceName()
+	return connect(dsn)
+}
+
+func ConnectToDB(conf config.DatabaseConfig) (*gorm.DB, error) {
+	dsn := conf.ToDataSourceName()
+	return connect(dsn)
+}
+
+func connect(dsn string) (*gorm.DB, error) {
 	driver := postgres.Open(dsn)
 
 	db, err := gorm.Open(driver, &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
+
+	dbName, err := getConnectedDBName(db)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(blueNet, "Connected to database", dbName+".")
+
 	return db, nil
 }
 
@@ -26,27 +42,28 @@ func Close(d *gorm.DB) {
 	if err != nil {
 		panic(err)
 	}
-	var dbName string
-	result := d.Raw("SELECT current_database();").Scan(&dbName)
-	if result.Error != nil {
-		panic(result.Error)
-	}
 
-	fmt.Println(yellowChevron, "Closing connection with database", dbName+".")
-	panic(db.Close())
+	dbName, err := getConnectedDBName(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(blueNet, "Closing connection with database", dbName+".")
+
+	if err := db.Close(); err != nil {
+		panic(err)
+	}
 }
 
-func CreateAndConnect(db *gorm.DB, dbconf *config.DatabaseConfig) (*gorm.DB, error) {
+func Create(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	if dbconf.DatabaseName == "" {
-		// TODO: refactor to use central contexted error. or make sure this is not empty
-		return nil, errors.New("Failed to create database: no database name provided.")
+		return errors.New("Failed to create database: no database name provided.")
 	}
 
 	// check if db exists
 	fmt.Println(yellowChevron, "Checking if database", dbconf.DatabaseName, "exists.")
 	result := db.Raw("SELECT * FROM pg_database WHERE datname = ?", dbconf.DatabaseName)
 	if result.Error != nil {
-		return nil, result.Error
+		return result.Error
 	}
 
 	// if not exists create it
@@ -58,13 +75,13 @@ func CreateAndConnect(db *gorm.DB, dbconf *config.DatabaseConfig) (*gorm.DB, err
 		result := db.Exec(create_command)
 
 		if result.Error != nil {
-			return nil, result.Error
+			return result.Error
 		}
-	} else {
-		fmt.Println(yellowChevron, "Database", dbconf.DatabaseName, "exists. Connecting...")
 	}
 
-	return database.Connect(dbconf)
+	fmt.Println(yellowChevron, "Database", dbconf.DatabaseName, "exists.")
+
+	return nil
 }
 
 func Drop(dbserver *gorm.DB, dbconf *config.DatabaseConfig) error {
@@ -75,4 +92,13 @@ func Drop(dbserver *gorm.DB, dbconf *config.DatabaseConfig) error {
 	}
 
 	return nil
+}
+
+func getConnectedDBName(db *gorm.DB) (string, error) {
+	var dbName string
+	result := db.Raw("SELECT current_database();").Scan(&dbName)
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return dbName, nil
 }
