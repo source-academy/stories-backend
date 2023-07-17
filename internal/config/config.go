@@ -51,11 +51,11 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	// Database
 	dbConfig := &DatabaseConfig{
 		// Port handled below
-		TimeZone:     getEnvOrDefault(DB_TIMEZONE, dbutils.DB_DEFAULT_TIMEZONE),
-		Host:         getEnvOrDefault(DB_HOSTNAME, dbutils.DB_DEFAULT_HOSTNAME),
-		User:         getEnvOrDefault(DB_USERNAME, dbutils.DB_DEFAULT_USER),
-		Password:     getEnvOrDefault(DB_PASSWORD, dbutils.DB_DEFAULT_PASSWORD),
-		DatabaseName: getEnvOrDefault(DB_NAME, dbutils.DB_DEFAULT_NAME),
+		TimeZone:     envutils.GetEnvOrDefault(DB_TIMEZONE, dbutils.DB_DEFAULT_TIMEZONE),
+		Host:         envutils.GetEnvOrDefault(DB_HOSTNAME, dbutils.DB_DEFAULT_HOSTNAME),
+		User:         envutils.GetEnvOrDefault(DB_USERNAME, dbutils.DB_DEFAULT_USER),
+		Password:     envutils.GetEnvOrDefault(DB_PASSWORD, dbutils.DB_DEFAULT_PASSWORD),
+		DatabaseName: envutils.GetEnvOrDefault(DB_NAME, dbutils.DB_DEFAULT_NAME),
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, dbutils.DB_DEFAULT_PORT)
 	if err != nil {
@@ -95,13 +95,6 @@ func loadEnvFiles(envFiles ...string) {
 	}
 }
 
-func getEnvOrDefault(key string, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value // Includes empty string if set
-	}
-	return fallback
-}
-
 // Parses an integer from the environment variable with the given key.
 // If the environment variable is not set, it returns the default
 // value. If the environment variable is set but cannot be parsed as
@@ -109,7 +102,7 @@ func getEnvOrDefault(key string, fallback string) string {
 // to the default value.
 func parseIntFromEnv(key string, defaultValue int) (int, error) {
 	// FIXME: Hacky abstraction
-	strVal := getEnvOrDefault(key, strconv.Itoa(defaultValue))
+	strVal := envutils.GetEnvOrDefault(key, strconv.Itoa(defaultValue))
 	if strVal == "" {
 		return defaultValue, nil
 	}
