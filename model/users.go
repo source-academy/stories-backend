@@ -22,6 +22,6 @@ func GetUserByID(userID int) *User {
 	return &user
 }
 
-func CreateUser(user User) {
-	DB.Create(&user)
+func CreateUser(user *User) {
+	DB.Create(user)
 }

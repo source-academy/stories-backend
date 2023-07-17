@@ -37,7 +37,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userModel := *params.ToModel()
-	model.CreateUser(userModel)
+	model.CreateUser(&userModel)
 	controller.EncodeJSONResponse(w, userviews.SingleFrom(userModel))
 	w.WriteHeader(http.StatusCreated)
 }
