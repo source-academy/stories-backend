@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	expectEqualMessage = "Expected last user to be the one created"
+	expectCreateEqualMessage = "Expected last user to be the one created"
+	expectReadEqualMessage   = "Expected read user to be the one previously created"
 )
 
 var dbConfig *config.DatabaseConfig = &config.DatabaseConfig{
@@ -68,26 +69,33 @@ func TestCreateUser(t *testing.T) {
 		var lastUser User
 		db.Model(&User{}).Last(&lastUser)
 
-		assert.Equal(t, user.ID, lastUser.ID, expectEqualMessage)
-		assert.Equal(t, user.GithubUsername, lastUser.GithubUsername, expectEqualMessage)
-		assert.Equal(t, user.GithubID, lastUser.GithubID, expectEqualMessage)
+		assert.Equal(t, user.ID, lastUser.ID, expectCreateEqualMessage)
+		assert.Equal(t, user.GithubUsername, lastUser.GithubUsername, expectCreateEqualMessage)
+		assert.Equal(t, user.GithubID, lastUser.GithubID, expectCreateEqualMessage)
 	})
 }
 
-// func TestGetUserByID(t *testing.T) {
-// 	t.Run("should get the correct user", func(t *testing.T) {
-// 		db, cleanUp := setupDBConnection(t, dbConfig)
-// 		defer cleanUp(t)
+func TestGetUserByID(t *testing.T) {
+	t.Run("should get the correct user", func(t *testing.T) {
+		db, cleanUp := setupDBConnection(t, dbConfig)
+		defer cleanUp(t)
 
-// 		users := []User{
-// 			{GithubUsername: "testUsername1", GithubID: 123},
-// 			{GithubUsername: "testUsername2", GithubID: 456},
-// 			{GithubUsername: "testUsername3", GithubID: 789},
-// 		}
+		users := []User{
+			{GithubUsername: "testUsername1", GithubID: 123},
+			{GithubUsername: "testUsername2", GithubID: 456},
+			{GithubUsername: "testUsername3", GithubID: 789},
+		}
 
-// 		for _, userToAdd := range users {
-// 			CreateUser(db, &userToAdd)
-// 		}
+		for _, userToAdd := range users {
+			CreateUser(db, &userToAdd)
+		}
 
-// 	})
-// }
+		for _, user := range users {
+			// FIXME: Don't use typecast
+			dbUser := GetUserByID(db, int(user.ID))
+			assert.Equal(t, user.ID, dbUser.ID, expectReadEqualMessage)
+			assert.Equal(t, user.GithubUsername, dbUser.GithubUsername, expectReadEqualMessage)
+			assert.Equal(t, user.GithubID, dbUser.GithubID, expectReadEqualMessage)
+		}
+	})
+}
