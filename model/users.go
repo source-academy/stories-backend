@@ -5,13 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserDB struct {
+type User struct {
 	gorm.Model
 	GithubUsername string
 	GithubID       int
 }
 
-func MapUserDBToUser(userDB UserDB) userviews.View {
+func MapUserDBToUser(userDB User) userviews.View {
 	user := userviews.View{
 		ID:             userDB.ID,
 		GithubUsername: userDB.GithubUsername,
