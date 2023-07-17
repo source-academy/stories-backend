@@ -27,9 +27,9 @@ hooks:
 	@echo "Hooks installed successfully!"
 
 db_migrate: db_status
-	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} migrate $(steps)
+	@go run ${DB_SCRIPT_ENTRYPOINT} migrate $(steps)
 db_rollback:
-	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} rollback $(steps)
+	@go run ${DB_SCRIPT_ENTRYPOINT} rollback $(steps)
 	@$(MAKE) db_status
 db_status:
-	@GO_ENV=development go run ${DB_SCRIPT_ENTRYPOINT} status
+	@go run ${DB_SCRIPT_ENTRYPOINT} status
