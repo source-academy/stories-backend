@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/source-academy/stories-backend/internal/utils/constants"
+	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,19 +33,19 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{})
 		defer cleanUp(t)
 
-		os.Setenv(GO_ENV, constants.ENV_DEVELOPMENT)
+		os.Setenv(GO_ENV, envutils.ENV_DEVELOPMENT)
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.ENV_DEVELOPMENT, conf.Environment)
+		assert.Equal(t, envutils.ENV_DEVELOPMENT, conf.Environment)
 	})
 	t.Run("should return production environment when GO_ENV is production", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{})
 		defer cleanUp(t)
 
-		os.Setenv(GO_ENV, constants.ENV_PRODUCTION)
+		os.Setenv(GO_ENV, envutils.ENV_PRODUCTION)
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.ENV_PRODUCTION, conf.Environment)
+		assert.Equal(t, envutils.ENV_PRODUCTION, conf.Environment)
 	})
 	t.Run("should return production environment when GO_ENV anything that is not development", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{})
@@ -54,7 +54,7 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 		os.Setenv(GO_ENV, "anything")
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.ENV_PRODUCTION, conf.Environment)
+		assert.Equal(t, envutils.ENV_PRODUCTION, conf.Environment)
 	})
 }
 
@@ -116,7 +116,7 @@ func TestLoadFromEnvironment_FileEnvironment_Port_Unset(t *testing.T) {
 
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.DEFAULT_PORT, conf.Port)
+		assert.Equal(t, envutils.DEFAULT_PORT, conf.Port)
 	})
 	t.Run("should return default port when it is set to an empty string", func(t *testing.T) {
 		envFile, cleanUp := setupEnvFile(t, map[string]string{
@@ -126,7 +126,7 @@ func TestLoadFromEnvironment_FileEnvironment_Port_Unset(t *testing.T) {
 
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.DEFAULT_PORT, conf.Port)
+		assert.Equal(t, envutils.DEFAULT_PORT, conf.Port)
 	})
 }
 
@@ -150,7 +150,7 @@ func TestLoadFromEnvironment_FileEnvironment_Port_Set(t *testing.T) {
 
 		conf, err := LoadFromEnvironment(envFile)
 		assert.Nil(t, err)
-		assert.Equal(t, constants.DEFAULT_PORT, conf.Port)
+		assert.Equal(t, envutils.DEFAULT_PORT, conf.Port)
 	})
 }
 

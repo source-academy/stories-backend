@@ -1,4 +1,4 @@
-package constants
+package dbutils
 
 const (
 	// TODO: Fall back to these values if the environment variables are not set

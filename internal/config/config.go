@@ -6,7 +6,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"github.com/source-academy/stories-backend/internal/utils/constants"
+	dbutils "github.com/source-academy/stories-backend/internal/utils/db"
+	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
 type Config struct {
@@ -41,10 +42,10 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	config := &Config{}
 
 	// Environment
-	if os.Getenv(GO_ENV) == constants.ENV_DEVELOPMENT {
-		config.Environment = constants.ENV_DEVELOPMENT
+	if os.Getenv(GO_ENV) == envutils.ENV_DEVELOPMENT {
+		config.Environment = envutils.ENV_DEVELOPMENT
 	} else {
-		config.Environment = constants.ENV_PRODUCTION
+		config.Environment = envutils.ENV_PRODUCTION
 	}
 
 	// Database
@@ -56,10 +57,10 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 		Password:     getEnvOrDefault(DB_PASSWORD, constants.DB_DEFAULT_PASSWORD),
 		DatabaseName: getEnvOrDefault(DB_NAME, constants.DB_DEFAULT_NAME),
 	}
-	dbConfig.Port, err = parseIntFromEnv(DB_PORT, constants.DB_DEFAULT_PORT)
+	dbConfig.Port, err = parseIntFromEnv(DB_PORT, dbutils.DB_DEFAULT_PORT)
 	if err != nil {
 		logrus.Warningln("Invalid database port:", err)
-		logrus.Warningln("Using default database port:", constants.DB_DEFAULT_PORT)
+		logrus.Warningln("Using default database port:", dbutils.DB_DEFAULT_PORT)
 	}
 	config.Database = dbConfig
 
@@ -68,10 +69,10 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	// Server configuration
 	config.Host = os.Getenv(HOST)
-	config.Port, err = parseIntFromEnv(PORT, constants.DEFAULT_PORT)
+	config.Port, err = parseIntFromEnv(PORT, envutils.DEFAULT_PORT)
 	if err != nil {
 		logrus.Warningln("Invalid server port:", err)
-		logrus.Warningln("Using default server port:", constants.DEFAULT_PORT)
+		logrus.Warningln("Using default server port:", envutils.DEFAULT_PORT)
 	}
 
 	return config, nil
