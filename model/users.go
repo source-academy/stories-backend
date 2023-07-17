@@ -20,18 +20,18 @@ func MapUserDBToUser(userDB User) userviews.View {
 	return user
 }
 
-func GetAllUsers() []userviews.View {
-	var users []userviews.View
+func GetAllUsers() []User {
+	var users []User
 	DB.Find(&users)
 	return users
 }
 
-func GetUserByID(userID int) *userviews.View {
-	var user userviews.View
+func GetUserByID(userID int) *User {
+	var user User
 	DB.First(&user, userID)
 	return &user
 }
 
-func CreateUser(user userviews.View) {
+func CreateUser(user User) {
 	DB.Create(&user)
 }
