@@ -43,19 +43,19 @@ func main() {
 	var db *sql.DB
 	switch flag.Arg(0) {
 	case "drop", "create":
-		d, err = ConnectToDBServer(*conf.Database)
+		d, err = connectAnonDB(*conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		defer Close(d)
+		defer closeDBConnection(d)
 	case "migrate", "rollback", "status":
-		d, err := ConnectToDB(*conf.Database)
+		d, err := connectDB(*conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		defer Close(d)
+		defer closeDBConnection(d)
 
 		db, err = d.DB()
 		if err != nil {
@@ -69,14 +69,14 @@ func main() {
 	// handling the command
 	switch flag.Arg(0) {
 	case "drop":
-		err := Drop(d, conf.Database)
+		err := dropDB(d, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		fmt.Println(greenTick, "Dropped database: ", conf.Database.DatabaseName)
 	case "create":
-		err := Create(d, conf.Database)
+		err := createDB(d, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)

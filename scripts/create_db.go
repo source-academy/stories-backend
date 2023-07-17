@@ -9,18 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectToDBServer(conf config.DatabaseConfig) (*gorm.DB, error) {
+func connectAnonDB(conf config.DatabaseConfig) (*gorm.DB, error) {
 	conf.DatabaseName = ""
 	dsn := conf.ToDataSourceName()
-	return connect(dsn)
+	return connectDBHelper(dsn)
 }
 
-func ConnectToDB(conf config.DatabaseConfig) (*gorm.DB, error) {
+func connectDB(conf config.DatabaseConfig) (*gorm.DB, error) {
 	dsn := conf.ToDataSourceName()
-	return connect(dsn)
+	return connectDBHelper(dsn)
 }
 
-func connect(dsn string) (*gorm.DB, error) {
+func connectDBHelper(dsn string) (*gorm.DB, error) {
 	driver := postgres.Open(dsn)
 
 	db, err := gorm.Open(driver, &gorm.Config{})
@@ -37,7 +37,7 @@ func connect(dsn string) (*gorm.DB, error) {
 	return db, nil
 }
 
-func Close(d *gorm.DB) {
+func closeDBConnection(d *gorm.DB) {
 	db, err := d.DB()
 	if err != nil {
 		panic(err)
@@ -54,7 +54,7 @@ func Close(d *gorm.DB) {
 	}
 }
 
-func Create(db *gorm.DB, dbconf *config.DatabaseConfig) error {
+func createDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	if dbconf.DatabaseName == "" {
 		return errors.New("Failed to create database: no database name provided.")
 	}
@@ -84,7 +84,7 @@ func Create(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	return nil
 }
 
-func Drop(db *gorm.DB, dbconf *config.DatabaseConfig) error {
+func dropDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", dbconf.DatabaseName)
 	result := db.Exec(drop_command)
 	if result.Error != nil {
