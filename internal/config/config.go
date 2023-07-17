@@ -87,7 +87,7 @@ func loadEnvFiles(envFiles ...string) {
 	// error it encounters.
 	for _, filePath := range envFiles {
 		err := godotenv.Load(filePath)
-		if err == nil {
+		if err != nil {
 			logrus.Warningf("Error loading env file %s: %v. Skipping...\n", filePath, err)
 			continue
 		}
