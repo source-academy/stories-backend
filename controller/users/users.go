@@ -16,7 +16,7 @@ import (
 
 func HandleList(w http.ResponseWriter, r *http.Request) {
 	users := model.GetAllUsers()
-	controller.EncodeJSONResponse(w, users)
+	controller.EncodeJSONResponse(w, userviews.ListFrom(users))
 }
 
 func HandleRead(w http.ResponseWriter, r *http.Request) {
