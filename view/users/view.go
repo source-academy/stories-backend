@@ -1,6 +1,6 @@
-package view
+package userviews
 
-type User struct {
+type View struct {
 	ID             uint   `json:"userId"`
 	GithubUsername string `json:"githubUsername"`
 	GithubID       int    `json:"githubId"`
