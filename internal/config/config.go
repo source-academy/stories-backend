@@ -36,11 +36,8 @@ const (
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
-	err := godotenv.Load(envFiles...)
-	if err != nil {
-		logrus.Errorln("Error loading .env file:", err)
-		return nil, err
-	}
+	var err error
+	loadEnvFiles(envFiles...)
 
 	config := &Config{}
 
@@ -53,11 +50,12 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	// Database
 	dbConfig := &DatabaseConfig{
-		TimeZone:     os.Getenv(DB_TIMEZONE),
-		Host:         os.Getenv(DB_HOSTNAME),
-		User:         os.Getenv(DB_USERNAME),
-		Password:     os.Getenv(DB_PASSWORD),
-		DatabaseName: os.Getenv(DB_NAME),
+		// Port handled below
+		TimeZone:     getEnvOrDefault(DB_TIMEZONE, dbutils.DB_DEFAULT_TIMEZONE),
+		Host:         getEnvOrDefault(DB_HOSTNAME, dbutils.DB_DEFAULT_HOSTNAME),
+		User:         getEnvOrDefault(DB_USERNAME, dbutils.DB_DEFAULT_USER),
+		Password:     getEnvOrDefault(DB_PASSWORD, dbutils.DB_DEFAULT_PASSWORD),
+		DatabaseName: getEnvOrDefault(DB_NAME, dbutils.DB_DEFAULT_NAME),
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, dbutils.DB_DEFAULT_PORT)
 	if err != nil {
@@ -80,13 +78,38 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	return config, nil
 }
 
+// Populates the environment from variables
+// in the given files. If a file does not exist,
+// it will be ignored (with a warning).
+func loadEnvFiles(envFiles ...string) {
+	// We manually iterate through each file path
+	// because godotenv.Load() will stop at the first
+	// error it encounters.
+	for _, filePath := range envFiles {
+		err := godotenv.Load(filePath)
+		if err == nil {
+			logrus.Warningf("Error loading env file %s: %v. Skipping...\n", filePath, err)
+			continue
+		}
+		logrus.Infoln("Loaded environment from", filePath)
+	}
+}
+
+func getEnvOrDefault(key string, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value // Includes empty string if set
+	}
+	return fallback
+}
+
 // Parses an integer from the environment variable with the given key.
 // If the environment variable is not set, it returns the default
 // value. If the environment variable is set but cannot be parsed as
 // an integer, it returns an error as well as setting the return value
 // to the default value.
 func parseIntFromEnv(key string, defaultValue int) (int, error) {
-	strVal := os.Getenv(key)
+	// FIXME: Hacky abstraction
+	strVal := getEnvOrDefault(key, strconv.Itoa(defaultValue))
 	if strVal == "" {
 		return defaultValue, nil
 	}
