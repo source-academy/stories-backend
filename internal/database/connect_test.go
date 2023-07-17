@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/source-academy/stories-backend/internal/config"
-	dbutils "github.com/source-academy/stories-backend/internal/utils/db"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -28,7 +27,7 @@ func TestConnect(t *testing.T) {
 		// Get currently connected database name
 		var dbName string
 		db.Raw("SELECT current_database()").Scan(&dbName)
-		assert.Equal(t, dbutils.DB_DEFAULT_NAME, dbName)
+		assert.Equal(t, conf.Database.DatabaseName, dbName)
 	})
 	// TODO: Populate these with actual tables once schema is finalized
 	// t.Run("should show a correct list of tables", func(t *testing.T) {
