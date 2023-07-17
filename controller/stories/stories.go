@@ -1,22 +1,24 @@
-package controller
+package stories
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
+
+	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/model"
-	"github.com/source-academy/stories-backend/view"
+	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
 
-func GetStories(w http.ResponseWriter, r *http.Request) {
+func HandleList(w http.ResponseWriter, r *http.Request) {
 	stories := model.GetAllStories()
-	EncodeJSONResponse(w, stories)
+	controller.EncodeJSONResponse(w, stories)
 }
 
-func GetStory(w http.ResponseWriter, r *http.Request) {
+func HandleRead(w http.ResponseWriter, r *http.Request) {
 	storyIDStr := chi.URLParam(r, "storyID")
 	storyID, err := strconv.Atoi(storyIDStr)
 	if err != nil {
@@ -24,17 +26,17 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	story := model.GetStoryByID(storyID)
-	EncodeJSONResponse(w, story)
+	controller.EncodeJSONResponse(w, story)
 }
 
-func CreateStory(w http.ResponseWriter, r *http.Request) {
-	var story view.Story
+func HandleCreate(w http.ResponseWriter, r *http.Request) {
+	var story storyviews.View
 	if err := json.NewDecoder(r.Body).Decode(&story); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	model.CreateStory(story)
-	EncodeJSONResponse(w, &story)
+	controller.EncodeJSONResponse(w, &story)
 	w.WriteHeader(http.StatusCreated)
 }
