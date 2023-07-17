@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -23,4 +24,12 @@ func MakeMiddlewareFrom(db *gorm.DB) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+func GetDBFrom(r *http.Request) (*gorm.DB, error) {
+	db, ok := r.Context().Value(dbKey).(*gorm.DB)
+	if !ok {
+		return nil, errors.New("Could not get database from request context")
+	}
+	return db, nil
 }
