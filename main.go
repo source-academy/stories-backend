@@ -35,6 +35,10 @@ func main() {
 	defer database.Close(DB)
 
 	var injectMiddlewares []func(http.Handler) http.Handler
+
+	// Inject DB session into request context
+	injectMiddlewares = append(injectMiddlewares, database.MakeMiddlewareFrom(DB))
+
 	// Initialze Sentry configuration
 	if conf.Environment == envutils.ENV_PRODUCTION {
 		err := sentry.Init(sentry.ClientOptions{
