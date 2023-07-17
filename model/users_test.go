@@ -1,41 +1,93 @@
 package model
 
-// import (
-// 	"testing"
-// 	// "time"
+import (
+	"testing"
 
-// 	"github.com/stretchr/testify/assert"
-// )
+	"github.com/source-academy/stories-backend/internal/config"
+	"github.com/source-academy/stories-backend/internal/database"
+	dbutils "github.com/source-academy/stories-backend/internal/utils/db"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
+)
 
-// func TestGetAllUsers(t *testing.T) {
-// 	t.Run("should return correct number of users", func(t *testing.T) {
-// 		users := GetAllUsers()
+const (
+	expectEqualMessage = "Expected last user to be the one created"
+)
 
-// 		assert.Len(t, users, 2, "Expected number of users to be 2")
-// 	})
-// }
+var dbConfig *config.DatabaseConfig = &config.DatabaseConfig{
+	TimeZone:     dbutils.DB_DEFAULT_TIMEZONE,
+	Host:         dbutils.DB_DEFAULT_HOSTNAME,
+	User:         dbutils.DB_DEFAULT_USER,
+	Password:     dbutils.DB_DEFAULT_PASSWORD,
+	Port:         dbutils.DB_DEFAULT_PORT,
+	DatabaseName: dbutils.DB_DEFAULT_NAME,
+}
 
-// func TestCreateUser(t *testing.T) {
-// 	t.Run("should create a new user", func(t *testing.T) {
-// 		user := User{
-// 			UserID:         3,
-// 			GithubUsername: "User 3",
-// 			GithubID:       3,
-// 			// CreatedAt:      time.Now(),
-// 			// DeletedAt:      time.Now(),
-// 			// UpdatedAt:      time.Now(),
+func setupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig) (*gorm.DB, func(*testing.T)) {
+	// TODO: Create test DB
+
+	// Connect to DB
+	db, err := database.Connect(dbConfig)
+	if err != nil {
+		t.Error(err)
+	}
+
+	return db, func(t *testing.T) {
+		database.Close(db)
+
+		// TODO: Drop test DB
+	}
+}
+
+func TestGetAllUsers(t *testing.T) {
+	t.Run("should return correct initial number of users", func(t *testing.T) {
+		db, cleanUp := setupDBConnection(t, dbConfig)
+		defer cleanUp(t)
+
+		users := GetAllUsers(db)
+		assert.Len(t, users, 2, "Expected initial number of users to be 0")
+	})
+}
+
+func TestCreateUser(t *testing.T) {
+	t.Run("should increase the total user count", func(t *testing.T) {
+		db, cleanUp := setupDBConnection(t, dbConfig)
+		defer cleanUp(t)
+
+		initialUsers := GetAllUsers(db)
+
+		user := User{
+			GithubUsername: "testUsername",
+			GithubID:       123,
+		}
+		CreateUser(db, &user)
+
+		newUsers := GetAllUsers(db)
+		assert.Len(t, newUsers, len(initialUsers)+1, "Expected number of users to increase by 1")
+
+		var lastUser User
+		db.Model(&User{}).Last(&lastUser)
+
+		assert.Equal(t, user.ID, lastUser.ID, expectEqualMessage)
+		assert.Equal(t, user.GithubUsername, lastUser.GithubUsername, expectEqualMessage)
+		assert.Equal(t, user.GithubID, lastUser.GithubID, expectEqualMessage)
+	})
+}
+
+// func TestGetUserByID(t *testing.T) {
+// 	t.Run("should get the correct user", func(t *testing.T) {
+// 		db, cleanUp := setupDBConnection(t, dbConfig)
+// 		defer cleanUp(t)
+
+// 		users := []User{
+// 			{GithubUsername: "testUsername1", GithubID: 123},
+// 			{GithubUsername: "testUsername2", GithubID: 456},
+// 			{GithubUsername: "testUsername3", GithubID: 789},
 // 		}
 
-// 		CreateUser(user)
+// 		for _, userToAdd := range users {
+// 			CreateUser(db, &userToAdd)
+// 		}
 
-// 		users := GetAllUsers()
-
-// 		assert.Len(t, users, 3, "Expected number of users to be 3")
-
-// 		lastStory := users[len(users)-1]
-// 		assert.Equal(t, 3, lastStory.UserID, "Expected user ID to be 3")
-// 		assert.Equal(t, "User 3", lastStory.GithubUsername, "Expected Github Username to be 'User 3'")
-// 		assert.Equal(t, 3, lastStory.GithubID, "Expected Github ID to be 3'")
-// 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
 // 	})
 // }
