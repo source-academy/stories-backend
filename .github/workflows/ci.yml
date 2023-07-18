@@ -6,6 +6,18 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.8
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 0.5s
+          --health-timeout 2m
+          --health-retries 50
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -37,6 +49,8 @@ jobs:
       - name: Run tests and check code coverage
         env:
           GO_ENV: test
+          # FIXME: Use a separate test DB once create scripts are available
+          DB_NAME: postgres
         run: |
           make test
           make coverage
