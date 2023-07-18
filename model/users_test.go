@@ -5,7 +5,6 @@ import (
 
 	"github.com/source-academy/stories-backend/internal/config"
 	"github.com/source-academy/stories-backend/internal/database"
-	dbutils "github.com/source-academy/stories-backend/internal/utils/db"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -15,14 +14,8 @@ const (
 	expectReadEqualMessage   = "Expected read user to be the one previously created"
 )
 
-var dbConfig *config.DatabaseConfig = &config.DatabaseConfig{
-	TimeZone:     dbutils.DB_DEFAULT_TIMEZONE,
-	Host:         dbutils.DB_DEFAULT_HOSTNAME,
-	User:         dbutils.DB_DEFAULT_USER,
-	Password:     dbutils.DB_DEFAULT_PASSWORD,
-	Port:         dbutils.DB_DEFAULT_PORT,
-	DatabaseName: dbutils.DB_DEFAULT_NAME,
-}
+var conf, _ = config.LoadFromEnvironment()
+var dbConfig *config.DatabaseConfig = conf.Database
 
 func setupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig) (*gorm.DB, func(*testing.T)) {
 	// TODO: Create test DB
