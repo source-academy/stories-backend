@@ -14,7 +14,7 @@ func TestMakeMiddlewareFrom(t *testing.T) {
 		// Set up
 		conf, _ := config.LoadFromEnvironment()
 		db, _ := Connect(conf.Database)
-		defer Close(db)
+		defer ignoreError(func() error { return Close(db) })
 
 		middleware := MakeMiddlewareFrom(db)
 		assert.NotNil(t, middleware, "Expected middleware to not be nil")
@@ -35,7 +35,7 @@ func TestGetDBFrom(t *testing.T) {
 		// Set up
 		conf, _ := config.LoadFromEnvironment()
 		db, _ := Connect(conf.Database)
-		defer Close(db)
+		defer ignoreError(func() error { return Close(db) })
 
 		// Create request
 		r, _ := http.NewRequest("GET", "/", nil)
