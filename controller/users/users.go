@@ -43,7 +43,11 @@ func HandleRead(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	user := model.GetUserByID(db, userID)
+	user, err := model.GetUserByID(db, userID)
+	if err != nil {
+		logrus.Error(err)
+		panic(err)
+	}
 	controller.EncodeJSONResponse(w, userviews.SingleFrom(user))
 }
 
