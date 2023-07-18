@@ -28,27 +28,28 @@ func HandleList(w http.ResponseWriter, r *http.Request) {
 	controller.EncodeJSONResponse(w, userviews.ListFrom(users))
 }
 
-func HandleRead(w http.ResponseWriter, r *http.Request) {
+func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid userID", http.StatusBadRequest)
-		return
+		return err
 	}
 
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
 	user, err := model.GetUserByID(db, userID)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 	controller.EncodeJSONResponse(w, userviews.SingleFrom(user))
+	return nil
 }
 
 func HandleCreate(w http.ResponseWriter, r *http.Request) {
