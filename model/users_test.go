@@ -38,8 +38,17 @@ func TestGetAllUsers(t *testing.T) {
 		db, cleanUp := setupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
+		db.Exec("DELETE FROM users")
 		users := GetAllUsers(db)
 		assert.Len(t, users, 0, "Expected initial number of users to be 0")
+
+		user := User{
+			GithubUsername: "testUsername",
+			GithubID:       123,
+		}
+		CreateUser(db, &user)
+		users = GetAllUsers(db)
+		assert.Len(t, users, 1, "Expected number of users to be 1 after adding 1 user")
 	})
 }
 
