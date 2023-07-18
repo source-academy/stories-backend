@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:14.8
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+  migrator:
+    build:
+      context: ./migrator
+      dockerfile: Dockerfile
+    environment:
+      - PG_USER=postgres
+      - PG_DATABASE=sa_stories
+      - PG_HOST=host.docker.internal
+    depends_on:
+      - db
+    networks:
+      - backend
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DB_HOSTNAME=host.docker.internal
+      - DB_USERNAME=postgres
+      - DB_NAME=sa_stories
+    ports:
+      - 8000:8000
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
