@@ -27,7 +27,6 @@ func main() {
 	if err != nil {
 		logrus.Errorln(err)
 	}
-
 	defer database.Close(db)
 
 	var injectMiddlewares []func(http.Handler) http.Handler
