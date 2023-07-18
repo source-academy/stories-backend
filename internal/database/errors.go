@@ -14,5 +14,6 @@ func HandleDBError(err error, fromModel string) error {
 			Message: fmt.Sprintf("Cannot find requested %s.", fromModel),
 		}
 	}
+	// TODO: Handle more types of errors
 	return err
 }
