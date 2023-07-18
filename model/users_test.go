@@ -94,7 +94,8 @@ func TestGetUserByID(t *testing.T) {
 
 		for _, user := range users {
 			// FIXME: Don't use typecast
-			dbUser := GetUserByID(db, int(user.ID))
+			dbUser, err := GetUserByID(db, int(user.ID))
+			assert.Nil(t, err, "Expected no error when getting user by valid ID")
 			assert.Equal(t, user.ID, dbUser.ID, expectReadEqualMessage)
 			assert.Equal(t, user.GithubUsername, dbUser.GithubUsername, expectReadEqualMessage)
 			assert.Equal(t, user.GithubID, dbUser.GithubID, expectReadEqualMessage)
