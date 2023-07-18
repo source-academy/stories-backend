@@ -75,14 +75,14 @@ func main() {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Dropped database: ", conf.Database.DatabaseName)
+		fmt.Println(greenTick, "Dropped database:", conf.Database.DatabaseName)
 	case "create":
 		err := createDB(d, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Created database: ", conf.Database.DatabaseName)
+		fmt.Println(greenTick, "Created database:", conf.Database.DatabaseName)
 	case "migrate":
 		var steps int
 		if flag.Arg(1) == "" {
