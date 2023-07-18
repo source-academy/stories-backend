@@ -64,6 +64,7 @@ func main() {
 		}
 	default:
 		logrus.Errorln("Invalid command")
+		return
 	}
 
 	// handling the command
