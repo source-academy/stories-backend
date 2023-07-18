@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/source-academy/stories-backend/internal/database"
 	"gorm.io/gorm"
 )
 
@@ -16,10 +17,13 @@ func GetAllUsers(db *gorm.DB) []User {
 	return users
 }
 
-func GetUserByID(db *gorm.DB, id int) User {
+func GetUserByID(db *gorm.DB, id int) (User, error) {
 	var user User
-	db.First(&user, id)
-	return user
+	err := db.First(&user, id).Error
+	if err != nil {
+		return user, database.HandleDBError(err, "user")
+	}
+	return user, err
 }
 
 func CreateUser(db *gorm.DB, user *User) {
