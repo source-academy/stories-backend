@@ -32,7 +32,7 @@ func connectDBHelper(dsn string) (*gorm.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(blueNet, "Connected to database", dbName+".")
+	fmt.Println(blueSandwich, "Connected to database", dbName+".")
 
 	return db, nil
 }
@@ -47,7 +47,7 @@ func closeDBConnection(d *gorm.DB) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(blueNet, "Closing connection with database", dbName+".")
+	fmt.Println(blueSandwich, "Closing connection with database", dbName+".")
 
 	if err := db.Close(); err != nil {
 		panic(err)

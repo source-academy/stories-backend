@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	blueNet       = color.With(color.Blue, "🖧")
+	blueSandwich  = color.With(color.Blue, "≡")
 	greenTick     = color.With(color.Green, "✔")
 	yellowChevron = color.With(color.Yellow, "❯")
 )
