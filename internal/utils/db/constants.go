@@ -9,3 +9,13 @@ const (
 	DB_DEFAULT_PORT     = 5432
 	DB_DEFAULT_NAME     = "sa_stories"
 )
+
+// Not used for now
+// TODO: Remove if not used
+func GetOrDefault[T comparable](val T, deflt T) T {
+	var empty T
+	if val == empty {
+		return deflt
+	}
+	return val
+}
