@@ -12,12 +12,7 @@ import (
 	"github.com/source-academy/stories-backend/internal/database"
 	"github.com/source-academy/stories-backend/internal/router"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
-
-	"github.com/source-academy/stories-backend/model"
-	"gorm.io/gorm"
 )
-
-var DB *gorm.DB
 
 func main() {
 	// Load configuration
@@ -28,18 +23,17 @@ func main() {
 	}
 
 	// Connect to the database
-	// FIXME: Don't use a global variable
-	DB, err = database.Connect(conf.Database)
-	model.DB = DB
+	db, err := database.Connect(conf.Database)
 	if err != nil {
 		logrus.Errorln(err)
 	}
-	defer database.Close(DB)
+
+	defer database.Close(db)
 
 	var injectMiddlewares []func(http.Handler) http.Handler
 
 	// Inject DB session into request context
-	injectMiddlewares = append(injectMiddlewares, database.MakeMiddlewareFrom(DB))
+	injectMiddlewares = append(injectMiddlewares, database.MakeMiddlewareFrom(db))
 
 	// Initialze Sentry configuration
 	if conf.Environment == envutils.ENV_PRODUCTION {

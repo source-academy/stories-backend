@@ -4,8 +4,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
 type Story struct {
 	gorm.Model
 	AuthorID uint
