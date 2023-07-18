@@ -8,8 +8,8 @@ var DB *gorm.DB
 
 type Story struct {
 	gorm.Model
-	AuthorID     uint
-	StoryContent string
+	AuthorID uint
+	Content  string
 }
 
 func GetAllStories(db *gorm.DB) []Story {

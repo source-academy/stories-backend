@@ -3,8 +3,8 @@ package storyparams
 import "github.com/source-academy/stories-backend/model"
 
 type Create struct {
-	AuthorID     uint   `json:"authorId"`
-	StoryContent string `json:"storyContent"`
+	AuthorID uint   `json:"authorId"`
+	Content  string `json:"content"`
 }
 
 // TODO: Add some validation
@@ -14,7 +14,7 @@ func (params *Create) Validate() error {
 
 func (params *Create) ToModel() *model.Story {
 	return &model.Story{
-		AuthorID:     params.AuthorID,
-		StoryContent: params.StoryContent,
+		AuthorID: params.AuthorID,
+		Content:  params.Content,
 	}
 }

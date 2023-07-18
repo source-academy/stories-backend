@@ -7,5 +7,5 @@ const (
 	DB_DEFAULT_USER     = "postgres"
 	DB_DEFAULT_PASSWORD = ""
 	DB_DEFAULT_PORT     = 5432
-	DB_DEFAULT_NAME     = "sa-stories"
+	DB_DEFAULT_NAME     = "sa_stories"
 )
