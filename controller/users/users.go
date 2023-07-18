@@ -16,16 +16,22 @@ import (
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
-func HandleList(w http.ResponseWriter, r *http.Request) {
+func HandleList(w http.ResponseWriter, r *http.Request) error {
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
-	users := model.GetAllUsers(db)
+	users, err := model.GetAllUsers(db)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
 	controller.EncodeJSONResponse(w, userviews.ListFrom(users))
+	return nil
 }
 
 func HandleRead(w http.ResponseWriter, r *http.Request) error {
@@ -52,11 +58,11 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func HandleCreate(w http.ResponseWriter, r *http.Request) {
+func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 	var params userparams.Create
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return err
 	}
 	userModel := *params.ToModel()
 
@@ -64,10 +70,16 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) {
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
-	model.CreateUser(db, &userModel)
+	err = model.CreateUser(db, &userModel)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
 	controller.EncodeJSONResponse(w, userviews.SingleFrom(userModel))
 	w.WriteHeader(http.StatusCreated)
+	return nil
 }
