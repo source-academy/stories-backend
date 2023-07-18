@@ -5,11 +5,11 @@ import (
 )
 
 type ClientNotFoundError struct {
-	message string
+	Message string
 }
 
 func (e ClientNotFoundError) Error() string {
-	return e.message
+	return e.Message
 }
 
 func (e ClientNotFoundError) HTTPStatusCode() int {
