@@ -1,171 +1,85 @@
 package model
 
-// import (
-// 	"testing"
-// 	// "time"
+import (
+	"fmt"
+	"testing"
 
-// 	"github.com/stretchr/testify/assert"
-// )
+	"github.com/stretchr/testify/assert"
+)
 
+// FIXME: Coupling with the other operations in the users database
 // func TestGetAllStories(t *testing.T) {
-// 	t.Run("should return all stories", func(t *testing.T) {
-// 		// Retrieve the stories
-// 		retrievedStories := GetAllStories()
+// 	t.Run("should return correct initial number of stories", func(t *testing.T) {
+// 		db, cleanUp := setupDBConnection(t, dbConfig)
+// 		defer cleanUp(t)
 
-// 		// Assert the number of stories
-// 		assert.Len(t, &retrievedStories, 0, "Expected number of stories to be 0")
-// 	})
-// }
+// 		db.Exec("DELETE FROM stories")
+// 		stories := GetAllStories(db)
+// 		assert.Len(t, stories, 0, "Expected initial number of stories to be 0")
 
-// func TestCreateStory(t *testing.T) {
-// 	t.Run("should create a new story", func(t *testing.T) {
-
-// 		// Create a new story
 // 		story := Story{
-// 			StoryID:      3,
-// 			AuthorID:     1,
-// 			StoryContent: "Story 3 Content",
-// 			// CreatedAt:    time.Now(),
-// 			// DeletedAt:    time.Now(),
-// 			// UpdatedAt:    time.Now(),
+// 			AuthorID: 1,
+// 			Content:  "# Hi\n\nThis is a test story.",
 // 		}
-
-// 		// Create the story
-// 		CreateStory(story)
-
-// 		// Retrieve all stories
-// 		stories := GetAllStories()
-
-// 		// Assert the number of stories
-// 		assert.Len(t, stories, 1, "Expected number of stories to be 1")
-
-// 		// Assert the properties of the created story
-// 		createdStory := stories[0]
-// 		assert.Equal(t, 3, createdStory.StoryID, "Expected story ID to be 3")
-// 		assert.Equal(t, 1, createdStory.AuthorID, "Expected user ID to be 1")
-// 		assert.Equal(t, "Story 3 Content", createdStory.StoryContent, "Expected story content to be 'Story 3 Content'")
-// 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
+// 		CreateStory(db, &story)
+// 		stories = GetAllStories(db)
+// 		assert.Len(t, stories, 1, "Expected number of stories to be 1 after adding 1 story")
 // 	})
 // }
 
-// func TestGetStoryByID(t *testing.T) {
-// 	t.Run("should retrieve a story by ID", func(t *testing.T) {
+func TestCreateStory(t *testing.T) {
+	t.Run("should increase the total story count", func(t *testing.T) {
+		db, cleanUp := setupDBConnection(t, dbConfig)
+		defer cleanUp(t)
 
-// 		// Retrieve a story by ID
-// 		story := GetStoryByID(3)
+		initialStories := GetAllStories(db)
 
-// 		// Assert the retrieved story
-// 		assert.NotNil(t, story, "Expected story to be retrieved")
-// 		assert.Equal(t, 3, story.StoryID, "Expected story ID to be 3")
-// 		assert.Equal(t, 1, story.AuthorID, "Expected user ID to be 1")
-// 		assert.Equal(t, "Story 3 Content", story.StoryContent, "Expected story content to be 'Story 3 Content'")
-// 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
-// 	})
-// }
+		// We need to first create a user due to the foreign key constraint
+		user := User{
+			GithubUsername: "testUsername",
+			GithubID:       123,
+		}
+		CreateUser(db, &user)
 
-// package model
+		story := Story{
+			AuthorID: user.ID,
+			Content:  "# Hi\n\nThis is a test story.",
+		}
+		CreateStory(db, &story)
 
-// import (
-// 	"testing"
-// 	// "time"
+		newStories := GetAllStories(db)
+		assert.Len(t, newStories, len(initialStories)+1, "Expected number of stories to increase by 1")
 
-// 	"github.com/stretchr/testify/assert"
-// )
+		var lastStory Story
+		db.Model(&Story{}).Last(&lastStory)
 
-// func TestGetAllStories(t *testing.T) {
-// 	t.Run("should return all stories", func(t *testing.T) {
-// 		// Retrieve the stories
-// 		retrievedStories := GetAllStories()
+		assert.Equal(t, story.ID, lastStory.ID, "Expected the story ID to be updated")
+		assert.Equal(t, story.AuthorID, lastStory.AuthorID, fmt.Sprintf(expectCreateEqualMessage, "story"))
+		assert.Equal(t, story.Content, lastStory.Content, fmt.Sprintf(expectCreateEqualMessage, "story"))
+	})
+}
 
-// 		// Assert the number of stories
-// 		assert.Len(t, &retrievedStories, 0, "Expected number of stories to be 0")
-// 	})
-// }
+func TestGetStoryByID(t *testing.T) {
+	t.Run("should get the correct story", func(t *testing.T) {
+		db, cleanUp := setupDBConnection(t, dbConfig)
+		defer cleanUp(t)
 
-// func TestCreateStory(t *testing.T) {
-// 	t.Run("should create a new story", func(t *testing.T) {
+		stories := []*Story{
+			{AuthorID: 1, Content: "The quick"},
+			{AuthorID: 1, Content: "brown fox"},
+			{AuthorID: 1, Content: "jumps over"},
+		}
 
-// 		// Create a new story
-// 		story := Story{
-// 			StoryID:      3,
-// 			AuthorID:     1,
-// 			StoryContent: "Story 3 Content",
-// 			// CreatedAt:    time.Now(),
-// 			// DeletedAt:    time.Now(),
-// 			// UpdatedAt:    time.Now(),
-// 		}
+		for _, storyToAdd := range stories {
+			CreateStory(db, storyToAdd)
+		}
 
-// 		// Create the story
-// 		CreateStory(story)
-
-// 		// Retrieve all stories
-// 		stories := GetAllStories()
-
-// 		// Assert the number of stories
-// 		assert.Len(t, stories, 1, "Expected number of stories to be 1")
-
-// 		// Assert the properties of the created story
-// 		createdStory := stories[0]
-// 		assert.Equal(t, 3, createdStory.StoryID, "Expected story ID to be 3")
-// 		assert.Equal(t, 1, createdStory.AuthorID, "Expected user ID to be 1")
-// 		assert.Equal(t, "Story 3 Content", createdStory.StoryContent, "Expected story content to be 'Story 3 Content'")
-// 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
-// 	})
-// }
-
-// func TestGetStoryByID(t *testing.T) {
-// 	t.Run("should retrieve a story by ID", func(t *testing.T) {
-
-// 		// Retrieve a story by ID
-// 		story := GetStoryByID(3)
-
-// 		// Assert the retrieved story
-// 		assert.NotNil(t, story, "Expected story to be retrieved")
-// 		assert.Equal(t, 3, story.StoryID, "Expected story ID to be 3")
-// 		assert.Equal(t, 1, story.AuthorID, "Expected user ID to be 1")
-// 		assert.Equal(t, "Story 3 Content", story.StoryContent, "Expected story content to be 'Story 3 Content'")
-// 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
-// 	})
-// }
-
-// // package model
-
-// // import (
-// // 	"testing"
-// // 	"time"
-
-// // 	"github.com/stretchr/testify/assert"
-// // )
-
-// // func TestGetAllStories(t *testing.T) {
-// // 	t.Run("should return correct number of stories", func(t *testing.T) {
-// // 		stories := GetAllStories()
-
-// // 		assert.Len(t, stories, 2, "Expected number of stories to be 2")
-// // 	})
-// // }
-
-// // func TestCreateStory(t *testing.T) {
-// // 	t.Run("should create a new story", func(t *testing.T) {
-// // 		story := Story{
-// // 			StoryID:      3,
-// // 			UserID:       1,
-// // 			StoryContent: "Story 3 Content",
-// // 			CreatedAt:    time.Now(),
-// // 			DeletedAt:    time.Now(),
-// // 			UpdatedAt:    time.Now(),
-// // 		}
-
-// // 		CreateStory(story)
-
-// // 		stories := GetAllStories()
-
-// // 		assert.Len(t, stories, 3, "Expected number of stories to be 3")
-
-// // 		lastStory := stories[len(stories)-1]
-// // 		assert.Equal(t, 3, lastStory.StoryID, "Expected story ID to be 3")
-// // 		assert.Equal(t, 1, lastStory.UserID, "Expected user ID to be 1")
-// // 		assert.Equal(t, "Story 3 Content", lastStory.StoryContent, "Expected story content to be 'Story 3 Content'")
-// // 		// You can add assertions for CreatedAt, DeletedAt, and UpdatedAt if necessary
-// // 	})
-// // }
+		for _, story := range stories {
+			// FIXME: Don't use typecast
+			dbStory := GetStoryByID(db, int(story.ID))
+			assert.Equal(t, story.ID, dbStory.ID, fmt.Sprintf(expectReadEqualMessage, "story"))
+			assert.Equal(t, story.AuthorID, dbStory.AuthorID, fmt.Sprintf(expectReadEqualMessage, "story"))
+			assert.Equal(t, story.Content, dbStory.Content, fmt.Sprintf(expectReadEqualMessage, "story"))
+		}
+	})
+}
