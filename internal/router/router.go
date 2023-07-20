@@ -33,17 +33,27 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	// Define routes
 	r.Get("/", controller.HandleHealthCheck)
 
-	r.Route("/stories", func(r chi.Router) {
-		r.Get("/", stories.HandleList)
-		r.Get("/{storyID}", stories.HandleRead)
-		r.Post("/", stories.HandleCreate)
-	})
+	r.Group(func(r chi.Router) {
+		r.Use(authMiddleware)
+		r.Route("/stories", func(r chi.Router) {
+			r.Get("/", stories.HandleList)
+			r.Get("/{storyID}", stories.HandleRead)
+			r.Post("/", stories.HandleCreate)
+		})
 
-	r.Route("/users", func(r chi.Router) {
-		r.Get("/", users.HandleList)
-		r.Get("/{userID}", handleAPIError(users.HandleRead))
-		r.Post("/", users.HandleCreate)
+		r.Route("/users", func(r chi.Router) {
+			r.Get("/", users.HandleList)
+			r.Get("/{userID}", handleAPIError(users.HandleRead))
+			r.Post("/", users.HandleCreate)
+		})
 	})
 
 	return r
+}
+
+func authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Implement auth middleware
+		next.ServeHTTP(w, r)
+	})
 }
