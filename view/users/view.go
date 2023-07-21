@@ -12,7 +12,7 @@ func SingleFrom(user model.User) View {
 	userView := View{
 		ID:            user.ID,
 		Username:      user.Username,
-		LoginProvider: user.LoginProvider.String(),
+		LoginProvider: user.LoginProvider.ToString(),
 	}
 	return userView
 }

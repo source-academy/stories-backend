@@ -19,7 +19,7 @@ func (params *Create) Validate() error {
 	case
 		// Allowed login providers for now
 		// TODO: Allow more login providers
-		userenums.LoginProviderNUSNET.String():
+		userenums.LoginProviderNUSNET.ToString():
 		break
 	default:
 		return errors.New("Invalid login provider")
@@ -37,7 +37,7 @@ func (params *Create) ToModel() *model.User {
 
 func convertProvider(provider string) userenums.LoginProvider {
 	switch provider {
-	case userenums.LoginProviderNUSNET.String():
+	case userenums.LoginProviderNUSNET.ToString():
 		return userenums.LoginProviderNUSNET
 	default:
 		// Should never happen as we previously validated the provider

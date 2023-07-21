@@ -12,7 +12,7 @@ func ListFrom(users []model.User) []ListView {
 	for i, user := range users {
 		usersListView[i] = ListView{
 			Username:      user.Username,
-			LoginProvider: user.LoginProvider.String(),
+			LoginProvider: user.LoginProvider.ToString(),
 		}
 	}
 	return usersListView
