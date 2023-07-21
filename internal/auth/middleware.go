@@ -7,13 +7,21 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/source-academy/stories-backend/internal/config"
+	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
 func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
+	// Skip auth in development mode
+	if conf.Environment == envutils.ENV_DEVELOPMENT {
+		return func(next http.Handler) http.Handler {
+			return next
+		}
+	}
+
 	keySet := getJWKS()
 	key, ok := keySet.Key(0)
 	if !ok {
-		// Block all access if main backend is down
+		// Block all access if JWKS source is down, since we can't verify JWTs
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
