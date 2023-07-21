@@ -58,6 +58,12 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	err := params.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	userModel := *params.ToModel()
 
 	// Get DB instance
