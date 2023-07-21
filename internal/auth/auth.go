@@ -3,9 +3,11 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
+	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,10 +16,11 @@ var (
 	endpointURL = os.Getenv("JWKS_ENDPOINT")
 )
 
-var jwks *map[string]interface{}
+var jwks *jwk.Set
 
-func GetJWKS() map[string]interface{} {
+func GetJWKS() jwk.Set {
 	// Singleton
+	// TODO: Refresh every X minutes
 	if jwks == nil {
 		setJwkFromEndpoint()
 	}
@@ -35,15 +38,21 @@ func setJwkFromEndpoint() {
 	defer resp.Body.Close()
 
 	// Parse JWK
-	var decoded map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&decoded)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to read JWK response body")
+		return
+	}
+
+	set := jwk.NewSet()
+	json.Unmarshal(body, &set)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to parse JWK")
 		return
 	}
 
 	// Set JWK
-	jwks = &decoded
+	jwks = &set
 }
 
 // TODO: Test len, etc format as expected
