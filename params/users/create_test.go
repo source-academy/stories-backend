@@ -13,11 +13,12 @@ func TestValidate(t *testing.T) {
 func TestToModel(t *testing.T) {
 	t.Run("should create a user model with the correct values", func(t *testing.T) {
 		params := Create{
-			GithubUsername: "testUsername",
-			GithubID:       123,
+			Username:      "testUsername",
+			LoginProvider: "github",
 		}
 		model := params.ToModel()
-		assert.Equal(t, params.GithubUsername, model.GithubUsername)
-		assert.Equal(t, params.GithubID, model.GithubID)
+		assert.Equal(t, params.Username, model.Username)
+		assert.Equal(t, params.LoginProvider, model.LoginProvider.String())
 	})
+	// TODO: Add test for invalid login provider
 }
