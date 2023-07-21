@@ -9,6 +9,7 @@ import (
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/controller/stories"
 	"github.com/source-academy/stories-backend/controller/users"
+	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/config"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
@@ -33,16 +34,19 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	// Define routes
 	r.Get("/", controller.HandleHealthCheck)
 
-	r.Route("/stories", func(r chi.Router) {
-		r.Get("/", stories.HandleList)
-		r.Get("/{storyID}", stories.HandleRead)
-		r.Post("/", stories.HandleCreate)
-	})
+	r.Group(func(r chi.Router) {
+		r.Use(auth.MakeMiddlewareFrom(config))
+		r.Route("/stories", func(r chi.Router) {
+			r.Get("/", stories.HandleList)
+			r.Get("/{storyID}", stories.HandleRead)
+			r.Post("/", stories.HandleCreate)
+		})
 
-	r.Route("/users", func(r chi.Router) {
-		r.Get("/", handleAPIError(users.HandleList))
-		r.Get("/{userID}", handleAPIError(users.HandleRead))
-		r.Post("/", handleAPIError(users.HandleCreate))
+		r.Route("/users", func(r chi.Router) {
+			r.Get("/", handleAPIError(users.HandleList))
+			r.Get("/{userID}", handleAPIError(users.HandleRead))
+			r.Post("/", handleAPIError(users.HandleCreate))
+		})
 	})
 
 	return r

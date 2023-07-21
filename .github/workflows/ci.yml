@@ -49,9 +49,10 @@ jobs:
       - name: Run tests and check code coverage
         env:
           GO_ENV: test
-          # FIXME: Use a separate test DB once create scripts are available
-          DB_NAME: postgres
+          DB_NAME: sa_stories_test
         run: |
+          make db_create
+          make db_migrate
           make test
           make coverage
       - name: Coveralls

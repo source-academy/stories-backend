@@ -1,5 +1,7 @@
 # Backend for Source Academy Stories
 
+[![Coverage Status](https://coveralls.io/repos/github/source-academy/stories-backend/badge.svg?branch=main)](https://coveralls.io/github/source-academy/stories-backend?branch=main)
+
 ## Setup
 
 ### Installing languages and tools required
@@ -39,10 +41,10 @@ make hooks
 
 #### Creating the database
 
-For now, we use psql to manually create the database. Run the following command to create the database (adjust the necessary values as needed):
+Run the following command to create the database:
 
 ```bash
-psql -U postgres -c "CREATE DATABASE sa_stories"
+make db_create
 ```
 
 #### Migrating the database
