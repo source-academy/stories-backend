@@ -45,7 +45,7 @@ func setJwkFromEndpoint() {
 	}
 
 	set := jwk.NewSet()
-	json.Unmarshal(body, &set)
+	err = json.Unmarshal(body, &set)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to parse JWK")
 		return
