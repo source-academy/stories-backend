@@ -9,6 +9,7 @@ import (
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/controller/stories"
 	"github.com/source-academy/stories-backend/controller/users"
+	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/config"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
@@ -34,7 +35,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Get("/", controller.HandleHealthCheck)
 
 	r.Group(func(r chi.Router) {
-		r.Use(authMiddleware)
+		r.Use(auth.MakeMiddlewareFrom(config))
 		r.Route("/stories", func(r chi.Router) {
 			r.Get("/", stories.HandleList)
 			r.Get("/{storyID}", stories.HandleRead)
@@ -49,11 +50,4 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	})
 
 	return r
-}
-
-func authMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Implement auth middleware
-		next.ServeHTTP(w, r)
-	})
 }
