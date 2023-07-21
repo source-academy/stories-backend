@@ -18,7 +18,7 @@ var (
 
 var jwks *jwk.Set
 
-func GetJWKS() jwk.Set {
+func getJWKS() jwk.Set {
 	// Singleton
 	// TODO: Refresh every X minutes
 	if jwks == nil {

@@ -10,7 +10,7 @@ import (
 )
 
 func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
-	keySet := GetJWKS()
+	keySet := getJWKS()
 	key, ok := keySet.Key(0)
 	if !ok {
 		// Block all access if main backend is down
