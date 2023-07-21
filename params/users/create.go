@@ -7,11 +7,6 @@ import (
 	"github.com/source-academy/stories-backend/model"
 )
 
-const (
-	loginParamGitHub = "github"
-	loginParamNUSNET = "luminus" // for legacy reasons
-)
-
 type Create struct {
 	Username      string `json:"username"`
 	LoginProvider string `json:"provider"`
@@ -19,9 +14,12 @@ type Create struct {
 
 // TODO: Add some validation
 func (params *Create) Validate() error {
-	// Validate login provider is one of the ones supported
+	// Validate login provider is one of the ones supported AND allowed
 	switch params.LoginProvider {
-	case loginParamGitHub, loginParamNUSNET:
+	case
+		// Allowed login providers for now
+		// TODO: Allow more login providers
+		userenums.LoginProviderNUSNET.String():
 		break
 	default:
 		return errors.New("Invalid login provider")
@@ -39,9 +37,7 @@ func (params *Create) ToModel() *model.User {
 
 func convertProvider(provider string) userenums.LoginProvider {
 	switch provider {
-	case loginParamGitHub:
-		return userenums.LoginProviderGitHub
-	case loginParamNUSNET:
+	case userenums.LoginProviderNUSNET.String():
 		return userenums.LoginProviderNUSNET
 	default:
 		// Should never happen as we previously validated the provider
