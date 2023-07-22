@@ -32,7 +32,8 @@ func TestCreateStory(t *testing.T) {
 		db, cleanUp := setupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
-		initialStories := GetAllStories(db)
+		initialStories, err := GetAllStories(db)
+		assert.Nil(t, err, "Expected no error when getting all stories")
 
 		// We need to first create a user due to the foreign key constraint
 		user := User{
@@ -45,9 +46,11 @@ func TestCreateStory(t *testing.T) {
 			AuthorID: user.ID,
 			Content:  "# Hi\n\nThis is a test story.",
 		}
-		CreateStory(db, &story)
+		err = CreateStory(db, &story)
+		assert.Nil(t, err, "Expected no error when creating story")
 
-		newStories := GetAllStories(db)
+		newStories, err := GetAllStories(db)
+		assert.Nil(t, err, "Expected no error when getting all stories")
 		assert.Len(t, newStories, len(initialStories)+1, "Expected number of stories to increase by 1")
 
 		var lastStory Story
@@ -71,12 +74,13 @@ func TestGetStoryByID(t *testing.T) {
 		}
 
 		for _, storyToAdd := range stories {
-			CreateStory(db, storyToAdd)
+			_ = CreateStory(db, storyToAdd)
 		}
 
 		for _, story := range stories {
 			// FIXME: Don't use typecast
-			dbStory := GetStoryByID(db, int(story.ID))
+			dbStory, err := GetStoryByID(db, int(story.ID))
+			assert.Nil(t, err, "Expected no error when getting story with valid ID")
 			assert.Equal(t, story.ID, dbStory.ID, fmt.Sprintf(expectReadEqualMessage, "story"))
 			assert.Equal(t, story.AuthorID, dbStory.AuthorID, fmt.Sprintf(expectReadEqualMessage, "story"))
 			assert.Equal(t, story.Content, dbStory.Content, fmt.Sprintf(expectReadEqualMessage, "story"))
