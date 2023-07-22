@@ -74,7 +74,7 @@ func TestGetStoryByID(t *testing.T) {
 		}
 
 		for _, storyToAdd := range stories {
-			CreateStory(db, storyToAdd)
+			_ = CreateStory(db, storyToAdd)
 		}
 
 		for _, story := range stories {
