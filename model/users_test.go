@@ -45,8 +45,8 @@ func setupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig) (*gorm.DB,
 // 		assert.Len(t, users, 0, "Expected initial number of users to be 0")
 
 // 		user := User{
-// 			GithubUsername: "testUsername",
-// 			GithubID:       123,
+// 			Username: "testUsername",
+// 			LoginProvider:       123,
 // 		}
 // 		CreateUser(db, &user)
 // 		users = GetAllUsers(db)
@@ -63,8 +63,8 @@ func TestCreateUser(t *testing.T) {
 		assert.Nil(t, err, "Expected no error when getting all users")
 
 		user := User{
-			GithubUsername: "testUsername",
-			GithubID:       123,
+			Username:      "testUsername",
+			LoginProvider: 123,
 		}
 		err = CreateUser(db, &user)
 		assert.Nil(t, err, "Expected no error when creating user")
@@ -77,8 +77,8 @@ func TestCreateUser(t *testing.T) {
 		db.Model(&User{}).Last(&lastUser)
 
 		assert.Equal(t, user.ID, lastUser.ID, "Expected the user ID to be updated")
-		assert.Equal(t, user.GithubUsername, lastUser.GithubUsername, fmt.Sprintf(expectCreateEqualMessage, "user"))
-		assert.Equal(t, user.GithubID, lastUser.GithubID, fmt.Sprintf(expectCreateEqualMessage, "user"))
+		assert.Equal(t, user.Username, lastUser.Username, fmt.Sprintf(expectCreateEqualMessage, "user"))
+		assert.Equal(t, user.LoginProvider, lastUser.LoginProvider, fmt.Sprintf(expectCreateEqualMessage, "user"))
 	})
 }
 
@@ -88,9 +88,9 @@ func TestGetUserByID(t *testing.T) {
 		defer cleanUp(t)
 
 		users := []*User{
-			{GithubUsername: "testUsername1", GithubID: 123},
-			{GithubUsername: "testUsername2", GithubID: 456},
-			{GithubUsername: "testUsername3", GithubID: 789},
+			{Username: "testUsername1", LoginProvider: 123},
+			{Username: "testUsername2", LoginProvider: 456},
+			{Username: "testUsername3", LoginProvider: 789},
 		}
 
 		for _, userToAdd := range users {
@@ -102,8 +102,8 @@ func TestGetUserByID(t *testing.T) {
 			dbUser, err := GetUserByID(db, int(user.ID))
 			assert.Nil(t, err, "Expected no error when getting user by valid ID")
 			assert.Equal(t, user.ID, dbUser.ID, fmt.Sprintf(expectReadEqualMessage, "user"))
-			assert.Equal(t, user.GithubUsername, dbUser.GithubUsername, fmt.Sprintf(expectReadEqualMessage, "user"))
-			assert.Equal(t, user.GithubID, dbUser.GithubID, fmt.Sprintf(expectReadEqualMessage, "user"))
+			assert.Equal(t, user.Username, dbUser.Username, fmt.Sprintf(expectReadEqualMessage, "user"))
+			assert.Equal(t, user.LoginProvider, dbUser.LoginProvider, fmt.Sprintf(expectReadEqualMessage, "user"))
 		}
 	})
 }
