@@ -37,7 +37,7 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
 				apierrors.ServeHTTP(w, r, apierrors.ClientUnauthorizedError{
-					Message: "Missing Authorization header",
+					Message: "Missing Authorization header.",
 				})
 				return
 			}
