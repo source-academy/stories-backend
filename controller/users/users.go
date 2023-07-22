@@ -40,8 +40,9 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		http.Error(w, "Invalid userID", http.StatusBadRequest)
-		return err
+		return apierrors.ClientBadRequestError{
+			Message: fmt.Sprintf("Invalid userID: %v", err),
+		}
 	}
 
 	// Get DB instance
@@ -66,18 +67,23 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 		e, ok := err.(*json.UnmarshalTypeError)
 		if !ok {
 			logrus.Error(err)
-			return err
+			return apierrors.ClientBadRequestError{
+				Message: fmt.Sprintf("Bad JSON parsing: %v", err),
+			}
 		}
 
 		// TODO: Investigate if we should use errors.Wrap instead
-		return apierrors.ClientBadRequestError{
+		return apierrors.ClientUnprocessableEntityError{
 			Message: fmt.Sprintf("Invalid JSON format: %s should be a %s.", e.Field, e.Type),
 		}
 	}
 
 	err := params.Validate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		logrus.Error(err)
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("JSON validation failed: %v", err),
+		}
 	}
 
 	userModel := *params.ToModel()
