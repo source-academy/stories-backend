@@ -2,6 +2,7 @@ package stories
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"strconv"
@@ -11,47 +12,67 @@ import (
 
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/internal/database"
+	apierrors "github.com/source-academy/stories-backend/internal/errors"
 	"github.com/source-academy/stories-backend/model"
 	storyparams "github.com/source-academy/stories-backend/params/stories"
 	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
 
-func HandleList(w http.ResponseWriter, r *http.Request) {
+func HandleList(w http.ResponseWriter, r *http.Request) error {
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
-	stories := model.GetAllStories(db)
+	stories, err := model.GetAllStories(db)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
 	controller.EncodeJSONResponse(w, storyviews.ListFrom(stories))
+	return nil
 }
 
-func HandleRead(w http.ResponseWriter, r *http.Request) {
+func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	storyIDStr := chi.URLParam(r, "storyID")
 	storyID, err := strconv.Atoi(storyIDStr)
 	if err != nil {
 		http.Error(w, "Invalid storyID", http.StatusBadRequest)
-		return
+		return err
 	}
 
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
-	story := model.GetStoryByID(db, storyID)
+	story, err := model.GetStoryByID(db, storyID)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
 	controller.EncodeJSONResponse(w, storyviews.SingleFrom(story))
+	return nil
 }
 
-func HandleCreate(w http.ResponseWriter, r *http.Request) {
+func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 	var params storyparams.Create
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		e, ok := err.(*json.UnmarshalTypeError)
+		if !ok {
+			logrus.Error(err)
+			return err
+		}
+
+		// TODO: Investigate if we should use errors.Wrap instead
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("Invalid JSON format: %s should be a %s.", e.Field, e.Type),
+		}
 	}
 	storyModel := *params.ToModel()
 
@@ -59,10 +80,16 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) {
 	db, err := database.GetDBFrom(r)
 	if err != nil {
 		logrus.Error(err)
-		panic(err)
+		return err
 	}
 
-	model.CreateStory(db, &storyModel)
+	err = model.CreateStory(db, &storyModel)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
 	controller.EncodeJSONResponse(w, storyviews.SingleFrom(storyModel))
 	w.WriteHeader(http.StatusCreated)
+	return nil
 }
