@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -23,7 +22,7 @@ func getJWKS(endpointURL string) jwk.Set {
 
 func setJwkFromEndpoint(endpointURL string) {
 	// Get JWK from endpoint
-	fmt.Println(endpointURL)
+	logrus.Debugf("Using %s as JWKS source\n", endpointURL)
 	resp, err := http.Get(endpointURL)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to get JWK from endpoint")
