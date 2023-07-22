@@ -39,7 +39,7 @@ func TestCreateStory(t *testing.T) {
 			Username:      "testUsername",
 			LoginProvider: 123,
 		}
-		CreateUser(db, &user)
+		_ = CreateUser(db, &user)
 
 		story := Story{
 			AuthorID: user.ID,
