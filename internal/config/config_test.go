@@ -9,6 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	test_bypassRequiredFields = map[string]string{
+		JWKS_ENDPOINT: "",
+	}
+)
+
 func setupEnvFile(t *testing.T, envKeyValues map[string]string) (string, func(*testing.T)) {
 	f, err := os.CreateTemp("", ".env")
 	if err != nil {
@@ -30,7 +36,7 @@ func setupEnvFile(t *testing.T, envKeyValues map[string]string) (string, func(*t
 
 func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 	t.Run("should return development environment when GO_ENV is development", func(t *testing.T) {
-		envFile, cleanUp := setupEnvFile(t, map[string]string{})
+		envFile, cleanUp := setupEnvFile(t, test_bypassRequiredFields)
 		defer cleanUp(t)
 
 		os.Setenv(GO_ENV, envutils.ENV_DEVELOPMENT)
@@ -39,7 +45,7 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 		assert.Equal(t, envutils.ENV_DEVELOPMENT, conf.Environment)
 	})
 	t.Run("should return production environment when GO_ENV is production", func(t *testing.T) {
-		envFile, cleanUp := setupEnvFile(t, map[string]string{})
+		envFile, cleanUp := setupEnvFile(t, test_bypassRequiredFields)
 		defer cleanUp(t)
 
 		os.Setenv(GO_ENV, envutils.ENV_PRODUCTION)
@@ -47,8 +53,26 @@ func TestLoadFromEnvironment_AppEnvironment(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, envutils.ENV_PRODUCTION, conf.Environment)
 	})
-	t.Run("should return production environment when GO_ENV anything that is not development", func(t *testing.T) {
-		envFile, cleanUp := setupEnvFile(t, map[string]string{})
+	t.Run("should return test environment when GO_ENV is test", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, test_bypassRequiredFields)
+		defer cleanUp(t)
+
+		os.Setenv(GO_ENV, envutils.ENV_TEST)
+		conf, err := LoadFromEnvironment(envFile)
+		assert.Nil(t, err)
+		assert.Equal(t, envutils.ENV_TEST, conf.Environment)
+	})
+	t.Run("should return script environment when GO_ENV is script", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, test_bypassRequiredFields)
+		defer cleanUp(t)
+
+		os.Setenv(GO_ENV, envutils.ENV_SCRIPT)
+		conf, err := LoadFromEnvironment(envFile)
+		assert.Nil(t, err)
+		assert.Equal(t, envutils.ENV_SCRIPT, conf.Environment)
+	})
+	t.Run("should return production environment for any other values of GO_ENV", func(t *testing.T) {
+		envFile, cleanUp := setupEnvFile(t, test_bypassRequiredFields)
 		defer cleanUp(t)
 
 		os.Setenv(GO_ENV, "anything")
