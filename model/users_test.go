@@ -59,15 +59,18 @@ func TestCreateUser(t *testing.T) {
 		db, cleanUp := setupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
-		initialUsers := GetAllUsers(db)
+		initialUsers, err := GetAllUsers(db)
+		assert.Nil(t, err, "Expected no error when getting all users")
 
 		user := User{
 			GithubUsername: "testUsername",
 			GithubID:       123,
 		}
-		CreateUser(db, &user)
+		err = CreateUser(db, &user)
+		assert.Nil(t, err, "Expected no error when creating user")
 
-		newUsers := GetAllUsers(db)
+		newUsers, err := GetAllUsers(db)
+		assert.Nil(t, err, "Expected no error when getting all users")
 		assert.Len(t, newUsers, len(initialUsers)+1, "Expected number of users to increase by 1")
 
 		var lastUser User
@@ -91,7 +94,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 
 		for _, userToAdd := range users {
-			CreateUser(db, userToAdd)
+			_ = CreateUser(db, userToAdd)
 		}
 
 		for _, user := range users {
