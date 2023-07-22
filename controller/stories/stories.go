@@ -40,8 +40,9 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	storyIDStr := chi.URLParam(r, "storyID")
 	storyID, err := strconv.Atoi(storyIDStr)
 	if err != nil {
-		http.Error(w, "Invalid storyID", http.StatusBadRequest)
-		return err
+		return apierrors.ClientBadRequestError{
+			Message: fmt.Sprintf("Invalid storyID: %v", err),
+		}
 	}
 
 	// Get DB instance
@@ -66,7 +67,9 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 		e, ok := err.(*json.UnmarshalTypeError)
 		if !ok {
 			logrus.Error(err)
-			return err
+			return apierrors.ClientBadRequestError{
+				Message: fmt.Sprintf("Bad JSON parsing: %v", err),
+			}
 		}
 
 		// TODO: Investigate if we should use errors.Wrap instead
