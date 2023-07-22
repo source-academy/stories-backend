@@ -50,9 +50,15 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	config := &Config{}
 
 	// Environment
-	if os.Getenv(GO_ENV) == envutils.ENV_DEVELOPMENT {
-		config.Environment = envutils.ENV_DEVELOPMENT
-	} else {
+	switch config.Environment = os.Getenv(GO_ENV); config.Environment {
+	case envutils.ENV_DEVELOPMENT:
+		logrus.Infoln("Running in development mode")
+	case envutils.ENV_TEST:
+		logrus.Infoln("Running in test mode")
+	case envutils.ENV_SCRIPT:
+		logrus.Infoln("Running in script mode")
+	default:
+		logrus.Infoln("Running in production mode")
 		config.Environment = envutils.ENV_PRODUCTION
 	}
 
@@ -85,7 +91,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	// RS256 public key for JWT verification
 	endpoint, ok := os.LookupEnv(JWKS_ENDPOINT)
-	if !ok {
+	if !ok && config.Environment != envutils.ENV_SCRIPT {
 		errMsg := fmt.Sprintf(missingRequiredEnvVarMsg, JWKS_ENDPOINT)
 		logrus.Errorln(errMsg)
 		panic(errors.New(errMsg))

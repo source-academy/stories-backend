@@ -26,6 +26,7 @@ hooks:
 	@chmod 755 ./.git/hooks/pre-push
 	@echo "Hooks installed successfully!"
 
+$(DB_TARGETS): export GO_ENV=script
 db_create:
 	@go run ${DB_SCRIPT_ENTRYPOINT} create
 db_drop:
