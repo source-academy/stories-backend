@@ -37,9 +37,9 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Group(func(r chi.Router) {
 		r.Use(auth.MakeMiddlewareFrom(config))
 		r.Route("/stories", func(r chi.Router) {
-			r.Get("/", stories.HandleList)
-			r.Get("/{storyID}", stories.HandleRead)
-			r.Post("/", stories.HandleCreate)
+			r.Get("/", handleAPIError(stories.HandleList))
+			r.Get("/{storyID}", handleAPIError(stories.HandleRead))
+			r.Post("/", handleAPIError(stories.HandleCreate))
 		})
 
 		r.Route("/users", func(r chi.Router) {
