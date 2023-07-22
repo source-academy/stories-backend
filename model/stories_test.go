@@ -37,8 +37,8 @@ func TestCreateStory(t *testing.T) {
 
 		// We need to first create a user due to the foreign key constraint
 		user := User{
-			GithubUsername: "testUsername",
-			GithubID:       123,
+			Username:      "testUsername",
+			LoginProvider: 123,
 		}
 		_ = CreateUser(db, &user)
 

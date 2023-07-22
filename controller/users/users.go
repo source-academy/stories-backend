@@ -74,6 +74,12 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 			Message: fmt.Sprintf("Invalid JSON format: %s should be a %s.", e.Field, e.Type),
 		}
 	}
+
+	err := params.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	userModel := *params.ToModel()
 
 	// Get DB instance

@@ -2,13 +2,14 @@ package model
 
 import (
 	"github.com/source-academy/stories-backend/internal/database"
+	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	GithubUsername string
-	GithubID       int
+	Username      string
+	LoginProvider userenums.LoginProvider
 }
 
 func GetAllUsers(db *gorm.DB) ([]User, error) {
