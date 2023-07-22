@@ -91,7 +91,7 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 
 	// RS256 public key for JWT verification
 	endpoint, ok := os.LookupEnv(JWKS_ENDPOINT)
-	if !ok && config.Environment != envutils.ENV_SCRIPT {
+	if !ok && (config.Environment != envutils.ENV_SCRIPT && config.Environment != envutils.ENV_TEST) {
 		errMsg := fmt.Sprintf(missingRequiredEnvVarMsg, JWKS_ENDPOINT)
 		logrus.Errorln(errMsg)
 		panic(errors.New(errMsg))
