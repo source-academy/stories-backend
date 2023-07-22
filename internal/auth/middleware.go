@@ -47,7 +47,7 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 			token, err := jwt.ParseString(toParse, jwt.WithKey(jwa.RS256, key))
 			if err != nil {
 				apierrors.ServeHTTP(w, r, apierrors.ClientForbiddenError{
-					Message: fmt.Sprintf("Failed to verify JWS: %s\n", err),
+					Message: fmt.Sprintf("Failed to verify JWT: %s\n", err),
 				})
 				return
 			}
