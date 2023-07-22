@@ -22,6 +22,7 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 	key, ok := keySet.Key(0)
 	if !ok {
 		// Block all access if JWKS source is down, since we can't verify JWTs
+		// TODO: Investigate if 500 is appropriate
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
