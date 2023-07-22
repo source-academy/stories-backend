@@ -17,3 +17,14 @@ func (provider LoginProvider) ToString() string {
 	}
 	return "unknown"
 }
+
+func LoginProviderFromString(provider string) (LoginProvider, bool) {
+	switch provider {
+	case "github":
+		return LoginProviderGitHub, true
+	case "luminus":
+		return LoginProviderNUSNET, true
+	}
+	// We fall back to NUSNET as default provider
+	return LoginProviderNUSNET, false
+}

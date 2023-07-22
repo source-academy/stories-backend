@@ -22,6 +22,13 @@ func main() {
 		logrus.Errorln(err)
 	}
 
+	// Set log level
+	if conf.Environment == envutils.ENV_DEVELOPMENT {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	// Connect to the database
 	db, err := database.Connect(conf.Database)
 	if err != nil {

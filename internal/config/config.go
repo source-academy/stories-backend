@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -18,6 +20,8 @@ type Config struct {
 	Database *DatabaseConfig
 
 	SentryDSN string
+
+	JWKSEndpoint string
 }
 
 const (
@@ -33,6 +37,10 @@ const (
 	DB_NAME     = "DB_NAME"
 
 	SENTRY = "SENTRY_DSN"
+
+	JWKS_ENDPOINT = "JWKS_ENDPOINT"
+
+	missingRequiredEnvVarMsg = "Missing required environment variable: %s"
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
@@ -42,9 +50,15 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	config := &Config{}
 
 	// Environment
-	if os.Getenv(GO_ENV) == envutils.ENV_DEVELOPMENT {
-		config.Environment = envutils.ENV_DEVELOPMENT
-	} else {
+	switch config.Environment = os.Getenv(GO_ENV); config.Environment {
+	case envutils.ENV_DEVELOPMENT:
+		logrus.Infoln("Running in development mode")
+	case envutils.ENV_TEST:
+		logrus.Infoln("Running in test mode")
+	case envutils.ENV_SCRIPT:
+		logrus.Infoln("Running in script mode")
+	default:
+		logrus.Infoln("Running in production mode")
 		config.Environment = envutils.ENV_PRODUCTION
 	}
 
@@ -74,6 +88,15 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 		logrus.Warningln("Invalid server port:", err)
 		logrus.Warningln("Using default server port:", envutils.DEFAULT_PORT)
 	}
+
+	// RS256 public key for JWT verification
+	endpoint, ok := os.LookupEnv(JWKS_ENDPOINT)
+	if !ok && (config.Environment != envutils.ENV_SCRIPT && config.Environment != envutils.ENV_TEST) {
+		errMsg := fmt.Sprintf(missingRequiredEnvVarMsg, JWKS_ENDPOINT)
+		logrus.Errorln(errMsg)
+		panic(errors.New(errMsg))
+	}
+	config.JWKSEndpoint = endpoint
 
 	return config, nil
 }
