@@ -23,7 +23,7 @@ func (params *Create) Validate() error {
 		userenums.LoginProviderNUSNET.ToString():
 		break
 	default:
-		return errors.New(fmt.Sprintf("Invalid login provider %s.", params.LoginProvider))
+		return fmt.Errorf("Invalid login provider %s.", params.LoginProvider)
 	}
 
 	return nil
