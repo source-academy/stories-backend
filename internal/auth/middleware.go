@@ -11,6 +11,11 @@ import (
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
+// MakeMiddlewareFrom returns a middleware that verifies JWTs from the Authorization
+// header of incoming requests. If the JWT is valid, the user ID is set in the
+// request context.
+//
+// It must be called after the DB middleware, since it depends on the DB connection.
 func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 	// Skip auth in development mode
 	if conf.Environment == envutils.ENV_DEVELOPMENT {
