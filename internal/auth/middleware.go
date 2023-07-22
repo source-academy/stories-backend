@@ -19,7 +19,7 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 		}
 	}
 
-	keySet := getJWKS()
+	keySet := getJWKS(conf.JWKSEndpoint)
 	key, ok := keySet.Key(0)
 	if !ok {
 		// Block all access if JWKS source is down, since we can't verify JWTs

@@ -5,29 +5,23 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	// TODO: Move to config object
-	endpointURL = os.Getenv("JWKS_ENDPOINT")
-)
-
 var jwks *jwk.Set
 
-func getJWKS() jwk.Set {
+func getJWKS(endpointURL string) jwk.Set {
 	// Singleton
 	// TODO: Refresh every X minutes
 	if jwks == nil {
-		setJwkFromEndpoint()
+		setJwkFromEndpoint(endpointURL)
 	}
 	return *jwks
 }
 
-func setJwkFromEndpoint() {
+func setJwkFromEndpoint(endpointURL string) {
 	// Get JWK from endpoint
 	fmt.Println(endpointURL)
 	resp, err := http.Get(endpointURL)

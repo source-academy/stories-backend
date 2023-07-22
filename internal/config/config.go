@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -18,6 +20,8 @@ type Config struct {
 	Database *DatabaseConfig
 
 	SentryDSN string
+
+	JWKSEndpoint string
 }
 
 const (
@@ -33,6 +37,10 @@ const (
 	DB_NAME     = "DB_NAME"
 
 	SENTRY = "SENTRY_DSN"
+
+	JWKS_ENDPOINT = "JWKS_ENDPOINT"
+
+	missingRequiredEnvVarMsg = "Missing required environment variable: %s"
 )
 
 func LoadFromEnvironment(envFiles ...string) (*Config, error) {
@@ -74,6 +82,15 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 		logrus.Warningln("Invalid server port:", err)
 		logrus.Warningln("Using default server port:", envutils.DEFAULT_PORT)
 	}
+
+	// RS256 public key for JWT verification
+	endpoint, ok := os.LookupEnv(JWKS_ENDPOINT)
+	if !ok {
+		errMsg := fmt.Sprintf(missingRequiredEnvVarMsg, JWKS_ENDPOINT)
+		logrus.Errorln(errMsg)
+		panic(errors.New(errMsg))
+	}
+	config.JWKSEndpoint = endpoint
 
 	return config, nil
 }
