@@ -7,6 +7,7 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/source-academy/stories-backend/internal/config"
+	apierrors "github.com/source-academy/stories-backend/internal/errors"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
@@ -35,7 +36,9 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 			// Get JWT from request
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+				apierrors.ServeHTTP(w, r, apierrors.ClientUnauthorizedError{
+					Message: "Missing Authorization header",
+				})
 				return
 			}
 
@@ -43,7 +46,9 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 			toParse := authHeader[len("Bearer "):]
 			token, err := jwt.ParseString(toParse, jwt.WithKey(jwa.RS256, key))
 			if err != nil {
-				fmt.Printf("Failed to verify JWS: %s\n", err)
+				apierrors.ServeHTTP(w, r, apierrors.ClientForbiddenError{
+					Message: fmt.Sprintf("Failed to verify JWS: %s\n", err),
+				})
 				return
 			}
 
