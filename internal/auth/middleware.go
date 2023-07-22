@@ -1,14 +1,26 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/source-academy/stories-backend/internal/config"
+	"github.com/source-academy/stories-backend/internal/database"
+	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
+	"github.com/source-academy/stories-backend/model"
+	"gorm.io/gorm"
+)
+
+const (
+	invalidTokenSubjectMessage = "Invalid user."
+	usernameKey                = "username"
+	loginProviderKey           = "provider"
 )
 
 // MakeMiddlewareFrom returns a middleware that verifies JWTs from the Authorization
@@ -57,19 +69,64 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 				return
 			}
 
-			fmt.Println(token.Subject())
+			// No error due to precondition of DB middleware being called first.
+			// Just to be safe, we check for error anyway.
+			db, err := database.GetDBFrom(r)
+			if err != nil {
+				// Will be caught by apierrors as 500 Internal Server Error
+				apierrors.ServeHTTP(w, r, errors.New("Failed to get DB connection."))
+				return
+			}
 
-			// TODO: Get token subject (user information)
-
-			// userData, err := url.ParseQuery(sub)
-			// if err != nil {
-			// 	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			// 	return
-			// }
+			user, err := validateAndGetUser(token.Subject(), db)
+			if err != nil {
+				// Intentionally override any status code with 403
+				apierrors.ServeHTTP(w, r, apierrors.ClientForbiddenError{
+					Message: err.Error(),
+				})
+				return
+			}
 
 			// TODO: If JWT is valid, set user ID in context
+			fmt.Println(user.ID, user.Username, user.LoginProvider.ToString())
 
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func validateAndGetUser(queryString string, db *gorm.DB) (*model.User, error) {
+	// Validate valid query string
+	userData, err := url.ParseQuery(queryString)
+	if err != nil {
+		return nil, errors.New(invalidTokenSubjectMessage)
+	}
+
+	// Validate required fields
+	requiredFields := []string{usernameKey, loginProviderKey}
+	for _, field := range requiredFields {
+		if !userData.Has(field) {
+			return nil, errors.New(invalidTokenSubjectMessage)
+		}
+	}
+
+	// Validate login provider
+	provider, ok := userenums.LoginProviderFromString(userData.Get(loginProviderKey))
+	if !ok {
+		// Invalid/unsupported login provider
+		return nil, errors.New(invalidTokenSubjectMessage)
+	}
+
+	// Validate user
+	user := model.User{
+		Username:      userData.Get(usernameKey),
+		LoginProvider: provider,
+	}
+	var dbUser model.User
+	err = db.Where(&user).First(&dbUser).Error
+	if err != nil {
+		return nil, database.HandleDBError(err, "user")
+	}
+
+	return &dbUser, nil
 }
