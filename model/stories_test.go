@@ -40,7 +40,7 @@ func TestCreateStory(t *testing.T) {
 		// We need to first create a user due to the foreign key constraint
 		user := User{
 			Username:      "testStoryAuthor",
-			LoginProvider: userenums.LoginProvider(rand.Int()),
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
 		}
 		_ = CreateUser(db, &user)
 
@@ -72,7 +72,7 @@ func TestGetStoryByID(t *testing.T) {
 		// We need to first create a user due to the foreign key constraint
 		user := User{
 			Username:      "testMultipleStoriesAuthor",
-			LoginProvider: userenums.LoginProvider(rand.Int()),
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
 		}
 		_ = CreateUser(db, &user)
 
