@@ -46,6 +46,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 			r.Get("/", handleAPIError(users.HandleList))
 			r.Get("/{userID}", handleAPIError(users.HandleRead))
 			r.Post("/", handleAPIError(users.HandleCreate))
+			r.Post("/batch", handleAPIError(users.HandleBatchCreate))
 		})
 	})
 

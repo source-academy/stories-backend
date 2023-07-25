@@ -54,6 +54,7 @@ jobs:
           make db_create
           make db_migrate
           make test
+          make db_drop db_create db_migrate
           make coverage
       - name: Coveralls
         uses: coverallsapp/github-action@v2
