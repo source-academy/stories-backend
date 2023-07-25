@@ -10,11 +10,15 @@ type Story struct {
 	AuthorID uint
 	Title    string
 	Content  string
+	PinOrder *int // nil if not pinned
 }
 
 func GetAllStories(db *gorm.DB) ([]Story, error) {
 	var stories []Story
-	err := db.Find(&stories).Error
+	err := db.
+		// TODO: Abstract out
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
+		Find(&stories).Error
 	if err != nil {
 		return stories, database.HandleDBError(err, "story")
 	}
