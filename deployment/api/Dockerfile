@@ -12,6 +12,12 @@ RUN cd stories-backend && make build
 
 FROM ubuntu:latest
 
+RUN apt-get update && apt-get install -y \
+    # Required to validate SSL certificates
+    ca-certificates \
+    # Remove apt package lists to save space
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /var/lib/sa_stories
 # Output entrypoint from "make build" is ./app
 COPY --from=build_stage /go/src/github.com/source-academy/stories-backend/app ./server
