@@ -8,6 +8,7 @@ import (
 type Story struct {
 	gorm.Model
 	AuthorID uint
+	Title    string
 	Content  string
 }
 
