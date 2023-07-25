@@ -1,7 +1,7 @@
 -- +migrate Up
 
 ALTER TABLE stories
-ADD COLUMN title TEXT;
+ADD COLUMN title VARCHAR(235);
 
 -- +migrate Down
 
