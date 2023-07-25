@@ -87,8 +87,8 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 				return
 			}
 
-			// TODO: If JWT is valid, set user ID in context
-			fmt.Println(user.ID, user.Username, user.LoginProvider.ToString())
+			// If JWT is valid, set user ID in context
+			r = injectUserIDToContext(r, int(user.ID))
 
 			next.ServeHTTP(w, r)
 		})
