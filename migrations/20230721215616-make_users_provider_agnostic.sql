@@ -1,6 +1,7 @@
 -- Makes the users table agnostic to the login provider.
 
 -- +migrate Up
+
 CREATE DOMAIN login_provider_type INTEGER NOT NULL;
 
 ALTER TABLE users

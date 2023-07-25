@@ -8,6 +8,7 @@ import (
 
 type User struct {
 	gorm.Model
+	FullName      string // FIXME: Use nullable string
 	Username      string
 	LoginProvider userenums.LoginProvider
 }
@@ -36,4 +37,13 @@ func CreateUser(db *gorm.DB, user *User) error {
 		return database.HandleDBError(err, "user")
 	}
 	return nil
+}
+
+func CreateUsers(db *gorm.DB, users *[]*User) (int64, error) {
+	tx := db.Create(users)
+	rowCount := tx.RowsAffected
+	if err := tx.Error; err != nil {
+		return rowCount, database.HandleDBError(err, "user")
+	}
+	return rowCount, nil
 }
