@@ -9,6 +9,7 @@ import (
 )
 
 type Create struct {
+	Name          string `json:"name"`
 	Username      string `json:"username"`
 	LoginProvider string `json:"provider"`
 }
@@ -37,6 +38,7 @@ func (params *Create) ToModel() *model.User {
 		panic(errors.New("Illegal path - invalid provider"))
 	}
 	return &model.User{
+		FullName:      params.Name,
 		Username:      params.Username,
 		LoginProvider: provider,
 	}
