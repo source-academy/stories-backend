@@ -58,3 +58,53 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(http.StatusCreated)
 	return nil
 }
+
+func HandleBatchCreate(w http.ResponseWriter, r *http.Request) error {
+	var usersparams userparams.BatchCreate
+	if err := json.NewDecoder(r.Body).Decode(&usersparams); err != nil {
+		e, ok := err.(*json.UnmarshalTypeError)
+		if !ok {
+			logrus.Error(err)
+			return apierrors.ClientBadRequestError{
+				Message: fmt.Sprintf("Bad JSON parsing: %v", err),
+			}
+		}
+
+		// TODO: Investigate if we should use errors.Wrap instead
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("Invalid JSON format: %s should be a %s.", e.Field, e.Type),
+		}
+	}
+
+	for _, userparams := range usersparams.Users {
+		err := userparams.Validate()
+		if err != nil {
+			logrus.Error(err)
+			return apierrors.ClientUnprocessableEntityError{
+				Message: fmt.Sprintf("JSON validation failed: %v", err),
+			}
+		}
+	}
+
+	userModels := make([]*model.User, len(usersparams.Users))
+	for i, userparams := range usersparams.Users {
+		userModels[i] = userparams.ToModel()
+	}
+
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	numCreated, err := model.CreateUsers(db, &userModels)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, userviews.BatchCreateFrom(userModels, numCreated))
+	w.WriteHeader(http.StatusCreated)
+	return nil
+}
