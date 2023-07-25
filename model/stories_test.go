@@ -2,8 +2,10 @@ package model
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 
+	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,7 +40,7 @@ func TestCreateStory(t *testing.T) {
 		// We need to first create a user due to the foreign key constraint
 		user := User{
 			Username:      "testStoryAuthor",
-			LoginProvider: 123,
+			LoginProvider: userenums.LoginProvider(rand.Int()),
 		}
 		_ = CreateUser(db, &user)
 
@@ -70,7 +72,7 @@ func TestGetStoryByID(t *testing.T) {
 		// We need to first create a user due to the foreign key constraint
 		user := User{
 			Username:      "testMultipleStoriesAuthor",
-			LoginProvider: 123,
+			LoginProvider: userenums.LoginProvider(rand.Int()),
 		}
 		_ = CreateUser(db, &user)
 
