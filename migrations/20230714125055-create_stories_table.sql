@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS stories (
     id SERIAL PRIMARY KEY,
     author_id INT REFERENCES users(id),
+    title TEXT,
     content TEXT,
     created_at created_at_type,
     deleted_at  deleted_at_type,
