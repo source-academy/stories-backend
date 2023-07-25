@@ -14,6 +14,10 @@ type Create struct {
 	LoginProvider string `json:"provider"`
 }
 
+type BatchCreate struct {
+	Users []Create `json:"users"`
+}
+
 // TODO: Add some validation
 func (params *Create) Validate() error {
 	// Validate login provider is one of the ones supported AND allowed
