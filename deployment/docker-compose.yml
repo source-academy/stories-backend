@@ -21,6 +21,8 @@ services:
       - db
     networks:
       - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   api:
     build:
       context: ./api
@@ -31,6 +33,8 @@ services:
       - DB_HOSTNAME=host.docker.internal
       - DB_USERNAME=postgres
       - DB_NAME=sa_stories
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - 8000:8000
     depends_on:
