@@ -7,7 +7,8 @@ import (
 )
 
 func CheckPermissions(r *http.Request, requestedActionPermissions ...permissions.PermissionGroup) (bool, error) {
-	// TODO: check permissions
-	// TODO: perhaps utilize userpermissions.GetFromRole
-	return false, nil
+	requiredPermissions := permissions.AllOf{
+		Groups: requestedActionPermissions,
+	}
+	return requiredPermissions.IsAuthorized(r), nil
 }
