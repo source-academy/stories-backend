@@ -1,38 +1,34 @@
 package userpermissions
 
 import (
-	"github.com/source-academy/stories-backend/internal/auth/permissions"
+	"errors"
+	// groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 )
 
-// TODO: Replace with more maintainable permissions matrix,
-// perhaps defined on a per-user/group basis in the DB.
-// TODO: Accept role as parameter once role enum is merged.
-// func GetFromRole(role groupenums.Role) []permissions.PermissionGroup {
-func GetFromRole() []permissions.PermissionGroup {
-	permissionsList := &[]Permission{} // FIXME: Hack to prevent errors. Remove when role enums are merged.
-	// var permissionsList *[]Permission
-
-	// Get permissions for all users
-	standardPermissions := []Permission{
+// Gets the RolePermission from a Permission. To be called
+// by external packages.
+// TODO: Investigate possibility of defining roles on a
+// per-user/group basis in the DB.
+func GetRolePermission(p Permission) *RolePermission {
+	switch p {
+	case
+		// Permissions for all users
 		CanCreateStories,
-		CanReadStories,
-	}
-	// if role == groupenums.RoleStandard {
-	// 	permissionsList = &standardPermissions
-	// }
-
-	// Get additional permissions for moderators and administrators
-	moderatorPermissions := []Permission{
+		CanReadStories:
+		return &RolePermission{
+			Permission: p,
+			// Role:       groupenums.RoleStandard,
+		}
+	case
+		// Additional permissions for moderators and administrators
 		CanUpdateStories,
-		CanDeleteStories,
-	}
-	moderatorPermissions = append(moderatorPermissions, standardPermissions...)
-	// if role == groupenums.RoleModerator {
-	// 	permissionsList = &moderatorPermissions
-	// }
-
-	// Get additional permissions for administrators only
-	adminPermissions := []Permission{
+		CanDeleteStories:
+		return &RolePermission{
+			Permission: p,
+			// Role:       groupenums.RoleModerator,
+		}
+	case
+		// Additional permissions for administrators only
 		CanCreateUsers,
 		CanReadUsers,
 		CanUpdateUsers,
@@ -40,25 +36,12 @@ func GetFromRole() []permissions.PermissionGroup {
 		CanCreateGroups,
 		CanReadGroups,
 		CanUpdateGroups,
-		CanDeleteGroups,
+		CanDeleteGroups:
+		return &RolePermission{
+			Permission: p,
+			// Role:       groupenums.RoleAdmin,
+		}
 	}
-	adminPermissions = append(adminPermissions, moderatorPermissions...)
-	// if role == groupenums.RoleAdmin {
-	// 	permissionsList = &adminPermissions
-	// }
-
-	// Return the permissions group
-
-	_ = adminPermissions // FIXME: Hack to prevent lint errors. Remove when role enums are merged.
-
-	if permissionsList == nil {
-		// Illegal path - something must have went wrong
-		panic("Illegal path")
-	}
-
-	group := make([]permissions.PermissionGroup, 0, len(standardPermissions))
-	for i, p := range *permissionsList {
-		group[i] = RolePermission{Permission: p}
-	}
-	return group
+	// Illegal path - all permissions should have been handled above
+	panic(errors.New("Illegal path - all permissions should have been handled above"))
 }
