@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+# Environment variables for Golang, must match .env.example
 export DB_HOSTNAME="$PG_HOST"
 export DB_USERNAME="$PG_USER"
 export DB_NAME="$PG_DATABASE"
