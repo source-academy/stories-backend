@@ -2,6 +2,11 @@ FROM golang:1.20.5 AS build_stage
 
 WORKDIR /go/src/github.com/source-academy/
 
+# Limit CPU and memory usage to prevent
+# crashes during server build
+ENV GOMAXPROCS=1
+ENV GOMEMLIMIT=256MiB
+
 RUN git clone https://github.com/source-academy/stories-backend
 RUN cd stories-backend && make build
 
