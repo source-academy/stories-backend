@@ -7,7 +7,7 @@ WORKDIR /go/src/github.com/source-academy/
 ENV GOMAXPROCS=1
 ENV GOMEMLIMIT=256MiB
 
-RUN git clone https://github.com/source-academy/stories-backend
+RUN git clone https://github.com/source-academy/stories-backend.git
 RUN cd stories-backend && make build
 
 FROM ubuntu:latest
