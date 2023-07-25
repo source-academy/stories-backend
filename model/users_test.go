@@ -63,7 +63,7 @@ func TestCreateUser(t *testing.T) {
 		assert.Nil(t, err, "Expected no error when getting all users")
 
 		user := User{
-			Username:      "testUsername",
+			Username:      "testUsername0",
 			LoginProvider: 123,
 		}
 		err = CreateUser(db, &user)
