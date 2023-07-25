@@ -67,10 +67,17 @@ func TestGetStoryByID(t *testing.T) {
 		db, cleanUp := setupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
+		// We need to first create a user due to the foreign key constraint
+		user := User{
+			Username:      "testMultipleStoriesAuthor",
+			LoginProvider: 123,
+		}
+		_ = CreateUser(db, &user)
+
 		stories := []*Story{
-			{AuthorID: 1, Content: "The quick"},
-			{AuthorID: 1, Content: "brown fox"},
-			{AuthorID: 1, Content: "jumps over"},
+			{AuthorID: user.ID, Content: "The quick"},
+			{AuthorID: user.ID, Content: "brown fox"},
+			{AuthorID: user.ID, Content: "jumps over"},
 		}
 
 		for _, storyToAdd := range stories {
