@@ -8,6 +8,7 @@ import (
 
 type User struct {
 	gorm.Model
+	FullName      string // FIXME: Use nullable string
 	Username      string
 	LoginProvider userenums.LoginProvider
 }
