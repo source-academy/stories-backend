@@ -7,6 +7,7 @@ type View struct {
 	AuthorID uint   `json:"authorId"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`
+	Pinned   bool   `json:"isPinned"`
 }
 
 func SingleFrom(story model.Story) View {
@@ -15,6 +16,7 @@ func SingleFrom(story model.Story) View {
 		AuthorID: story.AuthorID,
 		Title:    story.Title,
 		Content:  story.Content,
+		Pinned:   story.PinOrder != nil,
 	}
 	return storyView
 }
