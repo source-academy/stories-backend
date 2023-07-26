@@ -29,3 +29,8 @@ func Update(userID uint) permissions.PermissionGroup {
 		},
 	}
 }
+
+func Delete() permissions.PermissionGroup {
+	return userpermissions.
+		GetRolePermission(userpermissions.CanDeleteUsers)
+}

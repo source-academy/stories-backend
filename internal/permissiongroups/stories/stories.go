@@ -24,3 +24,13 @@ func Update(storyID uint) permissions.PermissionGroup {
 		},
 	}
 }
+
+func Delete(storyID uint) permissions.PermissionGroup {
+	return permissions.AnyOf{
+		Groups: []permissions.PermissionGroup{
+			userpermissions.
+				GetRolePermission(userpermissions.CanDeleteStories),
+			IsAuthorOf{StoryID: storyID},
+		},
+	}
+}
