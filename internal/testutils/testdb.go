@@ -1,4 +1,4 @@
-package database
+package testutils
 
 import (
 	"errors"
@@ -7,12 +7,32 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+func connect(conf *config.DatabaseConfig) (*gorm.DB, error) {
+	dsn := conf.ToDataSourceName()
+	driver := postgres.Open(dsn)
+
+	db, err := gorm.Open(driver, &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
+func close(d *gorm.DB) error {
+	db, err := d.DB()
+	if err != nil {
+		return err
+	}
+	return db.Close()
+}
+
 func connectAnonDB(conf config.DatabaseConfig) (*gorm.DB, error) {
 	conf.DatabaseName = ""
-	return Connect(&conf)
+	return connect(&conf)
 }
 
 func Create(conf *config.DatabaseConfig) error {
@@ -25,7 +45,7 @@ func Create(conf *config.DatabaseConfig) error {
 		logrus.Errorln(err)
 		return err
 	}
-	defer Close(db)
+	defer close(db)
 
 	// check if db exists
 	logrus.Infof("Checking if database %s exists.", conf.DatabaseName)
@@ -54,7 +74,7 @@ func Create(conf *config.DatabaseConfig) error {
 	return nil
 }
 
-func Drop(conf *config.DatabaseConfig) error {
+func drop(conf *config.DatabaseConfig) error {
 	if conf.DatabaseName == "" {
 		return errors.New("Failed to create database: no database name provided.")
 	}
@@ -64,7 +84,7 @@ func Drop(conf *config.DatabaseConfig) error {
 		logrus.Errorln(err)
 		return err
 	}
-	defer Close(db)
+	defer close(db)
 
 	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", conf.DatabaseName)
 	result := db.Exec(drop_command)
@@ -75,16 +95,16 @@ func Drop(conf *config.DatabaseConfig) error {
 	return nil
 }
 
-func MigrateDB(d *gorm.DB) error {
+func migrateDB(d *gorm.DB, migration_path string) error {
+	migrations := (migrate.FileMigrationSource{
+		Dir: migration_path,
+	})
+
 	db, err := d.DB()
 	if err != nil {
 		logrus.Errorln(err)
 		return err
 	}
-
-	migrations := (migrate.FileMigrationSource{
-		Dir: "../migrations",
-	})
 
 	_, err = migrate.ExecMax(db, "postgres", migrations, migrate.Up, 0)
 	if err != nil {

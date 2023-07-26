@@ -32,7 +32,7 @@ import (
 
 func TestCreateStory(t *testing.T) {
 	t.Run("should increase the total story count", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
 		defer cleanUp(t)
 
 		initialStories, err := GetAllStories(db)
@@ -67,7 +67,7 @@ func TestCreateStory(t *testing.T) {
 
 func TestGetStoryByID(t *testing.T) {
 	t.Run("should get the correct story", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
 		defer cleanUp(t)
 
 		// We need to first create a user due to the foreign key constraint

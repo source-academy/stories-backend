@@ -1,5 +1,6 @@
 coverage.out
 .env
+.env.testing
 
 # Editor files
 .idea

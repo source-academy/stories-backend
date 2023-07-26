@@ -3,15 +3,24 @@ package database
 import (
 	"testing"
 
-	"github.com/source-academy/stories-backend/internal/config"
+	"github.com/source-academy/stories-backend/internal/testutils"
 
 	"github.com/stretchr/testify/assert"
+)
+
+const (
+	test_env_path  = "../../.env.testing"
+	migration_path = "../../migrations"
 )
 
 func ignoreError(func() (err error)) {}
 
 func TestConnect(t *testing.T) {
-	conf, _ := config.LoadFromEnvironment()
+	conf := testutils.GetTestConf(test_env_path)
+	err := testutils.Create(conf.Database)
+	if err != nil {
+		t.Error(err)
+	}
 
 	t.Run("should connect to database", func(t *testing.T) {
 		db, err := Connect(conf.Database)

@@ -12,9 +12,11 @@ import (
 const (
 	expectCreateEqualMessage = "Expected last %s to be the one created"
 	expectReadEqualMessage   = "Expected read %s to be the one previously created"
+	test_env_path            = "../.env.testing"
+	migration_path           = "../migrations"
 )
 
-var conf, _ = config.LoadFromEnvironment("../.env.testing")
+var conf = testutils.GetTestConf(test_env_path)
 var dbConfig *config.DatabaseConfig = conf.Database
 
 // FIXME: Coupling with the other operations in the stories database
@@ -39,7 +41,7 @@ var dbConfig *config.DatabaseConfig = conf.Database
 
 func TestCreateUser(t *testing.T) {
 	t.Run("should increase the total user count", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
 		defer cleanUp(t)
 
 		initialUsers, err := GetAllUsers(db)
@@ -67,7 +69,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserByID(t *testing.T) {
 	t.Run("should get the correct user", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
 		defer cleanUp(t)
 
 		users := []*User{
