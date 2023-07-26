@@ -14,13 +14,15 @@ services:
       context: ./migrator
       dockerfile: Dockerfile
     environment:
-      - PG_USER=postgres
-      - PG_DATABASE=sa_stories
-      - PG_HOST=host.docker.internal
+      - PG_USER=${PG_USER}
+      - PG_DATABASE=${PG_DATABASE}
+      - PG_HOST=${PG_HOST}
     depends_on:
       - db
     networks:
       - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   api:
     build:
       context: ./api
@@ -28,9 +30,12 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8000
-      - DB_HOSTNAME=host.docker.internal
-      - DB_USERNAME=postgres
-      - DB_NAME=sa_stories
+      - DB_HOSTNAME=${PG_HOST}
+      - DB_USERNAME=${PG_USER}
+      - DB_NAME=${PG_DATABASE}
+      - JWKS_ENDPOINT=${JWKS_ENDPOINT}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - 8000:8000
     depends_on:
