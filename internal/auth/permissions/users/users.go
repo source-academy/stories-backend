@@ -2,7 +2,8 @@ package userpermissions
 
 import (
 	"errors"
-	// groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
+
+	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 )
 
 // Gets the RolePermission from a Permission. To be called
@@ -17,7 +18,7 @@ func GetRolePermission(p Permission) *RolePermission {
 		CanReadStories:
 		return &RolePermission{
 			Permission: p,
-			// Role:       groupenums.RoleStandard,
+			Role:       groupenums.RoleStandard,
 		}
 	case
 		// Additional permissions for moderators and administrators
@@ -25,7 +26,7 @@ func GetRolePermission(p Permission) *RolePermission {
 		CanDeleteStories:
 		return &RolePermission{
 			Permission: p,
-			// Role:       groupenums.RoleModerator,
+			Role:       groupenums.RoleModerator,
 		}
 	case
 		// Additional permissions for administrators only
@@ -39,7 +40,7 @@ func GetRolePermission(p Permission) *RolePermission {
 		CanDeleteGroups:
 		return &RolePermission{
 			Permission: p,
-			// Role:       groupenums.RoleAdmin,
+			Role:       groupenums.RoleAdmin,
 		}
 	}
 	// Illegal path - all permissions should have been handled above
