@@ -6,6 +6,7 @@ type Create struct {
 	AuthorID uint   `json:"authorId"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`
+	PinOrder *int   `json:"pinOrder"`
 }
 
 // TODO: Add some validation
@@ -18,5 +19,6 @@ func (params *Create) ToModel() *model.Story {
 		AuthorID: params.AuthorID,
 		Title:    params.Title,
 		Content:  params.Content,
+		PinOrder: params.PinOrder,
 	}
 }
