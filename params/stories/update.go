@@ -4,21 +4,20 @@ import (
 	"github.com/source-academy/stories-backend/model"
 )
 
-type Create struct {
-	AuthorID uint   `json:"authorId"`
+type Update struct {
 	Title    string `json:"title"`
 	Content  string `json:"content"`
 	PinOrder *int   `json:"pinOrder"`
 }
 
-// TODO: Add some validation
-func (params *Create) Validate() error {
+func (params *Update) Validate() error {
+	// Extra params won't do anything, e.g. authorID can't be changed.
+	// TODO: Error on extra params?
 	return nil
 }
 
-func (params *Create) ToModel() *model.Story {
+func (params *Update) ToModel() *model.Story {
 	return &model.Story{
-		AuthorID: params.AuthorID,
 		Title:    params.Title,
 		Content:  params.Content,
 		PinOrder: params.PinOrder,

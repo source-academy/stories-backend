@@ -6,7 +6,7 @@ import (
 )
 
 type View struct {
-	ID         uint   `json:"storyId"`
+	ID         uint   `json:"id"`
 	AuthorID   uint   `json:"authorId"`
 	AuthorName string `json:"authorName"`
 	Title      string `json:"title"`
