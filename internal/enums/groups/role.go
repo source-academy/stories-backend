@@ -33,3 +33,15 @@ func RoleFromString(role string) (Role, bool) {
 	// We fall back to standard role as default
 	return RoleStandard, false
 }
+
+func IsRoleGreaterThan(role1, role2 Role) bool {
+	switch role1 {
+	case RoleAdmin:
+		return true
+	case RoleModerator:
+		return role2 != RoleAdmin
+	case RoleStandard:
+		return role2 == RoleStandard
+	}
+	return false
+}
