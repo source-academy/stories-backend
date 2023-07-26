@@ -60,3 +60,34 @@ func CreateStory(db *gorm.DB, story *Story) error {
 	}
 	return nil
 }
+
+func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
+	err := db.
+		Transaction(func(tx *gorm.DB) error {
+			var originalStory Story
+			err := tx.
+				Scopes(preloadAssociations).
+				Where("id = ?", storyID).
+				First(&originalStory).
+				Error
+			if err != nil {
+				return database.HandleDBError(err, "story")
+			}
+
+			err = tx.
+				Where("id = ?", storyID).
+				Updates(newStory).
+				First(newStory).
+				Error
+			if err != nil {
+				return database.HandleDBError(err, "story")
+			}
+
+			return nil
+		})
+	if err != nil {
+		return database.HandleDBError(err, "story")
+	}
+
+	return nil
+}
