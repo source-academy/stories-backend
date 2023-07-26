@@ -11,6 +11,7 @@ type Story struct {
 	Author   User
 	Title    string
 	Content  string
+	PinOrder *int // nil if not pinned
 }
 
 var (
@@ -23,6 +24,8 @@ func GetAllStories(db *gorm.DB) ([]Story, error) {
 	var stories []Story
 	err := db.
 		Scopes(preloadAssociations).
+		// TODO: Abstract out
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
 		Find(&stories).
 		Error
 	if err != nil {

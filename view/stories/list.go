@@ -10,6 +10,7 @@ type ListView struct {
 	AuthorName string `json:"authorName"`
 	Title      string `json:"title"`
 	Content    string `json:"content"`
+	Pinned     bool   `json:"isPinned"`
 }
 
 func ListFrom(stories []model.Story) []ListView {
@@ -21,6 +22,7 @@ func ListFrom(stories []model.Story) []ListView {
 			AuthorName: author.Name,
 			Title:      story.Title,
 			Content:    story.Content,
+			Pinned:     story.PinOrder != nil,
 		}
 	}
 	return storiesListView
