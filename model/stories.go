@@ -62,6 +62,7 @@ func CreateStory(db *gorm.DB, story *Story) error {
 }
 
 func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
+	// TODO: Possible restore functionality for soft-deleted stories?
 	err := db.
 		Transaction(func(tx *gorm.DB) error {
 			var originalStory Story
