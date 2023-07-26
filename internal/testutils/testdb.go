@@ -22,12 +22,15 @@ func connect(conf *config.DatabaseConfig) (*gorm.DB, error) {
 	return db, nil
 }
 
-func close(d *gorm.DB) error {
+func close(d *gorm.DB) {
 	db, err := d.DB()
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return db.Close()
+	err = db.Close()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func connectAnonDB(conf config.DatabaseConfig) (*gorm.DB, error) {
@@ -74,25 +77,22 @@ func Create(conf *config.DatabaseConfig) error {
 	return nil
 }
 
-func drop(conf *config.DatabaseConfig) error {
+func Drop(conf *config.DatabaseConfig) {
 	if conf.DatabaseName == "" {
-		return errors.New("Failed to create database: no database name provided.")
+		logrus.Error("Failed to create database: no database name provided.")
 	}
 
 	db, err := connectAnonDB(*conf)
 	if err != nil {
 		logrus.Errorln(err)
-		return err
 	}
 	defer close(db)
 
 	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", conf.DatabaseName)
 	result := db.Exec(drop_command)
 	if result.Error != nil {
-		return result.Error
+		logrus.Error(result.Error)
 	}
-
-	return nil
 }
 
 func migrateDB(d *gorm.DB, migration_path string) error {

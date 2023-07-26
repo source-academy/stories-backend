@@ -18,25 +18,22 @@ var (
 func GetTestConf(test_env_path string) config.Config {
 	yellowChevron := color.With(color.Yellow, "❯")
 	fmt.Println(yellowChevron, "Getting test conf")
-	// once.Do(func() { // <-- atomic, does not allow repeating
-	// 	fmt.Println(yellowChevron, yellowChevron, yellowChevron, "Creating test conf")
-	// 	test_conf, _ = config.LoadFromEnvironment(test_env_path)
-	// })
-	if test_conf == nil {
-		fmt.Println(yellowChevron, yellowChevron, "Creating test conf")
+	once.Do(func() { // <-- atomic, does not allow repeating
+		fmt.Println(yellowChevron, yellowChevron, yellowChevron, "Creating test conf")
 		test_conf, _ = config.LoadFromEnvironment(test_env_path)
-	}
+	})
+	// if test_conf == nil {
+	// 	fmt.Println(yellowChevron, yellowChevron, "Creating test conf")
+	// 	test_conf, _ = config.LoadFromEnvironment(test_env_path)
+	// }
 	return *test_conf
 }
 
 func SetupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig, migration_path string) (*gorm.DB, func(*testing.T)) {
-	err := drop(dbConfig)
-	if err != nil {
-		t.Error(err)
-	}
+	Drop(dbConfig)
 
 	// Create test DB
-	err = Create(dbConfig)
+	err := Create(dbConfig)
 	if err != nil {
 		t.Error(err)
 	}
@@ -56,6 +53,6 @@ func SetupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig, migration_
 		close(db)
 
 		// Drop test DB
-		drop(dbConfig)
+		Drop(dbConfig)
 	}
 }

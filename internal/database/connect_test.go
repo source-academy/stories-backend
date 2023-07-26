@@ -21,6 +21,7 @@ func TestConnect(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	defer testutils.Drop(conf.Database)
 
 	t.Run("should connect to database", func(t *testing.T) {
 		db, err := Connect(conf.Database)
