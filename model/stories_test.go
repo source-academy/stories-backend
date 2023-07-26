@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	userenums "github.com/source-academy/stories-backend/internal/enums/users"
+	"github.com/source-academy/stories-backend/internal/testutils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,7 +32,7 @@ import (
 
 func TestCreateStory(t *testing.T) {
 	t.Run("should increase the total story count", func(t *testing.T) {
-		db, cleanUp := setupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
 		initialStories, err := GetAllStories(db)
@@ -66,7 +67,7 @@ func TestCreateStory(t *testing.T) {
 
 func TestGetStoryByID(t *testing.T) {
 	t.Run("should get the correct story", func(t *testing.T) {
-		db, cleanUp := setupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
 		// We need to first create a user due to the foreign key constraint

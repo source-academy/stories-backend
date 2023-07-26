@@ -5,9 +5,8 @@ import (
 	"testing"
 
 	"github.com/source-academy/stories-backend/internal/config"
-	"github.com/source-academy/stories-backend/internal/database"
+	"github.com/source-academy/stories-backend/internal/testutils"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
 const (
@@ -15,24 +14,8 @@ const (
 	expectReadEqualMessage   = "Expected read %s to be the one previously created"
 )
 
-var conf, _ = config.LoadFromEnvironment()
+var conf, _ = config.LoadFromEnvironment("../.env.testing")
 var dbConfig *config.DatabaseConfig = conf.Database
-
-func setupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig) (*gorm.DB, func(*testing.T)) {
-	// TODO: Create test DB
-
-	// Connect to DB
-	db, err := database.Connect(dbConfig)
-	if err != nil {
-		t.Error(err)
-	}
-
-	return db, func(t *testing.T) {
-		database.Close(db)
-
-		// TODO: Drop test DB
-	}
-}
 
 // FIXME: Coupling with the other operations in the stories database
 // func TestGetAllUsers(t *testing.T) {
@@ -56,7 +39,7 @@ func setupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig) (*gorm.DB,
 
 func TestCreateUser(t *testing.T) {
 	t.Run("should increase the total user count", func(t *testing.T) {
-		db, cleanUp := setupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
 		initialUsers, err := GetAllUsers(db)
@@ -84,7 +67,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserByID(t *testing.T) {
 	t.Run("should get the correct user", func(t *testing.T) {
-		db, cleanUp := setupDBConnection(t, dbConfig)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig)
 		defer cleanUp(t)
 
 		users := []*User{
