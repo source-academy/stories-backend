@@ -91,3 +91,17 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 
 	return nil
 }
+
+func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
+	var story Story
+	err := db.
+		Scopes(preloadAssociations).
+		Where("id = ?", storyID).
+		First(&story). // store the value to be returned
+		Delete(&story).
+		Error
+	if err != nil {
+		return story, database.HandleDBError(err, "story")
+	}
+	return story, nil
+}
