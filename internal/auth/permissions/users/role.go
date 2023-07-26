@@ -17,7 +17,7 @@ func (p RolePermission) IsAuthorized(r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	// TODO: Implement. Blocked by request context missing group info.
+	// FIXME: Implement. Blocked by request context missing group info.
 	_ = userID
 	// role := getRole(userID, groupID)
 	// return groupenums.IsRoleGreaterThan(role, p.Role)
