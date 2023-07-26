@@ -1,6 +1,8 @@
 package storyparams
 
-import "github.com/source-academy/stories-backend/model"
+import (
+	"github.com/source-academy/stories-backend/model"
+)
 
 type Create struct {
 	AuthorID uint   `json:"authorId"`
