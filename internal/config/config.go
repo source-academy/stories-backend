@@ -126,7 +126,7 @@ func getEnvOrDefault(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value // Includes empty string if set
 	}
-	logrus.Warningf("%s is not found when loading the env file, falling back to %s.", key, fallback)
+	logrus.Warningf("%s not found in environment, falling back to %s.\n", key, fallback)
 	return fallback
 }
 
