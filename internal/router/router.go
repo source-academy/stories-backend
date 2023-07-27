@@ -40,12 +40,14 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 			r.Get("/", handleAPIError(stories.HandleList))
 			r.Get("/{storyID}", handleAPIError(stories.HandleRead))
 			r.Put("/{storyID}", handleAPIError(stories.HandleUpdate))
+			r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
 			r.Post("/", handleAPIError(stories.HandleCreate))
 		})
 
 		r.Route("/users", func(r chi.Router) {
 			r.Get("/", handleAPIError(users.HandleList))
 			r.Get("/{userID}", handleAPIError(users.HandleRead))
+			r.Delete("/{userID}", handleAPIError(users.HandleDelete))
 			r.Post("/", handleAPIError(users.HandleCreate))
 			r.Post("/batch", handleAPIError(users.HandleBatchCreate))
 		})
