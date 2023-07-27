@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO: Reduce duplication with scripts/create_db.go
+
 func connect(conf *config.DatabaseConfig) (*gorm.DB, error) {
 	dsn := conf.ToDataSourceName()
 	driver := postgres.Open(dsn)
