@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	test_env_path  = "../../.env.testing"
+	test_env_path  = "../../.env.test"
 	migration_path = "../../migrations"
 )
 

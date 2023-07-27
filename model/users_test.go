@@ -12,7 +12,7 @@ import (
 const (
 	expectCreateEqualMessage = "Expected last %s to be the one created"
 	expectReadEqualMessage   = "Expected read %s to be the one previously created"
-	test_env_path            = "../.env.testing"
+	test_env_path            = "../.env.test"
 	migration_path           = "../migrations"
 )
 
