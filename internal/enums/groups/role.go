@@ -1,18 +1,20 @@
 package groupenums
 
-type Role uint
+type Role string
 
 const (
-	RoleStandard Role = iota
-	RoleModerator
-	RoleAdmin
+	RoleUnknown   Role = ""
+	RoleStandard  Role = "member"
+	RoleModerator Role = "moderator"
+	RoleAdmin     Role = "admin"
 )
 
 // We cannot name it String() because it will conflict with the String() method
+// TODO: remove if not used. might not be needed unless we need to handle the error case
 func (role Role) ToString() string {
 	switch role {
 	case RoleStandard:
-		return "user"
+		return "member"
 	case RoleModerator:
 		return "moderator"
 	case RoleAdmin:
@@ -21,9 +23,10 @@ func (role Role) ToString() string {
 	return "unknown"
 }
 
+// TODO: remove if not used. since string can be accepted to a role type
 func RoleFromString(role string) (Role, bool) {
 	switch role {
-	case "user":
+	case "member":
 		return RoleStandard, true
 	case "moderator":
 		return RoleModerator, true
