@@ -4,34 +4,37 @@ import (
 	"github.com/source-academy/stories-backend/internal/database"
 	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type UserGroup struct {
 	gorm.Model
-	User  User            `gorm:"foreignKey:UserID;references:ID"`
-	Group Group           `gorm:"foreignKey:GroupID;references:ID"`
-	Role  groupenums.Role // non null
+	UserID  int
+	User    User `gorm:"foreignKey:UserID;references:ID"`
+	GroupID int
+	Group   Group           `gorm:"foreignKey:GroupID;references:ID"`
+	Role    groupenums.Role // non null
 }
 
 func GetUserGroupByID(db *gorm.DB, userID int, groupID int) (UserGroup, error) {
 	var userGroup UserGroup
 
 	err := db.Model(&userGroup).
-		Preload("users").
-		Preload("groups").
-		Where("user.id = ?", userID).
-		Where("group.id = ?", groupID).
+		Preload(clause.Associations).
+		Where(UserGroup{UserID: userID, GroupID: groupID}).
 		First(&userGroup).Error
+
 	if err != nil {
-		return userGroup, database.HandleDBError(err, "group")
+		return userGroup, database.HandleDBError(err, "userGroup")
 	}
+
 	return userGroup, nil
 }
 
 func CreateUserGroup(db *gorm.DB, userGroup *UserGroup) error {
 	err := db.Create(userGroup).Error
 	if err != nil {
-		return database.HandleDBError(err, "group")
+		return database.HandleDBError(err, "userGroup")
 	}
 	return nil
 }
