@@ -1,5 +1,10 @@
 package groupenums
 
+import (
+	"database/sql/driver"
+	"errors"
+)
+
 type Role string
 
 const (
@@ -35,6 +40,23 @@ func RoleFromString(role string) (Role, bool) {
 	}
 	// We fall back to standard role as default
 	return RoleStandard, false
+}
+
+func (role *Role) Scan(value interface{}) error {
+	*role = Role(value.(string))
+	return nil
+}
+
+func (role Role) Value() (driver.Value, error) {
+	switch role {
+	case RoleStandard:
+		return "member", nil
+	case RoleModerator:
+		return "moderator", nil
+	case RoleAdmin:
+		return "admin", nil
+	}
+	return "member", errors.New("unknown role, fall back to member.")
 }
 
 func IsRoleGreaterThan(role1, role2 Role) bool {

@@ -8,14 +8,20 @@ import (
 
 type UserGroup struct {
 	gorm.Model
-	UserID  int             `gorm:"primaryKey"`
-	GroupID int             `gorm:"primaryKey"`
-	Role    groupenums.Role // non null
+	User  User            `gorm:"foreignKey:UserID;references:ID"`
+	Group Group           `gorm:"foreignKey:GroupID;references:ID"`
+	Role  groupenums.Role // non null
 }
 
-func GetUserGroupByID(db *gorm.DB, userId int, groupID int) (UserGroup, error) {
+func GetUserGroupByID(db *gorm.DB, userID int, groupID int) (UserGroup, error) {
 	var userGroup UserGroup
-	err := db.First(&userGroup, userId, groupID).Error
+
+	err := db.Model(&userGroup).
+		Preload("users").
+		Preload("groups").
+		Where("user.id = ?", userID).
+		Where("group.id = ?", groupID).
+		First(&userGroup).Error
 	if err != nil {
 		return userGroup, database.HandleDBError(err, "group")
 	}
