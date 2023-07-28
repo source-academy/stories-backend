@@ -1,8 +1,8 @@
 -- +migrate Up
 
-CREATE TYPE role AS ENUM('member', 'moderator', 'admin')
+CREATE TYPE role AS ENUM('member', 'moderator', 'admin');
 
-CREATE TABLE IF NOT EXISTS usergroups (
+CREATE TABLE IF NOT EXISTS user_groups (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),
     group_id INT REFERENCES groups(id),
