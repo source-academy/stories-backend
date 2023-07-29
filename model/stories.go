@@ -76,6 +76,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 			}
 
 			err = tx.
+				Scopes(preloadAssociations).
 				Where("id = ?", storyID).
 				Updates(newStory).
 				First(newStory).
