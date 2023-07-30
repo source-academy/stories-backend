@@ -10,9 +10,9 @@ import (
 type UserGroup struct {
 	gorm.Model
 	UserID  int
-	User    User `gorm:"foreignKey:UserID;references:ID"`
+	User    User
 	GroupID int
-	Group   Group           `gorm:"foreignKey:GroupID;references:ID"`
+	Group   Group
 	Role    groupenums.Role // non null
 }
 
