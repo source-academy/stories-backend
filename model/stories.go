@@ -75,7 +75,22 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 				return database.HandleDBError(err, "story")
 			}
 
+			// Handle nullable fields when null
+			if newStory.PinOrder == nil {
+				err = tx.
+					Scopes(preloadAssociations).
+					Where("id = ?", storyID).
+					Model(newStory).
+					Update("pin_order", gorm.Expr("NULL")).
+					Error
+				if err != nil {
+					return database.HandleDBError(err, "story")
+				}
+			}
+
+			// Update remaining fields
 			err = tx.
+				Scopes(preloadAssociations).
 				Where("id = ?", storyID).
 				Updates(newStory).
 				First(newStory).
