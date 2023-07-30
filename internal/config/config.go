@@ -63,13 +63,17 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 
 	// Database
+	defaultDBName := dbutils.DB_DEFAULT_NAME
+	if config.Environment == envutils.ENV_TEST {
+		defaultDBName = dbutils.DB_DEFAULT_NAME_TESTING
+	}
 	dbConfig := &DatabaseConfig{
 		// Port handled below
 		TimeZone:     getEnvOrDefault(DB_TIMEZONE, dbutils.DB_DEFAULT_TIMEZONE),
 		Host:         getEnvOrDefault(DB_HOSTNAME, dbutils.DB_DEFAULT_HOSTNAME),
 		User:         getEnvOrDefault(DB_USERNAME, dbutils.DB_DEFAULT_USER),
 		Password:     getEnvOrDefault(DB_PASSWORD, dbutils.DB_DEFAULT_PASSWORD),
-		DatabaseName: getEnvOrDefault(DB_NAME, dbutils.DB_DEFAULT_NAME),
+		DatabaseName: getEnvOrDefault(DB_NAME, defaultDBName),
 	}
 	dbConfig.Port, err = parseIntFromEnv(DB_PORT, dbutils.DB_DEFAULT_PORT)
 	if err != nil {
@@ -122,6 +126,7 @@ func getEnvOrDefault(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value // Includes empty string if set
 	}
+	logrus.Warningf("%s not found in environment, falling back to %s.\n", key, fallback)
 	return fallback
 }
 
