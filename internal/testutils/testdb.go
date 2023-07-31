@@ -64,8 +64,8 @@ func Create(conf *config.DatabaseConfig) error {
 	if result.Find(rec); len(rec) == 0 {
 		logrus.Infof("Database %s does not exist. Creating...", conf.DatabaseName)
 
-		create_command := fmt.Sprintf("CREATE DATABASE %s", conf.DatabaseName)
-		result := db.Exec(create_command)
+		createCommand := fmt.Sprintf("CREATE DATABASE %s", conf.DatabaseName)
+		result := db.Exec(createCommand)
 
 		if result.Error != nil {
 			return result.Error
@@ -90,16 +90,16 @@ func Drop(conf *config.DatabaseConfig) {
 	}
 	defer close(db)
 
-	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", conf.DatabaseName)
-	result := db.Exec(drop_command)
+	dropCommand := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", conf.DatabaseName)
+	result := db.Exec(dropCommand)
 	if result.Error != nil {
 		logrus.Error(result.Error)
 	}
 }
 
-func migrateDB(d *gorm.DB, migration_path string) error {
+func migrateDB(d *gorm.DB, migrationPath string) error {
 	migrations := (migrate.FileMigrationSource{
-		Dir: migration_path,
+		Dir: migrationPath,
 	})
 
 	db, err := d.DB()
