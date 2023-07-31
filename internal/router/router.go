@@ -44,6 +44,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 			r.Post("/", handleAPIError(stories.HandleCreate))
 		})
 
+		r.Get("/user", handleAPIError(users.HandleReadSelf))
 		r.Route("/users", func(r chi.Router) {
 			r.Get("/", handleAPIError(users.HandleList))
 			r.Get("/{userID}", handleAPIError(users.HandleRead))
