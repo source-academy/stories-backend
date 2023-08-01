@@ -12,7 +12,7 @@ import (
 func TestMakeMiddlewareFrom(t *testing.T) {
 	t.Run("should return a middleware function", func(t *testing.T) {
 		// Set up
-		conf := testutils.GetTestConf(test_env_path)
+		conf := testutils.GetTestConf(testEnvPath)
 		db, _ := Connect(conf.Database)
 		defer ignoreError(func() error { return Close(db) })
 
@@ -33,7 +33,7 @@ func TestGetDBFrom(t *testing.T) {
 
 	t.Run("should return a database when database is in context", func(t *testing.T) {
 		// Set up
-		conf := testutils.GetTestConf(test_env_path)
+		conf := testutils.GetTestConf(testEnvPath)
 		db, _ := Connect(conf.Database)
 		defer ignoreError(func() error { return Close(db) })
 

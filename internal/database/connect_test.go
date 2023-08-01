@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	test_env_path  = "../../.env.test"
-	migration_path = "../../migrations"
+	testEnvPath   = "../../.env.test"
+	migrationPath = "../../migrations"
 )
 
 func ignoreError(func() (err error)) {}
 
 func TestConnect(t *testing.T) {
-	conf := testutils.GetTestConf(test_env_path)
+	conf := testutils.GetTestConf(testEnvPath)
 	err := testutils.Create(conf.Database)
 	if err != nil {
 		t.Error(err)
