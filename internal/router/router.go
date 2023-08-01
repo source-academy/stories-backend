@@ -28,6 +28,8 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	}
 	if config.Environment == envutils.ENV_DEVELOPMENT {
 		options.AllowedOrigins = []string{"https://*", "http://*"}
+	} else if config.AllowedOrigins != nil {
+		options.AllowedOrigins = *config.AllowedOrigins
 	}
 	r.Use(cors.Handler(options))
 
