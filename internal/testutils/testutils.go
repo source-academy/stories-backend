@@ -11,25 +11,21 @@ import (
 )
 
 var (
-	test_conf *config.Config
-	once      sync.Once
+	testConfig *config.Config
+	once       sync.Once
 )
 
-func GetTestConf(test_env_path string) config.Config {
+func GetTestConf(testEnvPath string) config.Config {
 	yellowChevron := color.With(color.Yellow, "❯")
 	fmt.Println(yellowChevron, "Getting test conf")
 	once.Do(func() { // <-- atomic, does not allow repeating
 		fmt.Println(yellowChevron, yellowChevron, yellowChevron, "Creating test conf")
-		test_conf, _ = config.LoadFromEnvironment(test_env_path)
+		testConfig, _ = config.LoadFromEnvironment(testEnvPath)
 	})
-	// if test_conf == nil {
-	// 	fmt.Println(yellowChevron, yellowChevron, "Creating test conf")
-	// 	test_conf, _ = config.LoadFromEnvironment(test_env_path)
-	// }
-	return *test_conf
+	return *testConfig
 }
 
-func SetupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig, migration_path string) (*gorm.DB, func(*testing.T)) {
+func SetupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig, migrationPath string) (*gorm.DB, func(*testing.T)) {
 	Drop(dbConfig)
 
 	// Create test DB
@@ -44,7 +40,7 @@ func SetupDBConnection(t *testing.T, dbConfig *config.DatabaseConfig, migration_
 		t.Error(err)
 	}
 
-	err = migrateDB(db, migration_path)
+	err = migrateDB(db, migrationPath)
 	if err != nil {
 		t.Error(err)
 	}
