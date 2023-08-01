@@ -34,6 +34,9 @@ services:
       - DB_USERNAME=${PG_USER}
       - DB_NAME=${PG_DATABASE}
       - JWKS_ENDPOINT=${JWKS_ENDPOINT}
+      - ALLOWED_ORIGIN_1=${ALLOWED_ORIGIN_1}
+      - ALLOWED_ORIGIN_2=${ALLOWED_ORIGIN_2}
+      # ... more origins as needed
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
