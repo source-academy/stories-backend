@@ -15,7 +15,7 @@ import (
 
 func TestCreateUserGroup(t *testing.T) {
 	t.Run("succeeds: should increase the total usergroup count", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
 		// We need to first create a user and a group due to the foreign key constraint
@@ -50,7 +50,7 @@ func TestCreateUserGroup(t *testing.T) {
 	})
 
 	t.Run("failure: should not create twice with user_group index", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
 		// We need to first create a user and a group due to the foreign key constraint
@@ -86,7 +86,7 @@ func TestCreateUserGroup(t *testing.T) {
 func TestGetUserGroupByID(t *testing.T) {
 	// t.Skip("skip")
 	t.Run("should get the correct story", func(t *testing.T) {
-		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
 		// We need to first create a user and a group due to the foreign key constraint
