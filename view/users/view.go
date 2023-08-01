@@ -22,3 +22,20 @@ func SingleFrom(user model.User) View {
 	}
 	return userView
 }
+
+type SummaryView struct {
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
+}
+
+func SummaryFrom(user model.User) SummaryView {
+	name := user.FullName
+	if name == "" {
+		name = user.Username
+	}
+	userView := SummaryView{
+		ID:   user.ID,
+		Name: name,
+	}
+	return userView
+}
