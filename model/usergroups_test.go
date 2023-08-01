@@ -48,6 +48,39 @@ func TestCreateUserGroup(t *testing.T) {
 		assert.Equal(t, userGroup.User.Username, lastUserGroup.User.Username, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 		assert.Equal(t, userGroup.Group.ID, lastUserGroup.Group.ID, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 	})
+
+	t.Run("failure: should not create twice with user_group index", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migration_path)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testUser1",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		userGroup := UserGroup{
+			User:  user,
+			Group: group,
+			Role:  groupenums.RoleStandard,
+		}
+		err := CreateUserGroup(db, &userGroup)
+		assert.Nil(t, err, "Expected no error when creating usergroup for the first time")
+
+		userGroup2 := UserGroup{
+			User:  user,
+			Group: group,
+			Role:  groupenums.RoleStandard,
+		}
+		err = CreateUserGroup(db, &userGroup2)
+		assert.Error(t, err, "Expected error for violating user_group unique index")
+	})
 }
 
 func TestGetUserGroupByID(t *testing.T) {
