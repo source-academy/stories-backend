@@ -42,6 +42,8 @@ const (
 
 	JWKS_ENDPOINT = "JWKS_ENDPOINT"
 
+	ALLOWED_ORIGINS_PREFIX = "ALLOWED_ORIGIN_"
+
 	missingRequiredEnvVarMsg = "Missing required environment variable: %s"
 )
 
@@ -104,6 +106,13 @@ func LoadFromEnvironment(envFiles ...string) (*Config, error) {
 	}
 	config.JWKSEndpoint = endpoint
 
+	// CORS
+	allowedOrigins := getEnvValues(ALLOWED_ORIGINS_PREFIX)
+	if len(allowedOrigins) > 0 {
+		logrus.Infoln("Detected origins:", allowedOrigins)
+		config.AllowedOrigins = &allowedOrigins
+	}
+
 	return config, nil
 }
 
@@ -148,4 +157,24 @@ func parseIntFromEnv(key string, defaultValue int) (int, error) {
 		return defaultValue, err
 	}
 	return value, nil
+}
+
+func getEnvValues(keyPrefix string) []string {
+	allowedOrigins := []string{}
+	// One-indexed
+	for i := 1; ; i++ {
+		key := keyPrefix + strconv.Itoa(i)
+		logrus.Debugln("Looking for", key, "in environment")
+		origin, ok := os.LookupEnv(key)
+		if !ok {
+			break
+		}
+		if origin == "" {
+			logrus.Warningln("Empty origin found for", key, "- skipping")
+			continue
+		}
+		allowedOrigins = append(allowedOrigins, origin)
+	}
+	logrus.Debugln("Found", len(allowedOrigins), "allowed origins from environment")
+	return allowedOrigins
 }
