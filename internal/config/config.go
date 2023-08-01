@@ -22,6 +22,8 @@ type Config struct {
 	SentryDSN string
 
 	JWKSEndpoint string
+
+	AllowedOrigins *[]string
 }
 
 const (
