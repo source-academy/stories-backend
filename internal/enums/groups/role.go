@@ -1,18 +1,25 @@
 package groupenums
 
-type Role uint
+import (
+	"database/sql/driver"
+	"errors"
+)
+
+type Role string
 
 const (
-	RoleStandard Role = iota
-	RoleModerator
-	RoleAdmin
+	RoleUnknown   Role = ""
+	RoleStandard  Role = "member"
+	RoleModerator Role = "moderator"
+	RoleAdmin     Role = "admin"
 )
 
 // We cannot name it String() because it will conflict with the String() method
+// TODO: remove if not used. might not be needed unless we need to handle the error case
 func (role Role) ToString() string {
 	switch role {
 	case RoleStandard:
-		return "user"
+		return "member"
 	case RoleModerator:
 		return "moderator"
 	case RoleAdmin:
@@ -21,9 +28,10 @@ func (role Role) ToString() string {
 	return "unknown"
 }
 
+// TODO: remove if not used. since string can be accepted to a role type
 func RoleFromString(role string) (Role, bool) {
 	switch role {
-	case "user":
+	case "member":
 		return RoleStandard, true
 	case "moderator":
 		return RoleModerator, true
@@ -32,6 +40,25 @@ func RoleFromString(role string) (Role, bool) {
 	}
 	// We fall back to standard role as default
 	return RoleStandard, false
+}
+
+// Implements the Scanner interface
+func (role *Role) Scan(value interface{}) error {
+	*role = Role(value.(string))
+	return nil
+}
+
+// Imokements the Valuer interface
+func (role Role) Value() (driver.Value, error) {
+	switch role {
+	case RoleStandard:
+		return "member", nil
+	case RoleModerator:
+		return "moderator", nil
+	case RoleAdmin:
+		return "admin", nil
+	}
+	return "member", errors.New("unknown role, fall back to member.")
 }
 
 func IsRoleGreaterThan(role1, role2 Role) bool {
