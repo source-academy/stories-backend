@@ -42,11 +42,13 @@ func RoleFromString(role string) (Role, bool) {
 	return RoleStandard, false
 }
 
+// Implements the Scanner interface
 func (role *Role) Scan(value interface{}) error {
 	*role = Role(value.(string))
 	return nil
 }
 
+// Imokements the Valuer interface
 func (role Role) Value() (driver.Value, error) {
 	switch role {
 	case RoleStandard:
