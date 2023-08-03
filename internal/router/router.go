@@ -39,10 +39,12 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 
 	// Define routes
 	r.Group(func(r chi.Router) {
+		// Public routes
 		r.Get("/", controller.HandleHealthCheck)
 	})
 
 	r.Group(func(r chi.Router) {
+		// Private routes
 		r.Use(auth.MakeMiddlewareFrom(config))
 		r.Route("/stories", func(r chi.Router) {
 			r.Get("/", handleAPIError(stories.HandleList))
