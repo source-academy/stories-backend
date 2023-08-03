@@ -35,6 +35,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 		options.AllowedOrigins = *config.AllowedOrigins
 	}
 	r.Use(cors.Handler(options))
+	r.Use(middleware.NoCache)
 
 	// Define routes
 	r.Get("/", controller.HandleHealthCheck)
