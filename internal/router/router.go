@@ -24,8 +24,10 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	}
 	// Handle CORS
 	options := cors.Options{
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           60,
 	}
 	if config.Environment == envutils.ENV_DEVELOPMENT {
 		options.AllowedOrigins = []string{"https://*", "http://*"}
