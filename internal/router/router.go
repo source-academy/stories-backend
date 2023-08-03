@@ -38,7 +38,9 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Use(middleware.NoCache)
 
 	// Define routes
-	r.Get("/", controller.HandleHealthCheck)
+	r.Group(func(r chi.Router) {
+		r.Get("/", controller.HandleHealthCheck)
+	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(auth.MakeMiddlewareFrom(config))
