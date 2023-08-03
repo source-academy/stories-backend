@@ -19,9 +19,9 @@ func injectUserIDToContext(r *http.Request, userID int) *http.Request {
 }
 
 func GetUserIDFrom(r *http.Request) (*int, error) {
-	userID, ok := r.Context().Value(userContextKey).(*int)
+	userID, ok := r.Context().Value(userContextKey).(int)
 	if !ok {
 		return nil, errors.New("Could not get user ID from request context")
 	}
-	return userID, nil
+	return &userID, nil
 }
