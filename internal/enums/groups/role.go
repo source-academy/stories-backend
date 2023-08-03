@@ -2,6 +2,11 @@ package groupenums
 
 type Role string
 
+// We use database enums for roles, unlike login providers,
+// hence the string type instead of int.
+//
+// As a side effect, we do not need a RoleFromString function
+// as strings can be directly accepted into Role types.
 const (
 	RoleUnknown   Role = ""
 	RoleStandard  Role = "member"
