@@ -1,9 +1,7 @@
 package auth
 
 import (
-	"encoding/json"
-	"io"
-	"net/http"
+	"context"
 
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/sirupsen/logrus"
@@ -23,24 +21,9 @@ func getJWKS(endpointURL string) jwk.Set {
 func setJwkFromEndpoint(endpointURL string) {
 	// Get JWK from endpoint
 	logrus.Debugf("Using %s as JWKS source\n", endpointURL)
-	resp, err := http.Get(endpointURL)
+	set, err := jwk.Fetch(context.Background(), endpointURL)
 	if err != nil {
-		logrus.WithError(err).Error("Failed to get JWK from endpoint")
-		return
-	}
-	defer resp.Body.Close()
-
-	// Parse JWK
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logrus.WithError(err).Error("Failed to read JWK response body")
-		return
-	}
-
-	set := jwk.NewSet()
-	err = json.Unmarshal(body, &set)
-	if err != nil {
-		logrus.WithError(err).Error("Failed to parse JWK")
+		logrus.WithError(err).Error("Failed to fetch JWK from endpoint")
 		return
 	}
 
