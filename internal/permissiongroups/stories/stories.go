@@ -1,8 +1,8 @@
 package storypermissiongroups
 
 import (
-	"github.com/source-academy/stories-backend/internal/auth/permissions"
-	userpermissions "github.com/source-academy/stories-backend/internal/auth/permissions/users"
+	"github.com/source-academy/stories-backend/internal/permissions"
+	userpermissions "github.com/source-academy/stories-backend/internal/permissions/users"
 )
 
 func Create() permissions.PermissionGroup {
