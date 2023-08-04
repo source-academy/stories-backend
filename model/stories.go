@@ -17,12 +17,6 @@ type Story struct {
 	PinOrder *int // nil if not pinned
 }
 
-var (
-	preloadAssociations = func(db *gorm.DB) *gorm.DB {
-		return db.Preload("Author")
-	}
-)
-
 func GetAllStories(db *gorm.DB) ([]Story, error) {
 	var stories []Story
 	err := db.
