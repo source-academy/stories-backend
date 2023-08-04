@@ -3,12 +3,15 @@ package model
 import (
 	"github.com/source-academy/stories-backend/internal/database"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Story struct {
 	gorm.Model
 	AuthorID uint
 	Author   User
+	GroupID  uint
+	Group    Group
 	Title    string
 	Content  string
 	PinOrder *int // nil if not pinned
@@ -23,8 +26,7 @@ var (
 func GetAllStories(db *gorm.DB) ([]Story, error) {
 	var stories []Story
 	err := db.
-		Scopes(preloadAssociations).
-		// TODO: Abstract out
+		Preload(clause.Associations).
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
 		Find(&stories).
 		Error
@@ -37,7 +39,7 @@ func GetAllStories(db *gorm.DB) ([]Story, error) {
 func GetStoryByID(db *gorm.DB, id int) (Story, error) {
 	var story Story
 	err := db.
-		Scopes(preloadAssociations).
+		Preload(clause.Associations).
 		First(&story, id).
 		Error
 	if err != nil {
@@ -48,7 +50,7 @@ func GetStoryByID(db *gorm.DB, id int) (Story, error) {
 
 func CreateStory(db *gorm.DB, story *Story) error {
 	err := db.
-		Scopes(preloadAssociations).
+		Preload(clause.Associations).
 		Create(story).
 		// Get associated Author. See
 		// https://github.com/go-gorm/gen/issues/618 on why
@@ -67,7 +69,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 		Transaction(func(tx *gorm.DB) error {
 			var originalStory Story
 			err := tx.
-				Scopes(preloadAssociations).
+				Preload(clause.Associations).
 				Where("id = ?", storyID).
 				First(&originalStory).
 				Error
@@ -78,7 +80,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 			// Handle nullable fields when null
 			if newStory.PinOrder == nil {
 				err = tx.
-					Scopes(preloadAssociations).
+					Preload(clause.Associations).
 					Where("id = ?", storyID).
 					Model(newStory).
 					Update("pin_order", gorm.Expr("NULL")).
@@ -90,7 +92,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 
 			// Update remaining fields
 			err = tx.
-				Scopes(preloadAssociations).
+				Preload(clause.Associations).
 				Where("id = ?", storyID).
 				Updates(newStory).
 				First(newStory).
@@ -111,7 +113,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
 	var story Story
 	err := db.
-		Scopes(preloadAssociations).
+		Preload(clause.Associations).
 		Where("id = ?", storyID).
 		First(&story). // store the value to be returned
 		Delete(&story).
