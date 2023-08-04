@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"github.com/source-academy/stories-backend/internal/auth/permissions"
+	"github.com/source-academy/stories-backend/internal/permissions"
 )
 
 func CheckPermissions(r *http.Request, requestedActionPermissions ...permissions.PermissionGroup) (bool, error) {
