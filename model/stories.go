@@ -21,6 +21,7 @@ func GetAllStories(db *gorm.DB) ([]Story, error) {
 	var stories []Story
 	err := db.
 		Preload(clause.Associations).
+		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
 		Find(&stories).
 		Error
