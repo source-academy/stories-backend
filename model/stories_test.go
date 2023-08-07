@@ -70,6 +70,40 @@ func TestCreateStory(t *testing.T) {
 		assert.Equal(t, story.GroupID, lastStory.GroupID, fmt.Sprintf(expectCreateEqualMessage, "story"))
 		assert.Equal(t, story.Content, lastStory.Content, fmt.Sprintf(expectCreateEqualMessage, "story"))
 	})
+
+	t.Run("can create without group", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		initialStories, err := GetAllStories(db)
+		assert.Nil(t, err, "Expected no error when getting all stories")
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testStoryAuthor",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		story := Story{
+			AuthorID: user.ID,
+			Content:  "# Hi\n\nThis is a test story.",
+		}
+		err = CreateStory(db, &story)
+		assert.Nil(t, err, "Expected no error when creating story")
+
+		newStories, err := GetAllStories(db)
+		assert.Nil(t, err, "Expected no error when getting all stories")
+		assert.Len(t, newStories, len(initialStories)+1, "Expected number of stories to increase by 1")
+
+		var lastStory Story
+		db.Model(&Story{}).Last(&lastStory)
+
+		assert.Equal(t, story.ID, lastStory.ID, "Expected the story ID to be updated")
+		assert.Equal(t, story.AuthorID, lastStory.AuthorID, fmt.Sprintf(expectCreateEqualMessage, "story"))
+		assert.Equal(t, story.GroupID, lastStory.GroupID, fmt.Sprintf(expectCreateEqualMessage, "story"))
+		assert.Equal(t, story.Content, lastStory.Content, fmt.Sprintf(expectCreateEqualMessage, "story"))
+	})
 }
 
 func TestGetStoryByID(t *testing.T) {
