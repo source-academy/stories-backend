@@ -52,7 +52,7 @@ func TestCreateStory(t *testing.T) {
 
 		story := Story{
 			AuthorID: user.ID,
-			GroupID:  group.ID,
+			Group:    group,
 			Content:  "# Hi\n\nThis is a test story.",
 		}
 		err = CreateStory(db, &story)
@@ -90,9 +90,9 @@ func TestGetStoryByID(t *testing.T) {
 		_ = CreateGroup(db, &group)
 
 		stories := []*Story{
-			{AuthorID: user.ID, GroupID: group.ID, Content: "The quick"},
-			{AuthorID: user.ID, GroupID: group.ID, Content: "brown fox"},
-			{AuthorID: user.ID, GroupID: group.ID, Content: "jumps over"},
+			{AuthorID: user.ID, Group: group, Content: "The quick"},
+			{AuthorID: user.ID, Group: group, Content: "brown fox"},
+			{AuthorID: user.ID, Group: group, Content: "jumps over"},
 		}
 
 		for _, storyToAdd := range stories {
