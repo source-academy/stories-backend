@@ -104,6 +104,17 @@ func TestCreateStory(t *testing.T) {
 		assert.Equal(t, story.GroupID, lastStory.GroupID, fmt.Sprintf(expectCreateEqualMessage, "story"))
 		assert.Equal(t, story.Content, lastStory.Content, fmt.Sprintf(expectCreateEqualMessage, "story"))
 	})
+
+	t.Run("cannot create without author", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		story := Story{
+			Content: "# Hi\n\nThis is a test story.",
+		}
+		err := CreateStory(db, &story)
+		assert.Error(t, err, "Expected error when creating story without Author ID")
+	})
 }
 
 func TestGetStoryByID(t *testing.T) {

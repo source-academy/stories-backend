@@ -81,6 +81,37 @@ func TestCreateUserGroup(t *testing.T) {
 		err = CreateUserGroup(db, &userGroup2)
 		assert.Error(t, err, "Expected error for violating user_group unique index")
 	})
+
+	t.Run("failure: should not create with missing user or group", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testUser1",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		userGroup := UserGroup{
+			User: user,
+			Role: groupenums.RoleStandard,
+		}
+		err := CreateUserGroup(db, &userGroup)
+		assert.Error(t, err, "Expected error when creating usergroup without group")
+
+		userGroup2 := UserGroup{
+			Group: group,
+			Role:  groupenums.RoleStandard,
+		}
+		err = CreateUserGroup(db, &userGroup2)
+		assert.Error(t, err, "Expected error when creating usergroup without group")
+	})
 }
 
 func TestGetUserGroupByID(t *testing.T) {
