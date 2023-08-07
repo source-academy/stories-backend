@@ -10,7 +10,7 @@ type Story struct {
 	gorm.Model
 	AuthorID uint
 	Author   User
-	GroupID  uint
+	GroupID  *uint // null means this is a public story
 	Group    Group
 	Title    string
 	Content  string
