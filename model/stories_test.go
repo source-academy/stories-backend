@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	"github.com/source-academy/stories-backend/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -29,6 +30,15 @@ import (
 // 		assert.Len(t, stories, 1, "Expected number of stories to be 1 after adding 1 story")
 // 	})
 // }
+
+var (
+	errInvalidForeignKey = pgconn.PgError{
+		Code: "23503",
+	}
+	errNonNullable = pgconn.PgError{
+		Code: "23502",
+	}
+)
 
 func TestCreateStory(t *testing.T) {
 	t.Run("should increase the total story count", func(t *testing.T) {
@@ -104,6 +114,21 @@ func TestCreateStory(t *testing.T) {
 		assert.Equal(t, story.GroupID, lastStory.GroupID, fmt.Sprintf(expectCreateEqualMessage, "story"))
 		assert.Equal(t, story.Content, lastStory.Content, fmt.Sprintf(expectCreateEqualMessage, "story"))
 	})
+
+	t.Run("cannot create without author in model", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		story := Story{
+			Content: "# Hi\n\nThis is a test story.",
+		}
+		err := CreateStory(db, &story)
+
+		var pgerr *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errInvalidForeignKey.Code, pgerr.Code)
+		}
+	})
 }
 
 func TestGetStoryByID(t *testing.T) {
@@ -141,6 +166,27 @@ func TestGetStoryByID(t *testing.T) {
 			assert.Equal(t, story.AuthorID, dbStory.AuthorID, fmt.Sprintf(expectReadEqualMessage, "story"))
 			assert.Equal(t, story.GroupID, dbStory.GroupID, fmt.Sprintf(expectReadEqualMessage, "story"))
 			assert.Equal(t, story.Content, dbStory.Content, fmt.Sprintf(expectReadEqualMessage, "story"))
+		}
+	})
+}
+
+func TestStoryDB(t *testing.T) {
+	t.Run("cannot create without author", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		err := db.Exec(`INSERT INTO "stories" 
+		("created_at","updated_at","deleted_at","author_id","group_id","title","content","pin_order") 
+		VALUES ('2023-08-08 22:17:28.085','2023-08-08 22:17:28.085',NULL,NULL,NULL,'','# Hi, This is a test story.',NULL)`).
+			Error
+		var pgerr *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errNonNullable.Code, pgerr.Code)
 		}
 	})
 }
