@@ -15,8 +15,10 @@ import (
 	"github.com/source-academy/stories-backend/model"
 )
 
+type contextKey string
+
 const (
-	userGroupKey = "user_group_context"
+	userGroupKey contextKey = "user_group_context"
 )
 
 func InjectUserGroupIntoContext(next http.Handler) http.Handler {
