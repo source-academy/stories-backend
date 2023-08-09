@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
+	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
 	"github.com/source-academy/stories-backend/model"
 )
@@ -18,7 +19,8 @@ import (
 type contextKey string
 
 const (
-	userGroupKey contextKey = "user_group_context"
+	GroupKey contextKey = "group_context"
+	RoleKey  contextKey = "role_context"
 )
 
 func InjectUserGroupIntoContext(next http.Handler) http.Handler {
@@ -26,28 +28,26 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 		groupIDStr := chi.URLParam(r, "groupID")
 		groupID, err := strconv.Atoi(groupIDStr)
 		if err != nil {
-			apierrors.ServeHTTP(w, r, apierrors.ClientBadRequestError{
+			logrus.Error(err)
+			apierrors.ServeHTTP(w, r, apierrors.ClientUnprocessableEntityError{
 				Message: fmt.Sprintf("Invalid groupID: %v", err),
 			})
 			return
 		}
 
-		// get user
+		// Get user, this is called after the user ID injection
 		userID, err := auth.GetUserIDFrom(r)
 		if err != nil {
-			apierrors.ServeHTTP(w, r, apierrors.InternalServerError{
-				Message: fmt.Sprintf("Failed to get user: %s\n", err),
-			})
+			logrus.Error(err)
+			apierrors.ServeHTTP(w, r, err)
 			return
 		}
 
-		// Get DB instance
+		// Get DB instance, this is called after the DB middleware
 		db, err := database.GetDBFrom(r)
 		if err != nil {
 			logrus.Error(err)
-			apierrors.ServeHTTP(w, r, apierrors.InternalServerError{
-				Message: fmt.Sprintf("Failed to get DB instance: %s\n", err),
-			})
+			apierrors.ServeHTTP(w, r, err)
 			return
 		}
 
@@ -59,23 +59,32 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 		var dbUserGroup model.UserGroup
 		err = db.Where(&userGroup).First(&dbUserGroup).Error
 		if err != nil {
+			logrus.Error(err)
 			apierrors.ServeHTTP(w, r, apierrors.ClientForbiddenError{
-				Message: fmt.Sprintf("User not in group: %s\n", err),
+				Message: database.HandleDBError(err, "user_group").Error(),
 			})
 			return
 		}
 
-		// Create a new session from the database for each request
-		ctx := context.WithValue(r.Context(), userGroupKey, dbUserGroup)
+		group_context := context.WithValue(r.Context(), GroupKey, dbUserGroup.GroupID)
+		ctx := context.WithValue(group_context, RoleKey, dbUserGroup.Role)
 		// Inject the new context into the request
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func GetUserGroupFrom(r *http.Request) (*model.UserGroup, error) {
-	userGroup, ok := r.Context().Value(userGroupKey).(*model.UserGroup)
+func GetGroupIDFrom(r *http.Request) (*int, error) {
+	groupID, ok := r.Context().Value(GroupKey).(*int)
 	if !ok {
-		return nil, errors.New("Could not get database from request context")
+		return nil, errors.New("Could not get groupID from request context")
 	}
-	return userGroup, nil
+	return groupID, nil
+}
+
+func GetRoleDFrom(r *http.Request) (*groupenums.Role, error) {
+	role, ok := r.Context().Value(RoleKey).(*groupenums.Role)
+	if !ok {
+		return nil, errors.New("Could not get role from request context")
+	}
+	return role, nil
 }
