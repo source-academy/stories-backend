@@ -11,6 +11,7 @@ import (
 	"github.com/source-academy/stories-backend/controller/users"
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/config"
+	usergroups "github.com/source-academy/stories-backend/internal/usergroups"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
@@ -46,22 +47,27 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 	r.Group(func(r chi.Router) {
 		// Private routes
 		r.Use(auth.MakeMiddlewareFrom(config))
-		r.Route("/stories", func(r chi.Router) {
-			r.Get("/", handleAPIError(stories.HandleList))
-			r.Get("/{storyID}", handleAPIError(stories.HandleRead))
-			r.Put("/{storyID}", handleAPIError(stories.HandleUpdate))
-			r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
-			r.Post("/", handleAPIError(stories.HandleCreate))
+		r.Route("/groups/{groupID}", func(r chi.Router) {
+			// Group specific routes
+			r.Use(usergroups.InjectUserGroupIntoContext)
+			r.Route("/stories", func(r chi.Router) {
+				r.Get("/", handleAPIError(stories.HandleList))
+				r.Get("/{storyID}", handleAPIError(stories.HandleRead))
+				r.Put("/{storyID}", handleAPIError(stories.HandleUpdate))
+				r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
+				r.Post("/", handleAPIError(stories.HandleCreate))
+			})
+
+			r.Route("/users", func(r chi.Router) {
+				r.Get("/", handleAPIError(users.HandleList))
+				r.Get("/{userID}", handleAPIError(users.HandleRead))
+				r.Delete("/{userID}", handleAPIError(users.HandleDelete))
+				r.Post("/", handleAPIError(users.HandleCreate))
+				r.Post("/batch", handleAPIError(users.HandleBatchCreate))
+			})
 		})
 
 		r.Get("/user", handleAPIError(users.HandleReadSelf))
-		r.Route("/users", func(r chi.Router) {
-			r.Get("/", handleAPIError(users.HandleList))
-			r.Get("/{userID}", handleAPIError(users.HandleRead))
-			r.Delete("/{userID}", handleAPIError(users.HandleDelete))
-			r.Post("/", handleAPIError(users.HandleCreate))
-			r.Post("/batch", handleAPIError(users.HandleBatchCreate))
-		})
 	})
 
 	return r
