@@ -3,7 +3,6 @@ package userpermissions
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,8 +28,8 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 		groupID, err := strconv.Atoi(groupIDStr)
 		if err != nil {
 			logrus.Error(err)
-			apierrors.ServeHTTP(w, r, apierrors.ClientUnprocessableEntityError{
-				Message: fmt.Sprintf("Invalid groupID: %v", err),
+			apierrors.ServeHTTP(w, r, apierrors.ClientNotFoundError{
+				Message: "Route not found.",
 			})
 			return
 		}
