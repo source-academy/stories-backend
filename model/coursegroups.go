@@ -8,7 +8,7 @@ import (
 
 type CourseGroup struct {
 	gorm.Model
-	CourseID uint `gorm:"primaryKey"`
+	CourseID uint // assuming that course is unique
 	GroupID  uint
 	Group    Group
 }
