@@ -11,7 +11,7 @@ import (
 	"github.com/source-academy/stories-backend/controller/users"
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/config"
-	userpermissions "github.com/source-academy/stories-backend/internal/permissions/groups"
+	usergroup "github.com/source-academy/stories-backend/internal/usergroups"
 	envutils "github.com/source-academy/stories-backend/internal/utils/env"
 )
 
@@ -49,7 +49,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 		r.Use(auth.MakeMiddlewareFrom(config))
 		r.Route("/groups/{groupID}", func(r chi.Router) {
 			// Group specific routes
-			r.Use(userpermissions.InjectUserGroupIntoContext)
+			r.Use(usergroup.InjectUserGroupIntoContext)
 			r.Route("/stories", func(r chi.Router) {
 				r.Get("/", handleAPIError(stories.HandleList))
 				r.Get("/{storyID}", handleAPIError(stories.HandleRead))

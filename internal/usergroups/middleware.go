@@ -1,4 +1,4 @@
-package userpermissions
+package usergroup
 
 import (
 	"context"
@@ -18,8 +18,8 @@ import (
 type contextKey string
 
 const (
-	GroupKey contextKey = "group_context"
-	RoleKey  contextKey = "role_context"
+	groupKey contextKey = "group_context"
+	roleKey  contextKey = "role_context"
 )
 
 func InjectUserGroupIntoContext(next http.Handler) http.Handler {
@@ -65,15 +65,15 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 			return
 		}
 
-		group_context := context.WithValue(r.Context(), GroupKey, dbUserGroup.GroupID)
-		ctx := context.WithValue(group_context, RoleKey, dbUserGroup.Role)
+		groupContext := context.WithValue(r.Context(), groupKey, dbUserGroup.GroupID)
+		ctx := context.WithValue(groupContext, roleKey, dbUserGroup.Role)
 		// Inject the new context into the request
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func GetGroupIDFrom(r *http.Request) (*int, error) {
-	groupID, ok := r.Context().Value(GroupKey).(*int)
+	groupID, ok := r.Context().Value(groupKey).(*int)
 	if !ok {
 		return nil, errors.New("Could not get groupID from request context")
 	}
@@ -81,7 +81,7 @@ func GetGroupIDFrom(r *http.Request) (*int, error) {
 }
 
 func GetRoleDFrom(r *http.Request) (*groupenums.Role, error) {
-	role, ok := r.Context().Value(RoleKey).(*groupenums.Role)
+	role, ok := r.Context().Value(roleKey).(*groupenums.Role)
 	if !ok {
 		return nil, errors.New("Could not get role from request context")
 	}
