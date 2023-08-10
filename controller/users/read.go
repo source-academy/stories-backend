@@ -59,6 +59,29 @@ func HandleReadSelf(w http.ResponseWriter, r *http.Request) error {
 		logrus.Error(err)
 		return err
 	}
-	controller.EncodeJSONResponse(w, userviews.SummaryFrom(user))
+
+	var userGroup model.UserGroup
+	courseIDStr := r.URL.Query().Get("course")
+	if courseIDStr != "" {
+		courseID, err := strconv.Atoi(courseIDStr)
+		if err != nil {
+			logrus.Error(err)
+			return err
+		}
+
+		courseGroup, err := model.GetGroupByCourseID(db, courseID)
+		if err != nil {
+			logrus.Error(err)
+			return err
+		}
+
+		userGroup, err = model.GetUserGroupByID(db, user.ID, courseGroup.ID)
+		if err != nil {
+			logrus.Error(err)
+			return err
+		}
+	}
+
+	controller.EncodeJSONResponse(w, userviews.SummaryFrom(user, userGroup))
 	return nil
 }
