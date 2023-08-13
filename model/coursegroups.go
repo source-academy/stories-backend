@@ -14,8 +14,10 @@ type CourseGroup struct {
 }
 
 func GetGroupByCourseID(db *gorm.DB, courseID int) (Group, error) {
-	var courseGroup CourseGroup
-	err := db.Preload(clause.Associations).First(&courseGroup, courseID).Error
+	courseGroup := CourseGroup{
+		CourseID: uint(courseID),
+	}
+	err := db.Preload(clause.Associations).First(&courseGroup).Error
 	if err != nil {
 		return courseGroup.Group, database.HandleDBError(err, "courseGroup")
 	}
