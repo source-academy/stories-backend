@@ -11,14 +11,24 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
+	storypermissiongroups "github.com/source-academy/stories-backend/internal/permissiongroups/stories"
 	"github.com/source-academy/stories-backend/model"
 	storyparams "github.com/source-academy/stories-backend/params/stories"
 	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
 
 func HandleList(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.List())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error listing stories: %v", err),
+		}
+	}
+
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
@@ -45,6 +55,14 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
+	err = auth.CheckPermissions(r, storypermissiongroups.Read())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error reading story: %v", err),
+		}
+	}
+
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
@@ -62,6 +80,14 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleCreate(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.Create())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error creating story: %v", err),
+		}
+	}
+
 	var params storyparams.Create
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		e, ok := err.(*json.UnmarshalTypeError)
@@ -78,7 +104,7 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	err := params.Validate()
+	err = params.Validate()
 	if err != nil {
 		logrus.Error(err)
 		return apierrors.ClientUnprocessableEntityError{

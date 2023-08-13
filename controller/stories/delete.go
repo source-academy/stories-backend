@@ -8,8 +8,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
+	storypermissiongroups "github.com/source-academy/stories-backend/internal/permissiongroups/stories"
 	"github.com/source-academy/stories-backend/model"
 	storyviews "github.com/source-academy/stories-backend/view/stories"
 )
@@ -20,6 +22,14 @@ func HandleDelete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return apierrors.ClientBadRequestError{
 			Message: fmt.Sprintf("Invalid storyID: %v", err),
+		}
+	}
+
+	err = auth.CheckPermissions(r, storypermissiongroups.Delete(uint(storyID)))
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error deleting story: %v", err),
 		}
 	}
 
