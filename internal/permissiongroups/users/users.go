@@ -5,6 +5,11 @@ import (
 	userpermissions "github.com/source-academy/stories-backend/internal/permissions/users"
 )
 
+func List() permissions.PermissionGroup {
+	return userpermissions.
+		GetRolePermission(userpermissions.CanReadUsers)
+}
+
 func Create() permissions.PermissionGroup {
 	return userpermissions.
 		GetRolePermission(userpermissions.CanCreateUsers)
