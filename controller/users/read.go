@@ -11,6 +11,7 @@ import (
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
+	userpermissiongroups "github.com/source-academy/stories-backend/internal/permissiongroups/users"
 	"github.com/source-academy/stories-backend/model"
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
@@ -21,6 +22,14 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return apierrors.ClientBadRequestError{
 			Message: fmt.Sprintf("Invalid userID: %v", err),
+		}
+	}
+
+	err = auth.CheckPermissions(r, userpermissiongroups.Read(uint(userID)))
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error reading user: %v", err),
 		}
 	}
 
@@ -45,6 +54,14 @@ func HandleReadSelf(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		logrus.Error(err)
 		return err
+	}
+
+	err = auth.CheckPermissions(r, userpermissiongroups.Read(uint(*userID)))
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error reading user: %v", err),
+		}
 	}
 
 	// Get DB instance
