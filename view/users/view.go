@@ -26,6 +26,8 @@ func SingleFrom(user model.User) View {
 	return userView
 }
 
+// TODO: Investigate if it might be better if this comes
+// under a separate usergroupviews package
 type SummaryView struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`

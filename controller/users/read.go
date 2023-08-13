@@ -62,6 +62,7 @@ func HandleReadSelf(w http.ResponseWriter, r *http.Request) error {
 
 	var userGroup model.UserGroup
 	courseIDStr := r.URL.Query().Get("course")
+	// TODO: Use nullable type factory
 	if courseIDStr != "" {
 		courseID, err := strconv.Atoi(courseIDStr)
 		if err != nil {
