@@ -18,6 +18,7 @@ type Story struct {
 }
 
 // Passing nil to omit the filtering
+// TODO: Use nullable types instead
 func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
