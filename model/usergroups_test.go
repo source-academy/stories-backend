@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
@@ -81,6 +82,45 @@ func TestCreateUserGroup(t *testing.T) {
 		err = CreateUserGroup(db, &userGroup2)
 		assert.Error(t, err, "Expected error for violating user_group unique index")
 	})
+
+	t.Run("failure: should not create with missing user or group", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testUser1",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		userGroup := UserGroup{
+			User: user,
+			Role: groupenums.RoleStandard,
+		}
+		err := CreateUserGroup(db, &userGroup)
+		var pgerr *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errInvalidForeignKey.Code, pgerr.Code)
+		}
+		// assert.Error(t, err, "Expected error when creating usergroup without group")
+
+		userGroup2 := UserGroup{
+			Group: group,
+			Role:  groupenums.RoleStandard,
+		}
+		err = CreateUserGroup(db, &userGroup2)
+		var pgerr2 *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr2, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errInvalidForeignKey.Code, pgerr2.Code)
+		}
+		// assert.Error(t, err, "Expected error when creating usergroup without user")
+	})
 }
 
 func TestGetUserGroupByID(t *testing.T) {
@@ -118,7 +158,7 @@ func TestGetUserGroupByID(t *testing.T) {
 
 		for idx, userGroup := range usergroups {
 			// FIXME: Don't use typecast
-			dbUserGroup, err := GetUserGroupByID(db, int(users[idx].ID), int(group.ID))
+			dbUserGroup, err := GetUserGroupByID(db, users[idx].ID, group.ID)
 			assert.Nil(t, err, "Expected no error when getting userGroup with valid IDs")
 			assert.Equal(t, userGroup.Role, dbUserGroup.Role, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 			assert.Equal(t, userGroup.UserID, dbUserGroup.UserID, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
@@ -126,9 +166,63 @@ func TestGetUserGroupByID(t *testing.T) {
 			assert.Equal(t, userGroup.Group.ID, dbUserGroup.Group.ID, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 		}
 
-		_, err := GetUserGroupByID(db, int(users[1].ID+1), int(group.ID))
+		_, err := GetUserGroupByID(db, users[1].ID+1, group.ID)
 		// is this the correct bahaviour? calling to a model function returns a api error
 		// assert.ErrorIs(t, err, gorm.ErrRecordNotFound, "Expected error when getting userGroup with invalid ID")
 		assert.ErrorIs(t, err, apierrors.ClientNotFoundError{Message: "Cannot find requested userGroup."}, "Expected error when getting userGroup with invalid ID")
+	})
+}
+
+func TestUserGroupDB(t *testing.T) {
+	t.Run("cannot create without user", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testUser1",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		err := db.Exec(`INSERT INTO "user_groups" 
+			("created_at","updated_at","deleted_at","user_id","group_id","role") 
+			VALUES ('2023-08-08 23:44:01.417','2023-08-08 23:44:01.417',NULL,NULL,1,'member')`).
+			Error
+		var pgerr *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errNonNullable.Code, pgerr.Code)
+		}
+	})
+
+	t.Run("cannot create without group", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testUser1",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		err := db.Exec(`INSERT INTO "user_groups" 
+			("created_at","updated_at","deleted_at","user_id","group_id","role") 
+			VALUES ('2023-08-08 23:44:01.417','2023-08-08 23:44:01.417',NULL,1,NULL,'member')`).
+			Error
+		var pgerr *pgconn.PgError
+		if assert.ErrorAs(t, err, &pgerr, "Expected error when creating story without Author ID") {
+			assert.Equal(t, errNonNullable.Code, pgerr.Code)
+		}
 	})
 }

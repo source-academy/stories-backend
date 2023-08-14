@@ -9,14 +9,14 @@ import (
 
 type UserGroup struct {
 	gorm.Model
-	UserID  int
+	UserID  uint
 	User    User
-	GroupID int
+	GroupID uint
 	Group   Group
 	Role    groupenums.Role // non null
 }
 
-func GetUserGroupByID(db *gorm.DB, userID int, groupID int) (UserGroup, error) {
+func GetUserGroupByID(db *gorm.DB, userID uint, groupID uint) (UserGroup, error) {
 	var userGroup UserGroup
 
 	err := db.Model(&userGroup).
