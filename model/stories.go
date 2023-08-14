@@ -17,7 +17,7 @@ type Story struct {
 	PinOrder *int // nil if not pinned
 }
 
-// Passing nil to omit the filtering
+// Passing nil to omit the filtering and get all stories
 func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.

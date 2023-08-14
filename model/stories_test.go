@@ -146,23 +146,23 @@ func TestGetAllStoriesInGroup(t *testing.T) {
 		groups := []*Group{
 			{Name: "testGroup"}, {Name: "testGroup2"},
 		}
-		for idx, groupToAdd := range groups {
-			_ = CreateGroup(db, groupToAdd)
-			for i := 0; i < idx+1; i++ {
+		for i, group := range groups {
+			_ = CreateGroup(db, group)
+			for j := 0; j < i+1; j++ {
 				story := Story{
 					AuthorID: user.ID,
-					Group:    *groupToAdd,
-					Content:  fmt.Sprintf("testStoies %d", i),
+					Group:    *group,
+					Content:  fmt.Sprintf("testStoies %d", j),
 				}
 				err := CreateStory(db, &story)
 				assert.Nil(t, err, "Expected no error when creating story")
 			}
 		}
 
-		for idx, groupToAdd := range groups {
-			newStories, err := GetAllStoriesInGroup(db, &groupToAdd.ID)
+		for i, group := range groups {
+			newStories, err := GetAllStoriesInGroup(db, &group.ID)
 			assert.Nil(t, err, "Expected no error when getting all stories")
-			assert.Len(t, newStories, idx+1, "Expected number of stories to be correct")
+			assert.Len(t, newStories, i+1, "Expected number of stories to be correct")
 		}
 	})
 
@@ -177,6 +177,12 @@ func TestGetAllStoriesInGroup(t *testing.T) {
 		}
 		_ = CreateUser(db, &user)
 
+		group := Group{
+			Name: "testGroup",
+		}
+		_ = CreateGroup(db, &group)
+
+		// Create 3 stories without group
 		for i := 0; i < 3; i++ {
 			story := Story{
 				AuthorID: user.ID,
@@ -186,10 +192,22 @@ func TestGetAllStoriesInGroup(t *testing.T) {
 			assert.Nil(t, err, "Expected no error when creating story")
 		}
 
-		newStories, err := GetAllStoriesInGroup(db, nil)
-		assert.Nil(t, err, "Expected no error when getting all stories without group")
-		assert.Len(t, newStories, 3, "Expected number of stories to be correct")
+		// Create 1 story with group
+		story := Story{
+			AuthorID: user.ID,
+			GroupID:  &group.ID,
+			Content:  "testStoies",
+		}
+		err := CreateStory(db, &story)
+		assert.Nil(t, err, "Expected no error when creating story")
 
+		allStories, err := GetAllStoriesInGroup(db, nil)
+		assert.Nil(t, err, "Expected no error when getting all stories without group")
+		assert.Len(t, allStories, 4, "Expected number of stories to be correct")
+
+		groupStories, err := GetAllStoriesInGroup(db, &group.ID)
+		assert.Nil(t, err, "Expected no error when getting all stories without group")
+		assert.Len(t, groupStories, 1, "Expected number of stories to be correct")
 	})
 }
 
