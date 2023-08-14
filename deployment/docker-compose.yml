@@ -3,8 +3,11 @@ services:
   db:
     image: postgres:14.8
     restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGDATA=/var/lib/postgresql/data
     ports:
       - 5432:5432
     networks:
@@ -50,3 +53,6 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  pgdata:
