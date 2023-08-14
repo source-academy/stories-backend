@@ -158,7 +158,7 @@ func TestGetUserGroupByID(t *testing.T) {
 
 		for idx, userGroup := range usergroups {
 			// FIXME: Don't use typecast
-			dbUserGroup, err := GetUserGroupByID(db, int(users[idx].ID), int(group.ID))
+			dbUserGroup, err := GetUserGroupByID(db, users[idx].ID, group.ID)
 			assert.Nil(t, err, "Expected no error when getting userGroup with valid IDs")
 			assert.Equal(t, userGroup.Role, dbUserGroup.Role, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 			assert.Equal(t, userGroup.UserID, dbUserGroup.UserID, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
@@ -166,7 +166,7 @@ func TestGetUserGroupByID(t *testing.T) {
 			assert.Equal(t, userGroup.Group.ID, dbUserGroup.Group.ID, fmt.Sprintf(expectCreateEqualMessage, "usergroup"))
 		}
 
-		_, err := GetUserGroupByID(db, int(users[1].ID+1), int(group.ID))
+		_, err := GetUserGroupByID(db, users[1].ID+1, group.ID)
 		// is this the correct bahaviour? calling to a model function returns a api error
 		// assert.ErrorIs(t, err, gorm.ErrRecordNotFound, "Expected error when getting userGroup with invalid ID")
 		assert.ErrorIs(t, err, apierrors.ClientNotFoundError{Message: "Cannot find requested userGroup."}, "Expected error when getting userGroup with invalid ID")

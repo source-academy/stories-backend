@@ -52,8 +52,8 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 
 		// Get user_group
 		userGroup := model.UserGroup{
-			UserID:  *userID,
-			GroupID: groupID,
+			UserID:  uint(*userID),
+			GroupID: uint(groupID),
 		}
 		var dbUserGroup model.UserGroup
 		err = db.Where(&userGroup).First(&dbUserGroup).Error
