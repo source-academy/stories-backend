@@ -16,9 +16,10 @@ func (params *Create) Validate() error {
 	return nil
 }
 
-func (params *Create) ToModel() *model.Story {
+func (params *Create) ToModel(associatedGroupID *uint) *model.Story {
 	return &model.Story{
 		AuthorID: params.AuthorID,
+		GroupID:  associatedGroupID,
 		Title:    params.Title,
 		Content:  params.Content,
 		PinOrder: params.PinOrder,
