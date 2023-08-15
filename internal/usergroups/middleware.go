@@ -72,8 +72,8 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 	})
 }
 
-func GetGroupIDFrom(r *http.Request) (*int, error) {
-	groupID, ok := r.Context().Value(groupKey).(*int)
+func GetGroupIDFrom(r *http.Request) (*uint, error) {
+	groupID, ok := r.Context().Value(groupKey).(*uint)
 	if !ok {
 		return nil, errors.New("Could not get groupID from request context")
 	}

@@ -45,9 +45,6 @@ func TestCreateStory(t *testing.T) {
 		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
-		initialStories, err := GetAllStories(db)
-		assert.Nil(t, err, "Expected no error when getting all stories")
-
 		// We need to first create a user and a group due to the foreign key constraint
 		user := User{
 			Username:      "testStoryAuthor",
@@ -60,6 +57,9 @@ func TestCreateStory(t *testing.T) {
 		}
 		_ = CreateGroup(db, &group)
 
+		initialStories, err := GetAllStoriesInGroup(db, &group.ID)
+		assert.Nil(t, err, "Expected no error when getting all stories")
+
 		story := Story{
 			AuthorID: user.ID,
 			Group:    group,
@@ -68,7 +68,7 @@ func TestCreateStory(t *testing.T) {
 		err = CreateStory(db, &story)
 		assert.Nil(t, err, "Expected no error when creating story")
 
-		newStories, err := GetAllStories(db)
+		newStories, err := GetAllStoriesInGroup(db, &group.ID)
 		assert.Nil(t, err, "Expected no error when getting all stories")
 		assert.Len(t, newStories, len(initialStories)+1, "Expected number of stories to increase by 1")
 
@@ -85,7 +85,7 @@ func TestCreateStory(t *testing.T) {
 		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
-		initialStories, err := GetAllStories(db)
+		initialStories, err := GetAllStoriesInGroup(db, nil)
 		assert.Nil(t, err, "Expected no error when getting all stories")
 
 		// We need to first create a user and a group due to the foreign key constraint
@@ -102,7 +102,7 @@ func TestCreateStory(t *testing.T) {
 		err = CreateStory(db, &story)
 		assert.Nil(t, err, "Expected no error when creating story")
 
-		newStories, err := GetAllStories(db)
+		newStories, err := GetAllStoriesInGroup(db, nil)
 		assert.Nil(t, err, "Expected no error when getting all stories")
 		assert.Len(t, newStories, len(initialStories)+1, "Expected number of stories to increase by 1")
 
@@ -131,14 +131,48 @@ func TestCreateStory(t *testing.T) {
 	})
 }
 
-func TestGetStoryByID(t *testing.T) {
-	t.Run("should get the correct story", func(t *testing.T) {
+func TestGetAllStoriesInGroup(t *testing.T) {
+	t.Run("Should get all stories in a group", func(t *testing.T) {
 		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
 		defer cleanUp(t)
 
-		// We need to first create a user due to the foreign key constraint
+		// We need to first create a user and a group due to the foreign key constraint
 		user := User{
-			Username:      "testMultipleStoriesAuthor",
+			Username:      "testStoryAuthor",
+			LoginProvider: userenums.LoginProvider(rand.Int31()),
+		}
+		_ = CreateUser(db, &user)
+
+		groups := []*Group{
+			{Name: "testGroup"}, {Name: "testGroup2"},
+		}
+		for i, group := range groups {
+			_ = CreateGroup(db, group)
+			for j := 0; j < i+1; j++ {
+				story := Story{
+					AuthorID: user.ID,
+					Group:    *group,
+					Content:  fmt.Sprintf("testStoies %d", j),
+				}
+				err := CreateStory(db, &story)
+				assert.Nil(t, err, "Expected no error when creating story")
+			}
+		}
+
+		for i, group := range groups {
+			newStories, err := GetAllStoriesInGroup(db, &group.ID)
+			assert.Nil(t, err, "Expected no error when getting all stories")
+			assert.Len(t, newStories, i+1, "Expected number of stories to be correct")
+		}
+	})
+
+	t.Run("Should get stories with null group", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// We need to first create a user and a group due to the foreign key constraint
+		user := User{
+			Username:      "testStoryAuthor",
 			LoginProvider: userenums.LoginProvider(rand.Int31()),
 		}
 		_ = CreateUser(db, &user)
@@ -148,25 +182,32 @@ func TestGetStoryByID(t *testing.T) {
 		}
 		_ = CreateGroup(db, &group)
 
-		stories := []*Story{
-			{AuthorID: user.ID, Group: group, Content: "The quick"},
-			{AuthorID: user.ID, Group: group, Content: "brown fox"},
-			{AuthorID: user.ID, Group: group, Content: "jumps over"},
+		// Create 3 stories without group
+		for i := 0; i < 3; i++ {
+			story := Story{
+				AuthorID: user.ID,
+				Content:  fmt.Sprintf("testStoies %d", i),
+			}
+			err := CreateStory(db, &story)
+			assert.Nil(t, err, "Expected no error when creating story")
 		}
 
-		for _, storyToAdd := range stories {
-			_ = CreateStory(db, storyToAdd)
+		// Create 1 story with group
+		story := Story{
+			AuthorID: user.ID,
+			GroupID:  &group.ID,
+			Content:  "testStoies",
 		}
+		err := CreateStory(db, &story)
+		assert.Nil(t, err, "Expected no error when creating story")
 
-		for _, story := range stories {
-			// FIXME: Don't use typecast
-			dbStory, err := GetStoryByID(db, int(story.ID))
-			assert.Nil(t, err, "Expected no error when getting story with valid ID")
-			assert.Equal(t, story.ID, dbStory.ID, fmt.Sprintf(expectReadEqualMessage, "story"))
-			assert.Equal(t, story.AuthorID, dbStory.AuthorID, fmt.Sprintf(expectReadEqualMessage, "story"))
-			assert.Equal(t, story.GroupID, dbStory.GroupID, fmt.Sprintf(expectReadEqualMessage, "story"))
-			assert.Equal(t, story.Content, dbStory.Content, fmt.Sprintf(expectReadEqualMessage, "story"))
-		}
+		allStories, err := GetAllStoriesInGroup(db, nil)
+		assert.Nil(t, err, "Expected no error when getting all stories without group")
+		assert.Len(t, allStories, 4, "Expected number of stories to be correct")
+
+		groupStories, err := GetAllStoriesInGroup(db, &group.ID)
+		assert.Nil(t, err, "Expected no error when getting all stories without group")
+		assert.Len(t, groupStories, 1, "Expected number of stories to be correct")
 	})
 }
 

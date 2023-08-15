@@ -16,4 +16,3 @@ CREATE UNIQUE INDEX idx_unique_course ON course_groups (course_id);
 DROP INDEX idx_unique_course;
 
 DROP TABLE IF EXISTS course_groups;
-
