@@ -17,7 +17,10 @@ func GetGroupByCourseID(db *gorm.DB, courseID int) (Group, error) {
 	courseGroup := CourseGroup{
 		CourseID: uint(courseID),
 	}
-	err := db.Preload(clause.Associations).First(&courseGroup).Error
+	err := db.
+		Preload(clause.Associations).
+		Where(&courseGroup).
+		First(&courseGroup).Error
 	if err != nil {
 		return courseGroup.Group, database.HandleDBError(err, "courseGroup")
 	}
