@@ -10,10 +10,11 @@ import (
 )
 
 type Create struct {
-	Name          string          `json:"name"`
-	Username      string          `json:"username"`
-	LoginProvider string          `json:"provider"`
-	Role          groupenums.Role `json:"role"`
+	Name          string `json:"name"`
+	Username      string `json:"username"`
+	LoginProvider string `json:"provider"`
+	// FIXME: Role should be under usergroups create params
+	Role groupenums.Role `json:"role"`
 }
 
 type BatchCreate struct {
