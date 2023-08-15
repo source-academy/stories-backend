@@ -13,6 +13,7 @@ import (
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/internal/database"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
+	"github.com/source-academy/stories-backend/internal/usergroups"
 	"github.com/source-academy/stories-backend/model"
 	storyparams "github.com/source-academy/stories-backend/params/stories"
 	storyviews "github.com/source-academy/stories-backend/view/stories"
@@ -26,7 +27,14 @@ func HandleList(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	stories, err := model.GetAllStories(db)
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	stories, err := model.GetAllStoriesInGroup(db, groupID)
 	if err != nil {
 		logrus.Error(err)
 		return err

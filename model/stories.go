@@ -17,9 +17,13 @@ type Story struct {
 	PinOrder *int // nil if not pinned
 }
 
-func GetAllStories(db *gorm.DB) ([]Story, error) {
+// Passing nil to omit the filtering and get all stories
+// TODO: Use nullable types instead
+func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
+		// FIXME: Handle nil case properly
+		Where(Story{GroupID: groupID}).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
