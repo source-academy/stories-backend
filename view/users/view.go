@@ -32,7 +32,7 @@ type SummaryView struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 	// The following three field can be nested when we have many groups in a course
-	GroupID   uint            `json:"group"`
+	GroupID   uint            `json:"groupId"`
 	GroupName string          `json:"groupName"`
 	Role      groupenums.Role `json:"role"`
 }
