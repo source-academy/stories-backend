@@ -22,6 +22,7 @@ type Story struct {
 func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
+		// FIXME: Handle nil case properly
 		Where(Story{GroupID: groupID}).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
