@@ -9,6 +9,9 @@ import (
 	"github.com/source-academy/stories-backend/controller"
 	"github.com/source-academy/stories-backend/controller/stories"
 	"github.com/source-academy/stories-backend/controller/users"
+
+	// FIXME: Name clash
+	usergroupscontroller "github.com/source-academy/stories-backend/controller/usergroups"
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/config"
 	usergroups "github.com/source-academy/stories-backend/internal/usergroups"
@@ -63,7 +66,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 				r.Get("/{userID}", handleAPIError(users.HandleRead))
 				r.Delete("/{userID}", handleAPIError(users.HandleDelete))
 				r.Post("/", handleAPIError(users.HandleCreate))
-				r.Post("/batch", handleAPIError(users.HandleBatchCreate))
+				r.Post("/batch", handleAPIError(usergroupscontroller.HandleBatchCreate))
 			})
 		})
 
