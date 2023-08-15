@@ -65,7 +65,7 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 			return
 		}
 
-		groupContext := context.WithValue(r.Context(), groupKey, dbUserGroup.GroupID)
+		groupContext := context.WithValue(r.Context(), groupKey, &dbUserGroup.GroupID)
 		ctx := context.WithValue(groupContext, roleKey, dbUserGroup.Role)
 		// Inject the new context into the request
 		next.ServeHTTP(w, r.WithContext(ctx))
