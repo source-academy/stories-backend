@@ -80,10 +80,10 @@ func GetGroupIDFrom(r *http.Request) (*uint, error) {
 	return groupID, nil
 }
 
-func GetRoleDFrom(r *http.Request) (*groupenums.Role, error) {
-	role, ok := r.Context().Value(roleKey).(*groupenums.Role)
+func GetRoleFrom(r *http.Request) (*groupenums.Role, error) {
+	role, ok := r.Context().Value(roleKey).(groupenums.Role)
 	if !ok {
 		return nil, errors.New("Could not get role from request context")
 	}
-	return role, nil
+	return &role, nil
 }

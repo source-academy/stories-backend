@@ -3,8 +3,8 @@ package userpermissions
 import (
 	"net/http"
 
-	"github.com/source-academy/stories-backend/internal/auth"
 	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
+	"github.com/source-academy/stories-backend/internal/usergroups"
 )
 
 type RolePermission struct {
@@ -13,13 +13,9 @@ type RolePermission struct {
 }
 
 func (p RolePermission) IsAuthorized(r *http.Request) bool {
-	userID, err := auth.GetUserIDFrom(r)
+	role, err := usergroups.GetRoleFrom(r)
 	if err != nil {
 		return false
 	}
-	// FIXME: Implement. Blocked by request context missing group info.
-	_ = userID
-	// role := getRole(userID, groupID)
-	// return groupenums.IsRoleGreaterThan(role, p.Role)
-	return false
+	return groupenums.IsRoleGreaterThan(*role, p.Role)
 }

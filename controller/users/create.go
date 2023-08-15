@@ -7,14 +7,24 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/controller"
+	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
+	userpermissiongroups "github.com/source-academy/stories-backend/internal/permissiongroups/users"
 	"github.com/source-academy/stories-backend/model"
 	userparams "github.com/source-academy/stories-backend/params/users"
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
 func HandleCreate(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, userpermissiongroups.Create())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error creating user: %v", err),
+		}
+	}
+
 	var params userparams.Create
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		e, ok := err.(*json.UnmarshalTypeError)
@@ -31,7 +41,7 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	err := params.Validate()
+	err = params.Validate()
 	if err != nil {
 		logrus.Error(err)
 		return apierrors.ClientUnprocessableEntityError{
@@ -60,6 +70,14 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleBatchCreate(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, userpermissiongroups.Create())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error batch creating users: %v", err),
+		}
+	}
+
 	var usersparams userparams.BatchCreate
 	if err := json.NewDecoder(r.Body).Decode(&usersparams); err != nil {
 		e, ok := err.(*json.UnmarshalTypeError)
