@@ -70,6 +70,12 @@ func HandleUpdate(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	// TODO: Prevents cross-tenant story viewing
+	//       when user is a member of multiple stories groups.
+	//       Not implemented yet as deletion is protected with more
+	//       stringent permissions checks.
+	//       Will await refactor to minimise wasted effort
+
 	err = model.UpdateStory(db, storyID, &storyModel)
 	if err != nil {
 		logrus.Error(err)
