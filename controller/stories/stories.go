@@ -65,6 +65,26 @@ func HandleRead(w http.ResponseWriter, r *http.Request) error {
 		logrus.Error(err)
 		return err
 	}
+
+	// TODO: Refactor
+	// Prevents cross-tenant story viewing
+	// when user is a member of multiple stories groups
+
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	// FIXME: Hacky; use nullable types!
+	if *story.GroupID != *groupID {
+		// Do not expose multitenancy implementation
+		return apierrors.ClientNotFoundError{
+			Message: fmt.Sprintf("Story with ID %d not found", storyID),
+		}
+	}
+
 	controller.EncodeJSONResponse(w, storyviews.SingleFrom(story))
 	return nil
 }

@@ -23,6 +23,12 @@ func HandleDelete(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
+	// TODO: Prevents cross-tenant story viewing
+	//       when user is a member of multiple stories groups.
+	//       Not implemented yet as deletion is protected with more
+	//       stringent permissions checks.
+	//       Will await refactor to minimise wasted effort
+
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {

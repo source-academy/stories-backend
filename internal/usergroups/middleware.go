@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/auth"
 	"github.com/source-academy/stories-backend/internal/database"
@@ -65,7 +65,7 @@ func InjectUserGroupIntoContext(next http.Handler) http.Handler {
 			return
 		}
 
-		groupContext := context.WithValue(r.Context(), groupKey, dbUserGroup.GroupID)
+		groupContext := context.WithValue(r.Context(), groupKey, &dbUserGroup.GroupID)
 		ctx := context.WithValue(groupContext, roleKey, dbUserGroup.Role)
 		// Inject the new context into the request
 		next.ServeHTTP(w, r.WithContext(ctx))
