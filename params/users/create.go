@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	"github.com/source-academy/stories-backend/model"
 )
@@ -12,6 +13,8 @@ type Create struct {
 	Name          string `json:"name"`
 	Username      string `json:"username"`
 	LoginProvider string `json:"provider"`
+	// FIXME: Role should be under usergroups create params
+	Role groupenums.Role `json:"role"`
 }
 
 type BatchCreate struct {
@@ -29,6 +32,10 @@ func (params *Create) Validate() error {
 		break
 	default:
 		return fmt.Errorf("Invalid login provider %s.", params.LoginProvider)
+	}
+
+	if !params.Role.IsValid() {
+		return fmt.Errorf("Invalid role %s.", params.Role)
 	}
 
 	return nil
