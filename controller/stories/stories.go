@@ -140,7 +140,14 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	storyModel := *params.ToModel()
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	storyModel := *params.ToModel(groupID)
 
 	// Get DB instance
 	db, err := database.GetDBFrom(r)

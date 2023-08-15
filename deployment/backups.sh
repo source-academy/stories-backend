@@ -17,7 +17,7 @@ NEW_BACKUP_FILENAME="pgdump_`date +%Y%m%d-%H%M%S`.sql"
 BACKUP_FILE_PATH="$BACKUP_DIR/$NEW_BACKUP_FILENAME"
 
 BACKUP_COMMAND="'pg_dumpall -c -h \$PG_HOST -U \$PG_USER'"
-SQL_DUMP="$(docker compose -f "$COMPOSE_FILE_PATH" run --rm -it --entrypoint "bash -c $BACKUP_COMMAND" migrator)"
+SQL_DUMP="$(sudo docker compose -f "$COMPOSE_FILE_PATH" run --rm -it --entrypoint "bash -c $BACKUP_COMMAND" migrator)"
 
 if [[ -z "$LAST_BACKUP_FILENAME" ]]; then
     echo "No previous backups found, creating new backup..."

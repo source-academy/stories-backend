@@ -16,7 +16,7 @@ func TestToModel(t *testing.T) {
 			AuthorID: 1,
 			Content:  "# Hi\n\nThis is a test story.",
 		}
-		model := params.ToModel()
+		model := params.ToModel(nil)
 		assert.Equal(t, params.AuthorID, model.AuthorID)
 		assert.Equal(t, params.Content, model.Content)
 	})
