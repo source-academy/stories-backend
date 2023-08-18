@@ -22,7 +22,7 @@ func createDB(db *gorm.DB, dbName string) error {
 	// if not exists create it
 	rec := make(map[string]interface{})
 	if result.Find(rec); len(rec) != 0 {
-		fmt.Println(yellowChevron, "Database", dbName, "exists.")
+		fmt.Println(greenTick, "Database", dbName, "already exists.")
 		return nil
 	}
 
