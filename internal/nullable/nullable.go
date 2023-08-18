@@ -9,13 +9,13 @@ type Value[T nullable] struct {
 	IsSet bool
 }
 
-func From[T nullable](value T) Value[T] {
-	return Value[T]{value, true}
-}
-
 func Null[T nullable]() Value[T] {
 	var null T
 	return Value[T]{null, false}
+}
+
+func From[T nullable](value T) Value[T] {
+	return Value[T]{value, true}
 }
 
 func FromPtr[T nullable](value *T) Value[T] {
