@@ -16,6 +16,12 @@ import (
 const (
 	defaultMaxMigrateSteps  = 0 // no limit
 	defaultMaxRollbackSteps = 1
+
+	dropCmd     = "drop"
+	createCmd   = "create"
+	migrateCmd  = "migrate"
+	rollbackCmd = "rollback"
+	statusCmd   = "status"
 )
 
 var (
@@ -39,11 +45,11 @@ func main() {
 	// Check for command line arguments
 	flag.Parse()
 	switch flag.Arg(0) {
-	case "drop", "create":
+	case dropCmd, createCmd:
 		// We need to connect anonymously in order
 		// to drop or create the database.
 		conf.Database.DatabaseName = ""
-	case "migrate", "rollback", "status":
+	case migrateCmd, rollbackCmd, statusCmd:
 		// Do nothing
 	default:
 		logrus.Errorln("Invalid command")
@@ -71,35 +77,35 @@ func main() {
 	fmt.Println(blueSandwich, "Connected to database", dbName+".")
 
 	switch flag.Arg(0) {
-	case "drop":
+	case dropCmd:
 		err := dropDB(dbConn, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		fmt.Println(greenTick, "Dropped database:", conf.Database.DatabaseName)
-	case "create":
+	case createCmd:
 		err := createDB(dbConn, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		fmt.Println(greenTick, "Created database:", conf.Database.DatabaseName)
-	case "migrate":
+	case migrateCmd:
 		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		migrateDB(db)
-	case "rollback":
+	case rollbackCmd:
 		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		rollbackDB(db)
-	case "status":
+	case statusCmd:
 		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
