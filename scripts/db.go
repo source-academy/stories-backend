@@ -56,7 +56,12 @@ func main() {
 		logrus.Errorln(err)
 		panic(err)
 	}
-	defer closeDBConnection(d)
+	defer (func() {
+		// Ignore non-critical error
+		dbName, _ := getConnectedDBName(d)
+		fmt.Println(blueSandwich, "Closing connection with database", dbName+".")
+		database.Close(d)
+	})()
 
 	dbName, err := getConnectedDBName(d)
 	if err != nil {

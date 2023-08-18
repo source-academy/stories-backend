@@ -8,23 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func closeDBConnection(d *gorm.DB) {
-	db, err := d.DB()
-	if err != nil {
-		panic(err)
-	}
-
-	dbName, err := getConnectedDBName(d)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(blueSandwich, "Closing connection with database", dbName+".")
-
-	if err := db.Close(); err != nil {
-		panic(err)
-	}
-}
-
 func createDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	if dbconf.DatabaseName == "" {
 		return errors.New("Failed to create database: no database name provided.")
