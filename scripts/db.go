@@ -80,7 +80,7 @@ func main() {
 
 	switch flag.Arg(0) {
 	case dropCmd:
-		err := dropDB(dbConn, conf.Database)
+		err := dropDB(dbConn, targetDBName)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)

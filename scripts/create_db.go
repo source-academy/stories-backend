@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/source-academy/stories-backend/internal/config"
 	"gorm.io/gorm"
 )
 
@@ -38,8 +37,8 @@ func createDB(db *gorm.DB, dbName string) error {
 	return nil
 }
 
-func dropDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
-	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", dbconf.DatabaseName)
+func dropDB(db *gorm.DB, dbName string) error {
+	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", dbName)
 	result := db.Exec(drop_command)
 	if result.Error != nil {
 		return result.Error
