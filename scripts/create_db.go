@@ -39,12 +39,8 @@ func createDB(db *gorm.DB, dbName string) error {
 
 func dropDB(db *gorm.DB, dbName string) error {
 	drop_command := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", dbName)
-	result := db.Exec(drop_command)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
+	err := db.Exec(drop_command).Error
+	return err
 }
 
 func getDBName(db *gorm.DB) (string, error) {
