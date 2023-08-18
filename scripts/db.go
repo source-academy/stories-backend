@@ -42,6 +42,8 @@ func main() {
 		panic(err)
 	}
 
+	targetDBName := conf.Database.DatabaseName
+
 	// Check for command line arguments
 	flag.Parse()
 	switch flag.Arg(0) {
@@ -83,14 +85,14 @@ func main() {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Dropped database:", conf.Database.DatabaseName)
+		fmt.Println(greenTick, "Dropped database:", targetDBName)
 	case createCmd:
-		err := createDB(dbConn, conf.Database)
+		err := createDB(dbConn, targetDBName)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Created database:", conf.Database.DatabaseName)
+		fmt.Println(greenTick, "Created database:", targetDBName)
 	case migrateCmd:
 		db, err := dbConn.DB()
 		if err != nil {

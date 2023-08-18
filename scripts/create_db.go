@@ -8,14 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func createDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
-	if dbconf.DatabaseName == "" {
+func createDB(db *gorm.DB, dbName string) error {
+	if dbName == "" {
 		return errors.New("Failed to create database: no database name provided.")
 	}
 
 	// check if db exists
-	fmt.Println(yellowChevron, "Checking if database", dbconf.DatabaseName, "exists.")
-	result := db.Raw("SELECT * FROM pg_database WHERE datname = ?", dbconf.DatabaseName)
+	fmt.Println(yellowChevron, "Checking if database", dbName, "exists.")
+	result := db.Raw("SELECT * FROM pg_database WHERE datname = ?", dbName)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -23,9 +23,9 @@ func createDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 	// if not exists create it
 	rec := make(map[string]interface{})
 	if result.Find(rec); len(rec) == 0 {
-		fmt.Println(yellowChevron, "Database", dbconf.DatabaseName, "does not exist. Creating...")
+		fmt.Println(yellowChevron, "Database", dbName, "does not exist. Creating...")
 
-		create_command := fmt.Sprintf("CREATE DATABASE %s", dbconf.DatabaseName)
+		create_command := fmt.Sprintf("CREATE DATABASE %s", dbName)
 		result := db.Exec(create_command)
 
 		if result.Error != nil {
@@ -33,7 +33,7 @@ func createDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 		}
 	}
 
-	fmt.Println(yellowChevron, "Database", dbconf.DatabaseName, "exists.")
+	fmt.Println(yellowChevron, "Database", dbName, "exists.")
 
 	return nil
 }
