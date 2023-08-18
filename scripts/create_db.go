@@ -5,31 +5,8 @@ import (
 	"fmt"
 
 	"github.com/source-academy/stories-backend/internal/config"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-func connectAnonDB(conf config.DatabaseConfig) (*gorm.DB, error) {
-	conf.DatabaseName = ""
-	dsn := conf.ToDataSourceName()
-	return connectDBHelper(dsn)
-}
-
-func connectDB(conf config.DatabaseConfig) (*gorm.DB, error) {
-	dsn := conf.ToDataSourceName()
-	return connectDBHelper(dsn)
-}
-
-func connectDBHelper(dsn string) (*gorm.DB, error) {
-	driver := postgres.Open(dsn)
-
-	db, err := gorm.Open(driver, &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
 
 func closeDBConnection(d *gorm.DB) {
 	db, err := d.DB()

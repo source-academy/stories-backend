@@ -10,7 +10,7 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
-	"gorm.io/gorm"
+	"github.com/source-academy/stories-backend/internal/database"
 )
 
 const (
@@ -36,22 +36,22 @@ func main() {
 		panic(err)
 	}
 
-	var connector func(config.DatabaseConfig) (*gorm.DB, error)
-
 	// Check for command line arguments
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "drop", "create":
-		connector = connectAnonDB
+		// We need to connect anonymously in order
+		// to drop or create the database.
+		conf.Database.DatabaseName = ""
 	case "migrate", "rollback", "status":
-		connector = connectDB
+		// Do nothing
 	default:
 		logrus.Errorln("Invalid command")
 		return
 	}
 
 	// Connect to the database
-	d, err := connector(*conf.Database)
+	d, err := database.Connect(conf.Database)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
