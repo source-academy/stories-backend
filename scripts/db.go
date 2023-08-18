@@ -51,19 +51,19 @@ func main() {
 	}
 
 	// Connect to the database
-	d, err := database.Connect(conf.Database)
+	dbConn, err := database.Connect(conf.Database)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
 	defer (func() {
 		// Ignore non-critical error
-		dbName, _ := getConnectedDBName(d)
+		dbName, _ := getConnectedDBName(dbConn)
 		fmt.Println(blueSandwich, "Closing connection with database", dbName+".")
-		database.Close(d)
+		database.Close(dbConn)
 	})()
 
-	dbName, err := getConnectedDBName(d)
+	dbName, err := getConnectedDBName(dbConn)
 	if err != nil {
 		panic(err)
 	}
@@ -71,35 +71,35 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "drop":
-		err := dropDB(d, conf.Database)
+		err := dropDB(dbConn, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		fmt.Println(greenTick, "Dropped database:", conf.Database.DatabaseName)
 	case "create":
-		err := createDB(d, conf.Database)
+		err := createDB(dbConn, conf.Database)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		fmt.Println(greenTick, "Created database:", conf.Database.DatabaseName)
 	case "migrate":
-		db, err := d.DB()
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		migrateDB(db)
 	case "rollback":
-		db, err := d.DB()
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		rollbackDB(db)
 	case "status":
-		db, err := d.DB()
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
