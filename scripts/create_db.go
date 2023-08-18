@@ -21,19 +21,19 @@ func createDB(db *gorm.DB, dbName string) error {
 
 	// if not exists create it
 	rec := make(map[string]interface{})
-	if result.Find(rec); len(rec) == 0 {
-		fmt.Println(yellowChevron, "Database", dbName, "does not exist. Creating...")
-
-		create_command := fmt.Sprintf("CREATE DATABASE %s", dbName)
-		result := db.Exec(create_command)
-
-		if result.Error != nil {
-			return result.Error
-		}
+	if result.Find(rec); len(rec) != 0 {
+		fmt.Println(yellowChevron, "Database", dbName, "exists.")
+		return nil
 	}
 
-	fmt.Println(yellowChevron, "Database", dbName, "exists.")
+	fmt.Println(yellowChevron, "Database", dbName, "does not exist. Creating...")
+	create_command := fmt.Sprintf("CREATE DATABASE %s", dbName)
+	err := db.Exec(create_command).Error
+	if err != nil {
+		return err
+	}
 
+	fmt.Println(greenTick, "Created database:", dbName)
 	return nil
 }
 

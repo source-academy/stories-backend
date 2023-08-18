@@ -102,7 +102,6 @@ func main() {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Created database:", targetDBName)
 	case migrateCmd:
 		db, err := dbConn.DB()
 		if err != nil {
