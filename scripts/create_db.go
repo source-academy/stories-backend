@@ -97,8 +97,5 @@ func dropDB(db *gorm.DB, dbconf *config.DatabaseConfig) error {
 func getConnectedDBName(db *gorm.DB) (string, error) {
 	var dbName string
 	err := db.Raw("SELECT current_database();").Scan(&dbName).Error
-	if err != nil {
-		return "", err
-	}
-	return dbName, nil
+	return dbName, err
 }
