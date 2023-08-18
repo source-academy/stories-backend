@@ -34,7 +34,7 @@ var (
 	})
 )
 
-func main() {
+func setupScript() (string, *config.DatabaseConfig) {
 	// Load configuration
 	conf, err := config.LoadFromEnvironment()
 	if err != nil {
@@ -55,11 +55,21 @@ func main() {
 		// Do nothing
 	default:
 		logrus.Errorln("Invalid command")
+		return targetDBName, nil
+	}
+
+	return targetDBName, conf.Database
+}
+
+func main() {
+	targetDBName, dbConfig := setupScript()
+	if dbConfig == nil {
+		// Invalid configuration
 		return
 	}
 
 	// Connect to the database
-	dbConn, err := database.Connect(conf.Database)
+	dbConn, err := database.Connect(dbConfig)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
