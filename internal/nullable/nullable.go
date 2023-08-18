@@ -18,9 +18,9 @@ func From[T nullable](value T) Value[T] {
 	return Value[T]{value, true}
 }
 
-func FromPtr[T nullable](value *T) Value[T] {
-	if value == nil {
+func FromPtr[T nullable](ptr *T) Value[T] {
+	if ptr == nil {
 		return Null[T]()
 	}
-	return From[T](*value)
+	return From[T](*ptr)
 }
