@@ -5,8 +5,8 @@ type nullable interface {
 }
 
 type Value[T nullable] struct {
-	Value T
-	IsSet bool
+	value T
+	isSet bool
 }
 
 func Null[T nullable]() Value[T] {
