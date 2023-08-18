@@ -58,6 +58,12 @@ func main() {
 	}
 	defer closeDBConnection(d)
 
+	dbName, err := getConnectedDBName(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(blueSandwich, "Connected to database", dbName+".")
+
 	switch flag.Arg(0) {
 	case "drop":
 		err := dropDB(d, conf.Database)

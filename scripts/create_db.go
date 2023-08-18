@@ -28,12 +28,6 @@ func connectDBHelper(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	dbName, err := getConnectedDBName(db)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(blueSandwich, "Connected to database", dbName+".")
-
 	return db, nil
 }
 
