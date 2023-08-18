@@ -47,15 +47,20 @@ func GetStoryByID(db *gorm.DB, id int) (Story, error) {
 	return story, nil
 }
 
-func CreateStory(db *gorm.DB, story *Story) error {
-	err := db.
+func (s *Story) create(tx *gorm.DB) *gorm.DB {
+	return tx.
 		Preload(clause.Associations).
-		Create(story).
+		Create(s).
 		// Get associated Author. See
 		// https://github.com/go-gorm/gen/issues/618 on why
 		// a separate .First() is needed.
-		First(story).
-		Error
+		First(s)
+}
+
+func CreateStory(db *gorm.DB, story *Story) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return story.create(tx).Error
+	})
 	if err != nil {
 		return database.HandleDBError(err, "story")
 	}
