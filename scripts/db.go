@@ -65,12 +65,12 @@ func main() {
 	// Remember to close the connection
 	defer (func() {
 		// Ignore non-critical error
-		dbName, _ := getConnectedDBName(dbConn)
+		dbName, _ := getDBName(dbConn)
 		fmt.Println(blueSandwich, "Closing connection with database", dbName+".")
 		database.Close(dbConn)
 	})()
 
-	dbName, err := getConnectedDBName(dbConn)
+	dbName, err := getDBName(dbConn)
 	if err != nil {
 		panic(err)
 	}
