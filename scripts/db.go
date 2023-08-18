@@ -56,6 +56,7 @@ func main() {
 		logrus.Errorln(err)
 		panic(err)
 	}
+	// Remember to close the connection
 	defer (func() {
 		// Ignore non-critical error
 		dbName, _ := getConnectedDBName(dbConn)
