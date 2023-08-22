@@ -114,14 +114,19 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 	return nil
 }
 
-func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
-	var story Story
-	err := db.
+func (s *Story) delete(tx *gorm.DB, storyID uint) *gorm.DB {
+	return tx.
 		Preload(clause.Associations).
 		Where("id = ?", storyID).
-		First(&story). // store the value to be returned
-		Delete(&story).
-		Error
+		First(&s). // store the value to be returned
+		Delete(&s)
+}
+
+func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
+	var story Story
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return story.delete(tx, uint(storyID)).Error
+	})
 	if err != nil {
 		return story, database.HandleDBError(err, "story")
 	}
