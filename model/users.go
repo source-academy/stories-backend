@@ -57,14 +57,19 @@ func CreateUsers(db *gorm.DB, users *[]*User) (int64, error) {
 	return rowCount, nil
 }
 
+func (u *User) delete(tx *gorm.DB, userID uint) *gorm.DB {
+	return tx.
+		Model(u).
+		Where("id = ?", userID).
+		First(u). // store the value to be returned
+		Delete(u)
+}
+
 func DeleteUser(db *gorm.DB, userID int) (User, error) {
 	var user User
-	err := db.
-		Model(&user).
-		Where("id = ?", userID).
-		First(&user). // store the value to be returned
-		Delete(&user).
-		Error
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return user.delete(tx, uint(userID)).Error
+	})
 	if err != nil {
 		return user, database.HandleDBError(err, "user")
 	}
