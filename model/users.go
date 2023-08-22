@@ -31,9 +31,15 @@ func GetUserByID(db *gorm.DB, id int) (User, error) {
 	return user, err
 }
 
-func CreateUser(db *gorm.DB, user *User) error {
+func (u *User) create(tx *gorm.DB) *gorm.DB {
 	// TODO: If user already exists, but is soft-deleted, undelete the user
-	err := db.Create(user).Error
+	return tx.Create(u)
+}
+
+func CreateUser(db *gorm.DB, user *User) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return user.create(tx).Error
+	})
 	if err != nil {
 		return database.HandleDBError(err, "user")
 	}
