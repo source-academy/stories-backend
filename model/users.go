@@ -47,6 +47,8 @@ func CreateUser(db *gorm.DB, user *User) error {
 }
 
 func CreateUsers(db *gorm.DB, users *[]*User) (int64, error) {
+	// TODO: Use users.create() instead
+	// Blocked by `RowsAffected` not being accessible.
 	tx := db.Create(users)
 	rowCount := tx.RowsAffected
 	if err := tx.Error; err != nil {
