@@ -118,8 +118,8 @@ func (s *Story) delete(tx *gorm.DB, storyID uint) *gorm.DB {
 	return tx.
 		Preload(clause.Associations).
 		Where("id = ?", storyID).
-		First(&s). // store the value to be returned
-		Delete(&s)
+		First(s). // store the value to be returned
+		Delete(s)
 }
 
 func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
