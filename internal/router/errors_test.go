@@ -7,8 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// func handleAPIError(handler func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
-
 func TestHandleAPIError(t *testing.T) {
 	mockController := func(w http.ResponseWriter, r *http.Request) error {
 		return nil
