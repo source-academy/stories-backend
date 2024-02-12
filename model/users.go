@@ -54,11 +54,19 @@ func DeleteUser(db *gorm.DB, userID int) (User, error) {
 	err := db.
 		Model(&user).
 		Where("id = ?", userID).
-		First(&user). // store the value to be returned
+		First(&user).
+		Error
+	if err != nil {
+		return user, database.HandleDBError(err, "user")
+	}
+
+	err = db.
+		Model(&user).
 		Delete(&user).
 		Error
 	if err != nil {
 		return user, database.HandleDBError(err, "user")
 	}
+
 	return user, nil
 }
