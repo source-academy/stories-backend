@@ -9,6 +9,7 @@ import (
 	userenums "github.com/source-academy/stories-backend/internal/enums/users"
 	"github.com/source-academy/stories-backend/internal/testutils"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 // FIXME: Coupling with the other operations in the users database
@@ -39,6 +40,25 @@ var (
 		Code: "23502",
 	}
 )
+
+func TestCreate(t *testing.T) {
+	t.Run("", func(t *testing.T) {
+		db, cleanUp := testutils.SetupDBConnection(t, dbConfig, migrationPath)
+		defer cleanUp(t)
+
+		// Any number is fine because the statement is not executed,
+		// thus removing the coupling with an actual author having to be
+		// created prior.
+		story := &Story{
+			AuthorID: 1,
+			Content:  "The quick brown test content 5678.",
+		}
+		sql := db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+			return story.create(tx)
+		})
+		assert.Contains(t, sql, "The quick brown test content 5678.", "Should contain the story content")
+	})
+}
 
 func TestCreateStory(t *testing.T) {
 	t.Run("should increase the total story count", func(t *testing.T) {
@@ -221,8 +241,8 @@ func TestStoryDB(t *testing.T) {
 		}
 		_ = CreateGroup(db, &group)
 
-		err := db.Exec(`INSERT INTO "stories" 
-		("created_at","updated_at","deleted_at","author_id","group_id","title","content","pin_order") 
+		err := db.Exec(`INSERT INTO "stories"
+		("created_at","updated_at","deleted_at","author_id","group_id","title","content","pin_order")
 		VALUES ('2023-08-08 22:17:28.085','2023-08-08 22:17:28.085',NULL,NULL,NULL,'','# Hi, This is a test story.',NULL)`).
 			Error
 		var pgerr *pgconn.PgError
