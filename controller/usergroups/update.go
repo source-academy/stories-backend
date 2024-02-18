@@ -14,7 +14,7 @@ import (
 	apierrors "github.com/source-academy/stories-backend/internal/errors"
 	userpermissiongroups "github.com/source-academy/stories-backend/internal/permissiongroups/users"
 	"github.com/source-academy/stories-backend/model"
-	userparams "github.com/source-academy/stories-backend/params/users"
+	usergroupparams "github.com/source-academy/stories-backend/params/usergroups"
 	userviews "github.com/source-academy/stories-backend/view/users"
 )
 
@@ -35,7 +35,7 @@ func HandleUpdateRole(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	var params userparams.UpdateRole
+	var params usergroupparams.UpdateRole
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		e, ok := err.(*json.UnmarshalTypeError)
 		if !ok {

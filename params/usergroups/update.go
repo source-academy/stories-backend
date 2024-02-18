@@ -1,4 +1,4 @@
-package userparams
+package usergroupparams
 
 import (
 	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
