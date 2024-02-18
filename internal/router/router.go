@@ -64,6 +64,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", handleAPIError(users.HandleList))
 				r.Get("/{userID}", handleAPIError(users.HandleRead))
+				r.Put("/{userID}/role", handleAPIError(users.HandleUpdate))
 				r.Delete("/{userID}", handleAPIError(users.HandleDelete))
 				r.Post("/", handleAPIError(users.HandleCreate))
 				r.Post("/batch", handleAPIError(usergroupscontroller.HandleBatchCreate))

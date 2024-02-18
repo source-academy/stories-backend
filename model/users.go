@@ -70,3 +70,16 @@ func DeleteUser(db *gorm.DB, userID int) (User, error) {
 
 	return user, nil
 }
+
+func UpdateUser(db *gorm.DB, userID int, user *User) (User, error) {
+	err := db.
+		Model(&user).
+		Where("id = ?", userID).
+		First(&user).
+		Updates(&user).
+		Error
+	if err != nil {
+		return *user, database.HandleDBError(err, "user")
+	}
+	return *user, nil
+}
