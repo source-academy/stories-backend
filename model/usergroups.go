@@ -50,8 +50,7 @@ func GetUserRoleByID(db *gorm.DB, userID uint, groupID uint) (groupenums.Role, e
 func UpdateUserGroupByUserID(db *gorm.DB, userID uint, userGroup *UserGroup) (UserGroup, error) {
 	err := db.Model(&userGroup).
 		Preload(clause.Associations).
-		Where(UserGroup{UserID: userID}).
-		First(&userGroup).
+		Where("id = ?", userID).
 		Updates(&userGroup).
 		Error
 
