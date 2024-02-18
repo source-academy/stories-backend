@@ -31,9 +31,15 @@ func GetUserByID(db *gorm.DB, id int) (User, error) {
 	return user, err
 }
 
-func CreateUser(db *gorm.DB, user *User) error {
+func (u *User) create(tx *gorm.DB) *gorm.DB {
 	// TODO: If user already exists, but is soft-deleted, undelete the user
-	err := db.Create(user).Error
+	return tx.Create(u)
+}
+
+func CreateUser(db *gorm.DB, user *User) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return user.create(tx).Error
+	})
 	if err != nil {
 		return database.HandleDBError(err, "user")
 	}
@@ -41,6 +47,8 @@ func CreateUser(db *gorm.DB, user *User) error {
 }
 
 func CreateUsers(db *gorm.DB, users *[]*User) (int64, error) {
+	// TODO: Use users.create() instead
+	// Blocked by `RowsAffected` not being accessible.
 	tx := db.Create(users)
 	rowCount := tx.RowsAffected
 	if err := tx.Error; err != nil {
@@ -49,21 +57,19 @@ func CreateUsers(db *gorm.DB, users *[]*User) (int64, error) {
 	return rowCount, nil
 }
 
+func (u *User) delete(tx *gorm.DB, userID uint) *gorm.DB {
+	return tx.
+		Model(u).
+		Where("id = ?", userID).
+		First(u). // store the value to be returned
+		Delete(u)
+}
+
 func DeleteUser(db *gorm.DB, userID int) (User, error) {
 	var user User
-	err := db.
-		Model(&user).
-		Where("id = ?", userID).
-		First(&user).
-		Error
-	if err != nil {
-		return user, database.HandleDBError(err, "user")
-	}
-
-	err = db.
-		Model(&user).
-		Delete(&user).
-		Error
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return user.delete(tx, uint(userID)).Error
+	})
 	if err != nil {
 		return user, database.HandleDBError(err, "user")
 	}
