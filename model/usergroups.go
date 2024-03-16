@@ -38,3 +38,24 @@ func CreateUserGroup(db *gorm.DB, userGroup *UserGroup) error {
 	}
 	return nil
 }
+
+func GetUserRoleByID(db *gorm.DB, userID uint, groupID uint) (groupenums.Role, error) {
+	userGroup, err := GetUserGroupByID(db, userID, groupID)
+	if err != nil {
+		return userGroup.Role, database.HandleDBError(err, "userGroup")
+	}
+	return userGroup.Role, nil
+}
+
+func UpdateUserGroupByUserID(db *gorm.DB, userID uint, userGroup *UserGroup) (UserGroup, error) {
+	err := db.Model(&userGroup).
+		Preload(clause.Associations).
+		Where("id = ?", userID).
+		Updates(&userGroup).
+		Error
+
+	if err != nil {
+		return *userGroup, database.HandleDBError(err, "userGroup")
+	}
+	return *userGroup, nil
+}
