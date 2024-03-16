@@ -1,4 +1,4 @@
-FROM golang:1.20.5 AS build_stage
+FROM golang:1.21.5 AS build_stage
 
 WORKDIR /go/src/github.com/source-academy/
 
