@@ -7,7 +7,7 @@ require (
 	github.com/getsentry/sentry-go v0.26.0
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/cors v1.2.1
-	github.com/jackc/pgx/v5 v5.5.2
+	github.com/jackc/pgx/v5 v5.5.4
 	github.com/joho/godotenv v1.5.1
 	github.com/lestrrat-go/jwx/v2 v2.0.21
 	github.com/rubenv/sql-migrate v1.5.1
