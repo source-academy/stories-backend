@@ -18,7 +18,7 @@ Install Golang and PostgresSQL. We recommend using a version manager like [asdf]
 * Install the required versions of the tools:
 
   ```bash
-  asdf install golang 1.20.5
+  asdf install golang 1.21.5
   asdf install postgres 14.8
   ```
 
