@@ -1,4 +1,4 @@
-FROM golang:1.20.5
+FROM golang:1.21.5
 
 # Needed for pg_isready
 RUN apt-get update
