@@ -10,12 +10,18 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
-	"gorm.io/gorm"
+	"github.com/source-academy/stories-backend/internal/database"
 )
 
 const (
 	defaultMaxMigrateSteps  = 0 // no limit
 	defaultMaxRollbackSteps = 1
+
+	dropCmd     = "drop"
+	createCmd   = "create"
+	migrateCmd  = "migrate"
+	rollbackCmd = "rollback"
+	statusCmd   = "status"
 )
 
 var (
@@ -28,7 +34,7 @@ var (
 	})
 )
 
-func main() {
+func setupScript() (string, *config.DatabaseConfig) {
 	// Load configuration
 	conf, err := config.LoadFromEnvironment()
 	if err != nil {
@@ -36,59 +42,80 @@ func main() {
 		panic(err)
 	}
 
-	var connector func(config.DatabaseConfig) (*gorm.DB, error)
+	targetDBName := conf.Database.DatabaseName
 
 	// Check for command line arguments
 	flag.Parse()
 	switch flag.Arg(0) {
-	case "drop", "create":
-		connector = connectAnonDB
-	case "migrate", "rollback", "status":
-		connector = connectDB
+	case dropCmd, createCmd:
+		// We need to connect anonymously in order
+		// to drop or create the database.
+		conf.Database.DatabaseName = ""
+	case migrateCmd, rollbackCmd, statusCmd:
+		// Do nothing
 	default:
 		logrus.Errorln("Invalid command")
+		return targetDBName, nil
+	}
+
+	return targetDBName, conf.Database
+}
+
+func main() {
+	targetDBName, dbConfig := setupScript()
+	if dbConfig == nil {
+		// Invalid configuration
 		return
 	}
 
 	// Connect to the database
-	d, err := connector(*conf.Database)
+	dbConn, err := database.Connect(dbConfig)
 	if err != nil {
 		logrus.Errorln(err)
 		panic(err)
 	}
-	defer closeDBConnection(d)
+	// Remember to close the connection
+	defer (func() {
+		fmt.Println(blueSandwich, "Closing connection...")
+		database.Close(dbConn)
+	})()
+
+	dbName, err := getDBName(dbConn)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(blueSandwich, "Connected to database", dbName+".")
 
 	switch flag.Arg(0) {
-	case "drop":
-		err := dropDB(d, conf.Database)
+	case dropCmd:
+		err := dropDB(dbConn, targetDBName)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Dropped database:", conf.Database.DatabaseName)
-	case "create":
-		err := createDB(d, conf.Database)
+		fmt.Println(greenTick, "Dropped database:", targetDBName)
+	case createCmd:
+		err := createDB(dbConn, targetDBName)
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
-		fmt.Println(greenTick, "Created database:", conf.Database.DatabaseName)
-	case "migrate":
-		db, err := d.DB()
+	case migrateCmd:
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		migrateDB(db)
-	case "rollback":
-		db, err := d.DB()
+	case rollbackCmd:
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)
 		}
 		rollbackDB(db)
-	case "status":
-		db, err := d.DB()
+	case statusCmd:
+		db, err := dbConn.DB()
 		if err != nil {
 			logrus.Errorln(err)
 			panic(err)

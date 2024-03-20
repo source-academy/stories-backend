@@ -90,28 +90,22 @@ func GetStoryByID(db *gorm.DB, id int) (Story, error) {
 	return story, nil
 }
 
-func CreateStory(db *gorm.DB, story *Story) error {
-	// Check author's role
-	role, err := GetUserRoleByID(db, story.AuthorID)
-	if err != nil {
-		return fmt.Errorf("failed to get user role: %w", err)
-	}
-
-	// Set story status based on author's role
-	if role == groupenums.RoleStandard {
-		story.Status = Draft
-	} else {
-		story.Status = Published
-	}
-
-	// Create the story in the database
-	if err := db.
+func (s *Story) create(tx *gorm.DB) *gorm.DB {
+	return tx.
 		Preload(clause.Associations).
-		Create(story).
-		// Get associated Author.
-		First(story).
-		Error; err != nil {
-		return fmt.Errorf("failed to create story: %w", err)
+		Create(s).
+		// Get associated Author. See
+		// https://github.com/go-gorm/gen/issues/618 on why
+		// a separate .First() is needed.
+		First(s)
+}
+
+func CreateStory(db *gorm.DB, story *Story) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return story.create(tx).Error
+	})
+	if err != nil {
+		return database.HandleDBError(err, "story")
 	}
 
 	return nil
@@ -163,14 +157,19 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 	return nil
 }
 
-func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
-	var story Story
-	err := db.
+func (s *Story) delete(tx *gorm.DB, storyID uint) *gorm.DB {
+	return tx.
 		Preload(clause.Associations).
 		Where("id = ?", storyID).
-		First(&story). // store the value to be returned
-		Delete(&story).
-		Error
+		First(s). // store the value to be returned
+		Delete(s)
+}
+
+func DeleteStory(db *gorm.DB, storyID int) (Story, error) {
+	var story Story
+	err := db.Transaction(func(tx *gorm.DB) error {
+		return story.delete(tx, uint(storyID)).Error
+	})
 	if err != nil {
 		return story, database.HandleDBError(err, "story")
 	}
