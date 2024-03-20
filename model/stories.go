@@ -1,10 +1,7 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/source-academy/stories-backend/internal/database"
-	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
