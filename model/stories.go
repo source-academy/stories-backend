@@ -49,8 +49,8 @@ func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 func GetAllPublishedStories(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
-		// FIXME: Handle nil case properly
-		Where(Story{GroupID: groupID, Status: Published}).
+		Where("status = ?", int(Published)).
+		Where("group_id = ?", groupID).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
@@ -65,8 +65,8 @@ func GetAllPublishedStories(db *gorm.DB, groupID *uint) ([]Story, error) {
 func GetAllDraftStories(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
-		// FIXME: Handle nil case properly
-		Where(Story{GroupID: groupID, Status: Draft}).
+		Where("status = ?", int(Draft)).
+		Where("group_id = ?", groupID).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
