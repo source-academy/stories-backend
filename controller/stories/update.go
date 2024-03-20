@@ -85,3 +85,65 @@ func HandleUpdate(w http.ResponseWriter, r *http.Request) error {
 	controller.EncodeJSONResponse(w, storyviews.SingleFrom(storyModel))
 	return nil
 }
+
+func HandlePublish(w http.ResponseWriter, r *http.Request) error {
+	storyIDStr := chi.URLParam(r, "storyID")
+	storyID, err := strconv.Atoi(storyIDStr)
+	if err != nil {
+		return apierrors.ClientBadRequestError{
+			Message: fmt.Sprintf("Invalid storyID: %v", err),
+		}
+	}
+
+	err = auth.CheckPermissions(r, storypermissiongroups.Publish())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error moderating story: %v", err),
+		}
+	}
+
+	// Extra params won't do anything, e.g. authorID can't be changed.
+	// TODO: Error on extra params?
+	var params storyparams.Update
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		e, ok := err.(*json.UnmarshalTypeError)
+		if !ok {
+			logrus.Error(err)
+			return apierrors.ClientBadRequestError{
+				Message: fmt.Sprintf("Bad JSON parsing: %v", err),
+			}
+		}
+
+		// TODO: Investigate if we should use errors.Wrap instead
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("Invalid JSON format: %s should be a %s.", e.Field, e.Type),
+		}
+	}
+
+	err = params.Validate()
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("JSON validation failed: %v", err),
+		}
+	}
+
+	storyModel := *params.ToModel()
+
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	err = model.UpdateStory(db, storyID, &storyModel)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, storyviews.SingleFrom(storyModel))
+	return nil
+}

@@ -17,4 +17,5 @@ const (
 	CanReadStories   Permission = "can_read_stories"
 	CanUpdateStories Permission = "can_update_stories"
 	CanDeleteStories Permission = "can_delete_stories"
+	CanPublishStories Permission = "can_publish_stories"
 )

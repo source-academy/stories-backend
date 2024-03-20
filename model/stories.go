@@ -1,20 +1,31 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/source-academy/stories-backend/internal/database"
+	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
+type StoryStatus int
+
+const (
+    Draft StoryStatus = iota
+    Published
+)
+
 type Story struct {
-	gorm.Model
-	AuthorID uint
-	Author   User
-	GroupID  *uint // null means this is a public story
-	Group    Group
-	Title    string
-	Content  string
-	PinOrder *int // nil if not pinned
+    gorm.Model
+    AuthorID   uint
+    Author     User
+    GroupID    *uint
+    Group      Group
+    Title      string
+    Content    string
+    PinOrder   *int
+    Status     StoryStatus
 }
 
 // Passing nil to omit the filtering and get all stories
@@ -24,6 +35,38 @@ func GetAllStoriesInGroup(db *gorm.DB, groupID *uint) ([]Story, error) {
 	err := db.
 		// FIXME: Handle nil case properly
 		Where(Story{GroupID: groupID}).
+		Preload(clause.Associations).
+		// TODO: Abstract out the sorting logic
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
+		Find(&stories).
+		Error
+	if err != nil {
+		return stories, database.HandleDBError(err, "story")
+	}
+	return stories, nil
+}
+
+func GetAllPublishedStories(db *gorm.DB, groupID *uint) ([]Story, error) {
+	var stories []Story
+	err := db.
+		// FIXME: Handle nil case properly
+		Where(Story{GroupID: groupID, Status: Published}).
+		Preload(clause.Associations).
+		// TODO: Abstract out the sorting logic
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
+		Find(&stories).
+		Error
+	if err != nil {
+		return stories, database.HandleDBError(err, "story")
+	}
+	return stories, nil
+}
+
+func GetAllDraftStories(db *gorm.DB, groupID *uint) ([]Story, error) {
+	var stories []Story
+	err := db.
+		// FIXME: Handle nil case properly
+		Where(Story{GroupID: groupID, Status: Draft}).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
@@ -48,17 +91,29 @@ func GetStoryByID(db *gorm.DB, id int) (Story, error) {
 }
 
 func CreateStory(db *gorm.DB, story *Story) error {
-	err := db.
+	// Check author's role
+	role, err := GetUserRoleByID(db, story.AuthorID)
+	if err != nil {
+		return fmt.Errorf("failed to get user role: %w", err)
+	}
+
+	// Set story status based on author's role
+	if role == groupenums.RoleStandard {
+		story.Status = Draft
+	} else {
+		story.Status = Published
+	}
+
+	// Create the story in the database
+	if err := db.
 		Preload(clause.Associations).
 		Create(story).
-		// Get associated Author. See
-		// https://github.com/go-gorm/gen/issues/618 on why
-		// a separate .First() is needed.
+		// Get associated Author.
 		First(story).
-		Error
-	if err != nil {
-		return database.HandleDBError(err, "story")
+		Error; err != nil {
+		return fmt.Errorf("failed to create story: %w", err)
 	}
+
 	return nil
 }
 
@@ -88,7 +143,6 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 					return database.HandleDBError(err, "story")
 				}
 			}
-
 			// Update remaining fields
 			err = tx.
 				Preload(clause.Associations).

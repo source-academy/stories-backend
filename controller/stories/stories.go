@@ -54,6 +54,72 @@ func HandleList(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+func HandleListPublished(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.List())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error listing stories: %v", err),
+		}
+	}
+
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	stories, err := model.GetAllPublishedStories(db, groupID)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, storyviews.ListFrom(stories))
+	return nil
+}
+
+func HandleListDraft(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.List())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error listing stories: %v", err),
+		}
+	}
+
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	stories, err := model.GetAllDraftStories(db, groupID)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, storyviews.ListFrom(stories))
+	return nil
+}
+
 func HandleRead(w http.ResponseWriter, r *http.Request) error {
 	storyIDStr := chi.URLParam(r, "storyID")
 	storyID, err := strconv.Atoi(storyIDStr)

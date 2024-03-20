@@ -55,18 +55,21 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 			r.Use(usergroups.InjectUserGroupIntoContext)
 			r.Route("/stories", func(r chi.Router) {
 				r.Get("/", handleAPIError(stories.HandleList))
+				r.Get("/draft", handleAPIError(stories.HandleListDraft))
+				r.Get("/published", handleAPIError(stories.HandleListPublished))
 				r.Get("/{storyID}", handleAPIError(stories.HandleRead))
 				r.Put("/{storyID}", handleAPIError(stories.HandleUpdate))
+				r.Put("/{storyID}/publish", handleAPIError(stories.HandlePublish))
 				r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
 				r.Post("/", handleAPIError(stories.HandleCreate))
-			})
+			})			
 
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", handleAPIError(users.HandleList))
 				r.Get("/{userID}", handleAPIError(users.HandleRead))
 				r.Delete("/{userID}", handleAPIError(users.HandleDelete))
 				r.Post("/", handleAPIError(users.HandleCreate))
-				r.Post("/batch", handleAPIError(usergroupscontroller.HandleBatchCreate))
+				r.Put("/batch", handleAPIError(usergroupscontroller.HandleBatchCreate))
 			})
 		})
 
