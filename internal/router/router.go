@@ -62,7 +62,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 				r.Put("/{storyID}/publish", handleAPIError(stories.HandlePublish))
 				r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
 				r.Post("/", handleAPIError(stories.HandleCreate))
-			})			
+			})
 
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", handleAPIError(users.HandleList))
