@@ -32,19 +32,18 @@ func GetUserGroupByID(db *gorm.DB, userID uint, groupID uint) (UserGroup, error)
 }
 
 func GetUserRoleByID(db *gorm.DB, userID uint) (groupenums.Role, error) {
-    var userGroup UserGroup
+	var userGroup UserGroup
 
-    err := db.Model(&userGroup).
-        Where(UserGroup{UserID: userID}).
-        First(&userGroup).Error
+	err := db.Model(&userGroup).
+		Where(UserGroup{UserID: userID}).
+		First(&userGroup).Error
 
-    if err != nil {
-        return userGroup.Role, database.HandleDBError(err, "userRole")
-    }
+	if err != nil {
+		return userGroup.Role, database.HandleDBError(err, "userRole")
+	}
 
-    return userGroup.Role, nil
+	return userGroup.Role, nil
 }
-
 
 func CreateUserGroup(db *gorm.DB, userGroup *UserGroup) error {
 	err := db.Create(userGroup).Error

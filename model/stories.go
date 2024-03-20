@@ -9,20 +9,20 @@ import (
 type StoryStatus int
 
 const (
-    Draft StoryStatus = iota
-    Published
+	Draft StoryStatus = iota
+	Published
 )
 
 type Story struct {
-    gorm.Model
-    AuthorID   uint
-    Author     User
-    GroupID    *uint
-    Group      Group
-    Title      string
-    Content    string
-    PinOrder   *int
-    Status     StoryStatus
+	gorm.Model
+	AuthorID uint
+	Author   User
+	GroupID  *uint
+	Group    Group
+	Title    string
+	Content  string
+	PinOrder *int
+	Status   StoryStatus
 }
 
 // Passing nil to omit the filtering and get all stories

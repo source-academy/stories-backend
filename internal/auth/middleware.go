@@ -29,10 +29,10 @@ func MakeMiddlewareFrom(conf *config.Config) func(http.Handler) http.Handler {
 	if conf.Environment == envutils.ENV_DEVELOPMENT {
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			 r = injectUserIDToContext(r, 1)
-			 next.ServeHTTP(w, r)
+				r = injectUserIDToContext(r, 1)
+				next.ServeHTTP(w, r)
 			})
-		}		 
+		}
 	}
 
 	keySet := getJWKS(conf.JWKSEndpoint)

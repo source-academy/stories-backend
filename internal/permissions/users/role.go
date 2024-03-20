@@ -19,5 +19,3 @@ func (p RolePermission) IsAuthorized(r *http.Request) bool {
 	}
 	return groupenums.IsRoleGreaterThan(*role, p.Role)
 }
-
-
