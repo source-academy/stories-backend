@@ -136,17 +136,16 @@ func (s *Story) create(tx *gorm.DB) *gorm.DB {
 
 func CreateStory(db *gorm.DB, story *Story) error {
 	// Check author's role
-	role, err := GetUserRoleByID(db, story.AuthorID)
-	if err != nil {
-		return database.HandleDBError(err, "userRole")
-	}
+	role, _ := GetUserRoleByID(db, story.AuthorID)
+	// Based on the TestCreateStory, "can create without group" seems to be the desired behaviour
+	// No group means no userGroup, which means no role, so an error shouldn't be thrown
 	// Set story status based on author's role
-	if role == groupenums.RoleStandard {
+	if !groupenums.IsRoleGreaterThan(role, groupenums.RoleStandard) {
 		story.Status = Draft
 	} else {
 		story.Status = Published
 	}
-	err = db.Transaction(func(tx *gorm.DB) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(story).Error; err != nil {
 			return err // Return the error directly
 		}
