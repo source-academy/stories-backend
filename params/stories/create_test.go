@@ -7,7 +7,27 @@ import (
 )
 
 func TestValidate(t *testing.T) {
-	t.Run("should do nothing for now", func(t *testing.T) {})
+	negativePinOrder := -1
+	tests := []struct {
+		name    string
+		params  Create
+		wantErr bool
+	}{
+		{"valid input", Create{AuthorID: 1, Title: "Test Title", Content: "Test Content"}, false},
+		{"missing authorId", Create{Title: "Test Title", Content: "Test Content"}, true},
+		{"empty title", Create{AuthorID: 1, Content: "Test Content"}, true},
+		{"empty content", Create{AuthorID: 1, Title: "Test Title"}, true},
+		{"negative pinOrder", Create{AuthorID: 1, Title: "Test Title", Content: "Test Content", PinOrder: &negativePinOrder}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.params.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }
 
 func TestToModel(t *testing.T) {
