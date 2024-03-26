@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/source-academy/stories-backend/internal/database"
+	groupenums "github.com/source-academy/stories-backend/internal/enums/groups"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -10,19 +11,22 @@ type StoryStatus int
 
 const (
 	Draft StoryStatus = iota
+	Pending
+	Rejected
 	Published
 )
 
 type Story struct {
 	gorm.Model
-	AuthorID uint
-	Author   User
-	GroupID  *uint
-	Group    Group
-	Title    string
-	Content  string
-	PinOrder *int
-	Status   StoryStatus
+	AuthorID      uint
+	Author        User
+	GroupID       *uint
+	Group         Group
+	Title         string
+	Content       string
+	PinOrder      *int
+	Status        StoryStatus
+	StatusMessage *string
 }
 
 // Passing nil to omit the filtering and get all stories
@@ -59,11 +63,44 @@ func GetAllPublishedStories(db *gorm.DB, groupID *uint) ([]Story, error) {
 	return stories, nil
 }
 
-func GetAllDraftStories(db *gorm.DB, groupID *uint) ([]Story, error) {
+func GetAllPendingStories(db *gorm.DB, groupID *uint) ([]Story, error) {
 	var stories []Story
 	err := db.
-		Where("status = ?", int(Draft)).
+		Where("status = ?", int(Pending)).
 		Where("group_id = ?", groupID).
+		Preload(clause.Associations).
+		// TODO: Abstract out the sorting logic
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
+		Find(&stories).
+		Error
+	if err != nil {
+		return stories, database.HandleDBError(err, "story")
+	}
+	return stories, nil
+}
+
+func GetAllStoriesByStatus(db *gorm.DB, groupID *uint, status StoryStatus) ([]Story, error) {
+	var stories []Story
+	err := db.
+		Where("status = ?", int(status)).
+		Where("group_id = ?", groupID).
+		Preload(clause.Associations).
+		// TODO: Abstract out the sorting logic
+		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
+		Find(&stories).
+		Error
+	if err != nil {
+		return stories, database.HandleDBError(err, "story")
+	}
+	return stories, nil
+}
+
+func GetAllAuthorStoriesByStatus(db *gorm.DB, groupID *uint, userID *int, status StoryStatus) ([]Story, error) {
+	var stories []Story
+	err := db.
+		Where("status = ?", int(status)).
+		Where("group_id = ?", groupID).
+		Where("author_id = ?", userID).
 		Preload(clause.Associations).
 		// TODO: Abstract out the sorting logic
 		Order("pin_order ASC NULLS LAST, title ASC, content ASC").
@@ -98,8 +135,22 @@ func (s *Story) create(tx *gorm.DB) *gorm.DB {
 }
 
 func CreateStory(db *gorm.DB, story *Story) error {
-	err := db.Transaction(func(tx *gorm.DB) error {
-		return story.create(tx).Error
+	// Check author's role
+	role, err := GetUserRoleByID(db, story.AuthorID)
+	if err != nil {
+		return database.HandleDBError(err, "userRole")
+	}
+	// Set story status based on author's role
+	if role == groupenums.RoleStandard {
+		story.Status = Draft
+	} else {
+		story.Status = Published
+	}
+	err = db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(story).Error; err != nil {
+			return err // Return the error directly
+		}
+		return nil
 	})
 	if err != nil {
 		return database.HandleDBError(err, "story")

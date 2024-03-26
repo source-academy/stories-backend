@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -59,7 +58,7 @@ func HandleListPublished(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		logrus.Error(err)
 		return apierrors.ClientForbiddenError{
-			Message: fmt.Sprintf("Error listing stories: %v", err),
+			Message: fmt.Sprintf("Error listing published stories: %v", err),
 		}
 	}
 
@@ -77,7 +76,40 @@ func HandleListPublished(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	stories, err := model.GetAllPublishedStories(db, groupID)
+	stories, err := model.GetAllStoriesByStatus(db, groupID, model.Published)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, storyviews.ListFrom(stories))
+	return nil
+}
+
+func HandleListPending(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.Moderate())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error listing stories to be reviewed: %v", err),
+		}
+	}
+
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	stories, err := model.GetAllStoriesByStatus(db, groupID, model.Pending)
 	if err != nil {
 		logrus.Error(err)
 		return err
@@ -92,10 +124,14 @@ func HandleListDraft(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		logrus.Error(err)
 		return apierrors.ClientForbiddenError{
-			Message: fmt.Sprintf("Error listing stories: %v", err),
+			Message: fmt.Sprintf("Error listing drafts: %v", err),
 		}
 	}
-
+	userID, err := auth.GetUserIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
 	if err != nil {
@@ -110,7 +146,44 @@ func HandleListDraft(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	stories, err := model.GetAllDraftStories(db, groupID)
+	stories, err := model.GetAllAuthorStoriesByStatus(db, groupID, userID, model.Draft)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	controller.EncodeJSONResponse(w, storyviews.ListFrom(stories))
+	return nil
+}
+
+func HandleListRejected(w http.ResponseWriter, r *http.Request) error {
+	err := auth.CheckPermissions(r, storypermissiongroups.List())
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientForbiddenError{
+			Message: fmt.Sprintf("Error listing rejected stories: %v", err),
+		}
+	}
+	userID, err := auth.GetUserIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+	// Get DB instance
+	db, err := database.GetDBFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	// Get group id from context
+	groupID, err := usergroups.GetGroupIDFrom(r)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	stories, err := model.GetAllAuthorStoriesByStatus(db, groupID, userID, model.Rejected)
 	if err != nil {
 		logrus.Error(err)
 		return err

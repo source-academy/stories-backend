@@ -13,9 +13,9 @@ const (
 	CanUpdateGroups Permission = "can_update_groups"
 	CanDeleteGroups Permission = "can_delete_groups"
 
-	CanCreateStories  Permission = "can_create_stories"
-	CanReadStories    Permission = "can_read_stories"
-	CanUpdateStories  Permission = "can_update_stories"
-	CanDeleteStories  Permission = "can_delete_stories"
-	CanPublishStories Permission = "can_publish_stories"
+	CanCreateStories   Permission = "can_create_stories"
+	CanReadStories     Permission = "can_read_stories"
+	CanUpdateStories   Permission = "can_update_stories"
+	CanDeleteStories   Permission = "can_delete_stories"
+	CanModerateStories Permission = "can_moderate_stories"
 )
