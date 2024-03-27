@@ -1,6 +1,7 @@
 package storyparams
 
 import (
+	"fmt"
 	"github.com/source-academy/stories-backend/model"
 )
 
@@ -13,6 +14,18 @@ type Create struct {
 
 // TODO: Add some validation
 func (params *Create) Validate() error {
+	if params.AuthorID == 0 {
+		return fmt.Errorf("authorId is required and must be non-zero")
+	}
+	if params.Title == "" {
+		return fmt.Errorf("title is required and cannot be empty")
+	}
+	if params.Content == "" {
+		return fmt.Errorf("content is required and cannot be empty")
+	}
+	if params.PinOrder != nil && *params.PinOrder < 0 {
+		return fmt.Errorf("pinOrder, if set, must be non-negative")
+	}
 	return nil
 }
 

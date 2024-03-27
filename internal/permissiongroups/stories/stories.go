@@ -20,6 +20,11 @@ func Read() permissions.PermissionGroup {
 		GetRolePermission(userpermissions.CanReadStories)
 }
 
+func Moderate() permissions.PermissionGroup {
+	return userpermissions.
+		GetRolePermission(userpermissions.CanModerateStories)
+}
+
 func Update(storyID uint) permissions.PermissionGroup {
 	return permissions.AnyOf{
 		Groups: []permissions.PermissionGroup{

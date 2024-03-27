@@ -23,6 +23,7 @@ func GetRolePermission(p Permission) *RolePermission {
 	case
 		// Additional permissions for moderators and administrators
 		CanUpdateStories,
+		CanModerateStories,
 		CanDeleteStories:
 		return &RolePermission{
 			Permission: p,

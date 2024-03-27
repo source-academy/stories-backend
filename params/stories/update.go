@@ -5,9 +5,11 @@ import (
 )
 
 type Update struct {
-	Title    string `json:"title"`
-	Content  string `json:"content"`
-	PinOrder *int   `json:"pinOrder"`
+	Title         string `json:"title"`
+	Content       string `json:"content"`
+	PinOrder      *int   `json:"pinOrder"`
+	Status        int    `json:"status"`
+	StatusMessage string `json:"statusMessage"`
 }
 
 func (params *Update) Validate() error {
@@ -18,8 +20,10 @@ func (params *Update) Validate() error {
 
 func (params *Update) ToModel() *model.Story {
 	return &model.Story{
-		Title:    params.Title,
-		Content:  params.Content,
-		PinOrder: params.PinOrder,
+		Title:         params.Title,
+		Content:       params.Content,
+		PinOrder:      params.PinOrder,
+		Status:        model.StoryStatus(params.Status),
+		StatusMessage: &params.StatusMessage,
 	}
 }
