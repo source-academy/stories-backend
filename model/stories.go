@@ -20,11 +20,11 @@ type Story struct {
 	gorm.Model
 	AuthorID      uint
 	Author        User
-	GroupID       *uint
+	GroupID       *uint // null means this is a public story
 	Group         Group
 	Title         string
 	Content       string
-	PinOrder      *int
+	PinOrder      *int // nil if not pinned
 	Status        StoryStatus
 	StatusMessage *string
 }
@@ -154,7 +154,6 @@ func CreateStory(db *gorm.DB, story *Story) error {
 	if err != nil {
 		return database.HandleDBError(err, "story")
 	}
-
 	return nil
 }
 
@@ -184,6 +183,7 @@ func UpdateStory(db *gorm.DB, storyID int, newStory *Story) error {
 					return database.HandleDBError(err, "story")
 				}
 			}
+
 			// Update remaining fields
 			err = tx.
 				Preload(clause.Associations).
