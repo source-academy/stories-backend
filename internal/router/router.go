@@ -58,7 +58,7 @@ func Setup(config *config.Config, injectMiddleWares []func(http.Handler) http.Ha
 				r.Get("/draft", handleAPIError(stories.HandleListDraft))
 				r.Get("/pending", handleAPIError(stories.HandleListPending))
 				r.Get("/published", handleAPIError(stories.HandleListPublished))
-				r.Get("/rejected", handleAPIError(stories.HandleListPublished))
+				r.Get("/rejected", handleAPIError(stories.HandleListRejected))
 				r.Get("/{storyID}", handleAPIError(stories.HandleRead))
 				r.Put("/{storyID}", handleAPIError(stories.HandleUpdate))
 				r.Delete("/{storyID}", handleAPIError(stories.HandleDelete))
