@@ -59,7 +59,7 @@ func HandleUpdateRole(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	userGroupModel := *params.ToModel()
+	updateModel := *params.ToModel(uint(userID))
 
 	// Get DB instance
 	db, err := database.GetDBFrom(r)
@@ -68,13 +68,14 @@ func HandleUpdateRole(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	userGroup, err := model.UpdateUserGroupByUserID(db, uint(userID), &userGroupModel)
+	// TODO: Refactor logic
+	userGroup, err := model.UpdateUserGroupByUserID(db, updateModel.UserID, &updateModel)
 	if err != nil {
 		logrus.Error(err)
 		return err
 	}
 
-	user, err := model.GetUserByID(db, userID)
+	user, err := model.GetUserByID(db, int(userGroup.UserID))
 	if err != nil {
 		logrus.Error(err)
 		return err

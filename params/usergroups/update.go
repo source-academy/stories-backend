@@ -11,9 +11,10 @@ type UpdateRole struct {
 	Role groupenums.Role `json:"role"`
 }
 
-func (params *UpdateRole) ToModel() *model.UserGroup {
+func (params *UpdateRole) ToModel(userID uint) *model.UserGroup {
 	return &model.UserGroup{
-		Role: params.Role,
+		UserID: userID,
+		Role:   params.Role,
 	}
 }
 
