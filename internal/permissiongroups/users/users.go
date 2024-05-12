@@ -30,7 +30,6 @@ func Update(userID uint) permissions.PermissionGroup {
 		Groups: []permissions.PermissionGroup{
 			userpermissions.
 				GetRolePermission(userpermissions.CanUpdateUsers),
-			IsSelf{UserID: userID},
 		},
 	}
 }
