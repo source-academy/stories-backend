@@ -31,7 +31,7 @@ func HandleUpdateRole(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		logrus.Error(err)
 		return apierrors.ClientForbiddenError{
-			Message: fmt.Sprintf("Error batch creating users: %v", err),
+			Message: fmt.Sprintf("Error updating user: %v", err),
 		}
 	}
 
