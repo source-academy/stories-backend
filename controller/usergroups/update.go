@@ -51,14 +51,13 @@ func HandleUpdateRole(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	// TODO: add validation for updating user?
-	// err = params.Validate()
-	// if err != nil {
-	// 	logrus.Error(err)
-	// 	return apierrors.ClientUnprocessableEntityError{
-	// 		Message: fmt.Sprintf("JSON validation failed: %v", err),
-	// 	}
-	// }
+	err = params.Validate()
+	if err != nil {
+		logrus.Error(err)
+		return apierrors.ClientUnprocessableEntityError{
+			Message: fmt.Sprintf("JSON validation failed: %v", err),
+		}
+	}
 
 	userGroupModel := *params.ToModel()
 
