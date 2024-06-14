@@ -1,11 +1,10 @@
 package testutils
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 
-	"github.com/TwiN/go-color"
+	"github.com/sirupsen/logrus"
 	"github.com/source-academy/stories-backend/internal/config"
 	"gorm.io/gorm"
 )
@@ -16,10 +15,9 @@ var (
 )
 
 func GetTestConf(testEnvPath string) config.Config {
-	yellowChevron := color.With(color.Yellow, "❯")
-	fmt.Println(yellowChevron, "Getting test conf")
+	logrus.Infoln("Reading test configuration...")
 	once.Do(func() { // <-- atomic, does not allow repeating
-		fmt.Println(yellowChevron, yellowChevron, yellowChevron, "Creating test conf")
+		logrus.Infoln("Creating test configuration...")
 		testConfig, _ = config.LoadFromEnvironment(testEnvPath)
 	})
 	return *testConfig
